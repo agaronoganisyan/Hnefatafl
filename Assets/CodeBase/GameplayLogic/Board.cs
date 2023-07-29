@@ -4,12 +4,14 @@ using UnityEngine;
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.Infrastructure;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic
 {
-    public class Board : MonoBehaviour
+    public class Board : MonoBehaviour, IService
     {
-        UnitsManager _unitsManager;
+       //UnitsManager _unitsManager;
 
         //[SerializeField] Tile _regularTile;
         //[SerializeField] Tile _thronTile;
@@ -26,16 +28,10 @@ namespace CodeBase.GameplayLogic
 
         int _boardSize;
 
-        private void Start()
-        {
-            Initialize();
-            GenerateBoard();
-        }
-
-        void Initialize()
+        public void Initialize()
         {
             _boardSize = ConstValues.BOARD_SIZE;
-            _unitsManager = new UnitsManager();
+            GenerateBoard();
         }
 
         void GenerateBoard()
@@ -57,8 +53,6 @@ namespace CodeBase.GameplayLogic
                     InstantiateTile(GetTileTypeByPos(pos), pos);
                 }
             }
-
-            _unitsManager.SpawnUnits();
         }
 
         void InstantiateTile(TileType tileType, Vector3 pos)

@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class ConstValues
+namespace CodeBase.Infrastructure
 {
-    public const int BOARD_SIZE = 11;
+    public static class ConstValues
+    {
+        public const int BOARD_SIZE = 11;
+    }
 }

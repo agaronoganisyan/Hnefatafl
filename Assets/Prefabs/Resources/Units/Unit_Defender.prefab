@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2892769733025900739}
   - component: {fileID: 5997783409086594851}
   - component: {fileID: 2524237944403002650}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1878547734511842805}
   - component: {fileID: 2734758346880833047}
-  m_Layer: 0
+  - component: {fileID: 1133118525992196593}
+  m_Layer: 7
   m_Name: Unit_Defender
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,5 +130,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _type: 2
-  _currentX: 0
-  _currentY: 0
+--- !u!65 &1133118525992196593
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6807848925404749118}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.75, y: 0.2, z: 0.75}
+  m_Center: {x: 0.000000059604645, y: 0.1, z: -0.00000008940697}

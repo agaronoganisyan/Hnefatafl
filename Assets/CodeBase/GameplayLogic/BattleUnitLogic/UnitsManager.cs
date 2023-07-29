@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CodeBase.Infrastructure.Services.AssetManagement;
+using CodeBase.Infrastructure;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
-    public class UnitsManager : MonoBehaviour
+    public class UnitsManager : MonoBehaviour, IService
     {
         BattleUnit _intsUnit;
 
@@ -13,7 +15,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
         int _boardSize;
 
-        public UnitsManager()
+        public void Initialize()
         {
             _boardSize = ConstValues.BOARD_SIZE;
             _units = new BattleUnit[_boardSize, _boardSize];
@@ -75,6 +77,11 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             _intsUnit = Instantiate(AssetsProvider.GetCachedAsset<BattleUnit>(AssetsPath.PathToBattleUnit(battleUnitType)));
             _intsUnit.Initialize(pos);
             _units[(int)pos.x, (int)pos.z] = _intsUnit;
+        }
+
+        public bool IsThereUnit(Vector3 pos)
+        {
+            return _units[(int)pos.x, (int)pos.z] != null ? true : false;
         }
     }
 }

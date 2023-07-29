@@ -6,7 +6,7 @@ namespace CodeBase.Infrastructure.Services.AssetManagement
 {
     public static class AssetsProvider 
     {
-        static Hashtable _cachedAssets = new Hashtable();
+        private static readonly Dictionary<string, Component> _cachedAssets = new Dictionary<string, Component>();
 
         public static T GetCachedAsset<T>(string path) where T : Component
         {
