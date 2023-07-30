@@ -3,21 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.GameplayLogic.BoardLogic;
+using CodeBase.GameplayLogic.TileLogic;
 
 namespace CodeBase.GameplayLogic
 {
-    public class Controller : MonoBehaviour
+    public class Controller : MonoBehaviour, IService
     {
+        Board _board;
+        UnitsManager _unitsManager;
+
         [SerializeField] Camera _camera;
         [SerializeField] LayerMask _tileLayer;
-        [SerializeField] LayerMask _unitLayer;
 
         Ray _ray;
         RaycastHit _hit;
 
-        bool _isUnitSelected;
+        Tile _selectedTile;
+        BattleUnit _selectedUnit;
 
         public static event Action<BattleUnit> OnUnitSelected;
+        public static event Action<Tile> OnUnitPlaced;
+        public static event Action<Tile> OnDisableHighlight;
+
+        public void Initialize(Board board,UnitsManager unitsManager)
+        {
+            _board = board;
+            _unitsManager = unitsManager;
+        }
 
         private void Update()
         {
@@ -25,23 +39,35 @@ namespace CodeBase.GameplayLogic
             {
                 _ray = _camera.ScreenPointToRay(Input.mousePosition);
 
-                if (_isUnitSelected)
+                if (Physics.Raycast(_ray, out _hit, 100, _tileLayer))
                 {
+                    _selectedTile = _hit.transform.GetComponent<Tile>();
 
-                //    UnitsManager.istg
-
-                    if (Physics.Raycast(_ray, out _hit, 100, _tileLayer))
+                    if (_selectedUnit != null)
                     {
+                        if (_selectedUnit.IsThisIndexAvailableToMove(_selectedTile.Index))
+                        {
+                            OnUnitPlaced?.Invoke(_selectedTile);
+                        }
+                        else
+                        {
+                            OnDisableHighlight?.Invoke(_selectedTile);
+                        }
 
+                        _selectedUnit = null;
                     }
-                }
-                else
-                {
-                    if (Physics.Raycast(_ray, out _hit, 100, _unitLayer))
+                    else
                     {
-                        _isUnitSelected = true;
+                        _selectedUnit = _unitsManager.GetUnitByIndex(_selectedTile.Index);
 
-                      //  OnUnitSelected?.Invoke(_hit.collider.tr);
+                        if (_selectedUnit != null)
+                        {
+                            OnUnitSelected?.Invoke(_selectedUnit);
+                        }
+                        else
+                        {
+
+                        }
                     }
                 }
             }

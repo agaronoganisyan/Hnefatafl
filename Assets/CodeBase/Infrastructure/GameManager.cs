@@ -4,6 +4,7 @@ using UnityEngine;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.GameplayLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.GameplayLogic.BoardLogic;
 
 namespace CodeBase.Infrastructure
 {
@@ -12,7 +13,9 @@ namespace CodeBase.Infrastructure
         public void InitializeGame()
         {
             ServiceLocator.Get<Board>().Initialize();
-            ServiceLocator.Get<UnitsManager>().Initialize();
+            ServiceLocator.Get<BoardHighlight>().Initialize();
+            ServiceLocator.Get<UnitsManager>().Initialize(ServiceLocator.Get<Board>());
+            ServiceLocator.Get<Controller>().Initialize(ServiceLocator.Get<Board>(),ServiceLocator.Get<UnitsManager>());
         }
 
         public void StartGame()

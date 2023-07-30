@@ -9,6 +9,7 @@ namespace CodeBase.Infrastructure.Services.AssetManagement
     public static class AssetsPath
     {
         public static string PathToTile(TileType type) => "Tiles/Tile_" + type;
+        public static string PathToTileHighlight = "TileHighlights/TileHighlight";
         public static string PathToBattleUnit(BattleUnitType type) => "Units/Unit_" + type;
     }
 }

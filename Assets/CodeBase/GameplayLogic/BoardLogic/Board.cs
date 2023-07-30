@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.Infrastructure.Services.AssetManagement;
-using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.Infrastructure;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.GameplayLogic.BattleUnitLogic;
 
-namespace CodeBase.GameplayLogic
+namespace CodeBase.GameplayLogic.BoardLogic
 {
     public class Board : MonoBehaviour, IService
     {
-       //UnitsManager _unitsManager;
-
-        //[SerializeField] Tile _regularTile;
-        //[SerializeField] Tile _thronTile;
-        //[SerializeField] Tile _shelterTile;
         Tile _intsTile;
 
         Tile[,] _tiles;
@@ -67,6 +62,18 @@ namespace CodeBase.GameplayLogic
             if ((pos == _upperLeftShelterPos) || (pos == _upperRightShelterPos) || (pos == _lowerLeftShelterPos) || (pos == _lowerRightShelterPos)) return TileType.Shelter;
             else if (pos == _thronPos) return TileType.Thron;
             else return TileType.Regular;
+        }
+
+        public bool IsIndexAvailableToMove(Vector2Int index, BattleUnitType moveUnitType)
+        {
+            if (moveUnitType == BattleUnitType.King)
+            {
+                return _tiles[index.x, index.y] != null ? true : false;
+            }
+            else
+            {
+                return (_tiles[index.x, index.y] != null && _tiles[index.x, index.y].Type != TileType.Shelter) ? true : false;
+            }
         }
     }
 }
