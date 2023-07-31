@@ -20,10 +20,10 @@ namespace CodeBase.GameplayLogic.TileLogic
         Vector2Int _index;
         public Vector2Int Index => _index;
 
-        public void Initialize(Vector3 pos)
+        public void Initialize(Vector2Int index)
         {
-            transform.position = pos;
-            _index = new Vector2Int((int)pos.x, (int)pos.z);
+            transform.position = new Vector3(index.x, 0, index.y);
+            _index = new Vector2Int(index.x, index.y);
         }
     }
 }

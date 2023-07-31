@@ -15,11 +15,11 @@ namespace CodeBase.GameplayLogic.BoardLogic
 
         Tile[,] _tiles;
 
-        Vector3 _thronPos;
-        Vector3 _upperLeftShelterPos;
-        Vector3 _upperRightShelterPos;
-        Vector3 _lowerLeftShelterPos;
-        Vector3 _lowerRightShelterPos;
+        Vector2Int _thronIndex;
+        Vector2Int _upperLeftShelterIndex;
+        Vector2Int _upperRightShelterIndex;
+        Vector2Int _lowerLeftShelterIndex;
+        Vector2Int _lowerRightShelterIndex;
 
         int _boardSize;
 
@@ -33,47 +33,45 @@ namespace CodeBase.GameplayLogic.BoardLogic
         {
             _tiles = new Tile[_boardSize, _boardSize];
 
-            float boardSizeHalf = (float)_boardSize / 2 - 0.5f;
-            _thronPos = new Vector3(boardSizeHalf, 0, boardSizeHalf);
-            _upperLeftShelterPos = new Vector3(0,0,0);
-            _upperRightShelterPos = new Vector3(0,0, _boardSize-1);
-            _lowerLeftShelterPos = new Vector3(_boardSize-1, 0,0);
-            _lowerRightShelterPos = new Vector3(_boardSize-1, 0, _boardSize-1);
+            int boardSizeHalf = (int)((float)_boardSize / 2 - 0.5f);
+            _thronIndex = new Vector2Int(boardSizeHalf, boardSizeHalf);
+            _upperLeftShelterIndex = new Vector2Int(0,0);
+            _upperRightShelterIndex = new Vector2Int(0, _boardSize-1);
+            _lowerLeftShelterIndex = new Vector2Int(_boardSize-1, 0);
+            _lowerRightShelterIndex = new Vector2Int(_boardSize-1,  _boardSize-1);
 
             for (int x = 0; x < _boardSize; x++)
             {
                 for (int y = 0; y < _boardSize; y++)
                 {
-                    Vector3 pos = new Vector3(x, 0, y);
-                    InstantiateTile(GetTileTypeByPos(pos), pos);
+                    Vector2Int index = new Vector2Int(x,  y);
+                    InstantiateTile(GetTileTypeByIndex(index), index);
                 }
             }
         }
 
-        void InstantiateTile(TileType tileType, Vector3 pos)
+        void InstantiateTile(TileType tileType, Vector2Int index)
         {
             _intsTile = Instantiate(AssetsProvider.GetCachedAsset<Tile>(AssetsPath.PathToTile(tileType)), this.transform);
-            _intsTile.Initialize(pos);
-            _tiles[(int)pos.x, (int)pos.z] = _intsTile;
+            _intsTile.Initialize(index);
+            _tiles[index.x, index.y] = _intsTile;
         }
 
-        TileType GetTileTypeByPos(Vector3 pos)
+        public TileType GetTileTypeByIndex(Vector2Int index)
         {
-            if ((pos == _upperLeftShelterPos) || (pos == _upperRightShelterPos) || (pos == _lowerLeftShelterPos) || (pos == _lowerRightShelterPos)) return TileType.Shelter;
-            else if (pos == _thronPos) return TileType.Thron;
+            if ((index == _upperLeftShelterIndex) || (index == _upperRightShelterIndex) || (index == _lowerLeftShelterIndex) || (index == _lowerRightShelterIndex)) return TileType.Shelter;
+            else if (index == _thronIndex) return TileType.Thron;
             else return TileType.Regular;
         }
 
-        public bool IsIndexAvailableToMove(Vector2Int index, BattleUnitType moveUnitType)
+        public bool IsIndexAvailableToMove(Vector2Int index)
         {
-            if (moveUnitType == BattleUnitType.King)
-            {
-                return _tiles[index.x, index.y] != null ? true : false;
-            }
-            else
-            {
-                return (_tiles[index.x, index.y] != null && _tiles[index.x, index.y].Type != TileType.Shelter) ? true : false;
-            }
+            return _tiles[index.x, index.y] != null ? true : false;
+        }
+
+        public bool IsIndexOnBoard(Vector2Int index)
+        {
+            return index.x < 0 || index.y < 0 || index.x >= _boardSize || index.y >= _boardSize ? false : true;
         }
     }
 }

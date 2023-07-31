@@ -7,27 +7,42 @@ using CodeBase.Infrastructure;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
-    public enum BattleUnitType
+    public enum TeamType
+    {
+        None,
+        White,
+        Black
+    }
+
+    public enum UnitType
     {
         None,
         King,
-        Defender,
-        Attacker
+        Warrior
     }
 
     public abstract class BattleUnit : MonoBehaviour
     {
-        [SerializeField] BattleUnitType _type;
-        public BattleUnitType Type => _type;
+        protected Board _board;
+        protected UnitsManager _unitsManager;
 
-        Vector2Int _index;
+        [SerializeField] protected TeamType _teamType;
+        public TeamType TeamType => _teamType;
+
+        [SerializeField] protected UnitType _unitType;
+        public UnitType UnitType => _unitType;
+
+        protected Vector2Int _index;
         public Vector2Int Index => _index;
 
-        List<Vector2Int> _availableMoves = new List<Vector2Int>();
+        protected List<Vector2Int> _availableMoves = new List<Vector2Int>();
         public List<Vector2Int> AvailableMoves => _availableMoves;
 
-        public void Initialize(Vector2Int index)
+        public void Initialize(Vector2Int index, Board board , UnitsManager unitsManager)
         {
+            _board = board;
+            _unitsManager = unitsManager;
+
             SetPosition(index);
         }
 
@@ -37,38 +52,53 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             _index = new Vector2Int(index.x, index.y);
         }
 
-        public void CalculateAvailableMoves(Board board, UnitsManager unitsManager)
+        public void Kill()
+        {
+            gameObject.SetActive(false);
+        }
+
+        public void CalculateAvailableMoves()
         {
             _availableMoves.Clear();
 
             //Down
             for (int i = _index.y - 1; i >= 0; i--)
             {
-                if (!board.IsIndexAvailableToMove(new Vector2Int(_index.x, i), _type) || unitsManager.IsThereUnit(new Vector2Int(_index.x, i))) break;
-                else _availableMoves.Add(new Vector2Int(_index.x, i));
+                Vector2Int index = new Vector2Int(_index.x, i);
+
+                if (IsThereProblemWithIndex(index)) break;
+                else _availableMoves.Add(index);
             }
 
             //Up
             for (int i = _index.y + 1; i < ConstValues.BOARD_SIZE; i++)
             {
-                if (!board.IsIndexAvailableToMove(new Vector2Int(_index.x, i), _type) || unitsManager.IsThereUnit(new Vector2Int(_index.x, i))) break;
-                else _availableMoves.Add(new Vector2Int(_index.x, i));
+                Vector2Int index = new Vector2Int(_index.x, i);
+
+                if (IsThereProblemWithIndex(index)) break;
+                else _availableMoves.Add(index);
             }
 
             //Left
             for (int i = _index.x - 1; i >= 0; i--)
             {
-                if (!board.IsIndexAvailableToMove(new Vector2Int(i, _index.y), _type) || unitsManager.IsThereUnit(new Vector2Int(i, _index.y))) break;
-                else _availableMoves.Add(new Vector2Int(i, _index.y));
+                Vector2Int index = new Vector2Int(i, _index.y);
+
+                if (IsThereProblemWithIndex(index)) break;
+                else _availableMoves.Add(index);
             }
 
             //Right
             for (int i = _index.x + 1; i < ConstValues.BOARD_SIZE; i++)
             {
-                if (!board.IsIndexAvailableToMove(new Vector2Int(i, _index.y), _type) || unitsManager.IsThereUnit(new Vector2Int(i, _index.y))) break;
-                else _availableMoves.Add(new Vector2Int(i, _index.y));
+                Vector2Int index = new Vector2Int(i, _index.y);
+
+                if (IsThereProblemWithIndex(index)) break;
+                else _availableMoves.Add(index);
             }
         }
+
+        protected abstract bool IsThereProblemWithIndex(Vector2Int index);
 
         public bool IsThisIndexAvailableToMove(Vector2Int index)
         {

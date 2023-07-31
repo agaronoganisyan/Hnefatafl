@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6754832828758359552}
-  - component: {fileID: 8761866594836836729}
+  - component: {fileID: 5686569862602459860}
   - component: {fileID: 6957874292701642478}
   m_Layer: 7
-  m_Name: Unit_Attacker
+  m_Name: Warrior
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,7 +34,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8761866594836836729
+--- !u!114 &5686569862602459860
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,10 +43,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4971643742058186338}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 159555e6221be4fe19383cc7c0bac075, type: 3}
+  m_Script: {fileID: 11500000, guid: 4502f6a5266a34cf9a5aad5e11301b9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _type: 3
+  _teamType: 2
+  _unitType: 2
 --- !u!65 &6957874292701642478
 BoxCollider:
   m_ObjectHideFlags: 0
