@@ -42,8 +42,6 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         {
             _board = board;
             _unitsManager = unitsManager;
-
-            SetPosition(index);
         }
 
         public void SetPosition(Vector2Int index)
@@ -54,7 +52,12 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
         public void Kill()
         {
-            gameObject.SetActive(false);
+            SetActiveStatus(false);
+        }
+
+        public void SetActiveStatus(bool status)
+        {
+            gameObject.SetActive(status);
         }
 
         public void CalculateAvailableMoves()

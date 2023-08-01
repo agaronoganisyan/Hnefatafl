@@ -28,6 +28,12 @@ namespace CodeBase.GameplayLogic.BoardLogic
             GenerateBoardHighlight();
         }
 
+        public void Restart()
+        {
+            _selectedUnit = null;
+            DisableAllHighlights();
+        }
+
         void GenerateBoardHighlight()
         {
             _highlights = new TileHighlight[_boardSize, _boardSize];
@@ -68,6 +74,17 @@ namespace CodeBase.GameplayLogic.BoardLogic
             for (int i = 0; i < _selectedUnit.AvailableMoves.Count; i++)
             {
                 _highlights[_selectedUnit.AvailableMoves[i].x, _selectedUnit.AvailableMoves[i].y].Hide();
+            }
+        }
+
+        void DisableAllHighlights()
+        {
+            for (int x = 0; x < _boardSize; x++)
+            {
+                for (int y = 0; y < _boardSize; y++)
+                {
+                    _highlights[x, y].Hide();
+                }
             }
         }
 

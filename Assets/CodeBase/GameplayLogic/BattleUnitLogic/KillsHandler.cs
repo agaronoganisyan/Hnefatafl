@@ -12,11 +12,13 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
     public class KillsHandler 
     {
+        GameManager _gameManager;
         Board _board;
         UnitsManager _unitsManager;
 
-        public KillsHandler(Board board, UnitsManager unitsManager)
+        public KillsHandler(GameManager gameManager,Board board, UnitsManager unitsManager)
         {
+            _gameManager = gameManager;
             _board = board;
             _unitsManager = unitsManager;
         }
@@ -75,6 +77,8 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         {
             _unitsManager.RemoveUnitFromTile(unit);
             unit.Kill();
+
+            if (unit.UnitType == UnitType.King) _gameManager.DefeatGame();
         }
 
         bool IsCaughtUnitSurroundedOnThisSide(Vector2Int index, TeamType currentUnitTeam, UnitType caughtUnitType)

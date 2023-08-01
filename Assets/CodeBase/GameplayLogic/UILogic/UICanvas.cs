@@ -11,8 +11,6 @@ namespace CodeBase.GameplayLogic.UILogic
         [SerializeField] protected Canvas canvas;
         [SerializeField] protected GraphicRaycaster graphicRaycaster;
 
-        public abstract void Initialize();
-
         public virtual void Open()
         {
             canvas.enabled = true;

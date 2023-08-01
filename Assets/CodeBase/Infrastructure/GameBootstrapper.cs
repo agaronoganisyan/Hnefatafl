@@ -6,7 +6,8 @@ using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic;
 using CodeBase.GameplayLogic.UILogic;
-using CodeBase.GameplayLogic.UILogic.DebriefingLogic;
+using CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic;
+using CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic;
 
 namespace CodeBase.Infrastructure
 {
@@ -17,7 +18,8 @@ namespace CodeBase.Infrastructure
         [SerializeField] UnitsManager _unitsManager;
         [SerializeField] Controller _controller;
 
-        [SerializeField] Debriefing _debriefing;
+        [SerializeField] GameplayCanvas _gameplayCanvas;
+        [SerializeField] DebriefingCanvas _debriefingCanvas;
 
         private void Awake()
         {
@@ -26,7 +28,8 @@ namespace CodeBase.Infrastructure
             ServiceLocator.Register<Controller>(_controller);
             ServiceLocator.Register<BoardHighlight>(_boardHighlight);
 
-            ServiceLocator.Register<Debriefing>(_debriefing);
+            ServiceLocator.Register<GameplayCanvas>(_gameplayCanvas);
+            ServiceLocator.Register<DebriefingCanvas>(_debriefingCanvas);
 
             GameManager gameManager = new GameManager();
             ServiceLocator.Register<GameManager>(gameManager);

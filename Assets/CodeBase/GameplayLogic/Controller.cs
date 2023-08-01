@@ -4,15 +4,18 @@ using UnityEngine;
 using System;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic.TileLogic;
+using CodeBase.Infrastructure;
 
 namespace CodeBase.GameplayLogic
 {
     public class Controller : MonoBehaviour, IService
     {
-        Board _board;
         UnitsManager _unitsManager;
+        Tile _selectedTile;
+        BattleUnit _selectedUnit;
+
+        TeamType _currentTeamOfTurn;
 
         [SerializeField] Camera _camera;
         [SerializeField] LayerMask _tileLayer;
@@ -20,21 +23,33 @@ namespace CodeBase.GameplayLogic
         Ray _ray;
         RaycastHit _hit;
 
-        Tile _selectedTile;
-        BattleUnit _selectedUnit;
+        bool _isLocked;
 
         public static event Action<BattleUnit> OnUnitSelected;
         public static event Action<Tile> OnUnitPlaced;
         public static event Action<Tile> OnDisableHighlight;
 
-        public void Initialize(Board board,UnitsManager unitsManager)
+        public static event Action<TeamType> OnCurrentTeamOfTurnChanged;
+
+        public void Initialize(UnitsManager unitsManager)
         {
-            _board = board;
             _unitsManager = unitsManager;
+
+            GameManager.OnGameDefeated += () => SetControlLockStatus(true);
+            GameManager.OnGameWon += () => SetControlLockStatus(true);
+        }
+
+        public void Prepare()
+        {
+            SetTeamOfTurn(TeamType.White);
+
+            SetControlLockStatus(false);
         }
 
         private void Update()
         {
+            if (_isLocked) return;
+
             if (Input.GetMouseButtonDown(0))
             {
                 _ray = _camera.ScreenPointToRay(Input.mousePosition);
@@ -47,6 +62,7 @@ namespace CodeBase.GameplayLogic
                     {
                         if (_selectedUnit.IsThisIndexAvailableToMove(_selectedTile.Index))
                         {
+                            SwitchTeamOfTurn();
                             OnUnitPlaced?.Invoke(_selectedTile);
                         }
                         else
@@ -60,17 +76,42 @@ namespace CodeBase.GameplayLogic
                     {
                         _selectedUnit = _unitsManager.GetUnitByIndex(_selectedTile.Index);
 
-                        if (_selectedUnit != null)
-                        {
-                            OnUnitSelected?.Invoke(_selectedUnit);
-                        }
-                        else
-                        {
+                        if (_selectedUnit == null) return;
 
+                        if (_selectedUnit.TeamType != _currentTeamOfTurn)
+                        {
+                            _selectedUnit = null;
+                            return;
                         }
+
+                        OnUnitSelected?.Invoke(_selectedUnit);
+
+                        //if (_selectedUnit != null)
+                        //{
+                        //    OnUnitSelected?.Invoke(_selectedUnit);
+                        //}
+                        //else
+                        //{
+
+                        //}
                     }
                 }
             }
         }
+
+        void SwitchTeamOfTurn()
+        {
+            if (_currentTeamOfTurn == TeamType.White) SetTeamOfTurn(TeamType.Black);
+            else SetTeamOfTurn(TeamType.White);
+        }
+
+        void SetTeamOfTurn(TeamType teamType)
+        {
+            _currentTeamOfTurn = teamType;
+
+            OnCurrentTeamOfTurnChanged?.Invoke(_currentTeamOfTurn);
+        }
+
+        void SetControlLockStatus(bool status) => _isLocked = status;
     }
 }

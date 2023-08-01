@@ -12,85 +12,34 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
     public class UnitsManager : MonoBehaviour, IService
     {
+        UnitsSpawner _unitsSpawner;
         KillsHandler _killsHandler;
 
+        GameManager _gameManager;
         Board _board;
 
-        BattleUnit _intsUnit;
         BattleUnit _selectedUnit;
 
         BattleUnit[,] _units;
 
-        int _boardSize;
-
         public static event Action<BattleUnit> OnSelectedUnitMovesCalculated;
 
-        public void Initialize(Board board)
+        public void Initialize(GameManager gameManager, Board board)
         {
+            _gameManager = gameManager;
             _board = board;
 
-            _killsHandler = new KillsHandler(_board, this);
+            _unitsSpawner = new UnitsSpawner(_board, this, ConstValues.BOARD_SIZE);
+            _killsHandler = new KillsHandler(_gameManager, _board, this);
 
-            _boardSize = ConstValues.BOARD_SIZE;
-            _units = new BattleUnit[_boardSize, _boardSize];
+            _units = new BattleUnit[ConstValues.BOARD_SIZE, ConstValues.BOARD_SIZE];
+            _unitsSpawner.PrepareUnits(true);
         }
 
-        public void SpawnUnits()
+        public void Restart()
         {
-            //Upper side attackers
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(3, 0));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(4, 0));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(5, 0));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(6, 0));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(7, 0));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(5, 1));
-
-            //Left side attackers
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(0, 3));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(0, 4));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(0, 5));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(0, 6));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(0, 7));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(1, 5));
-
-            //Right side attackers
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(_boardSize - 1, 3));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(_boardSize - 1, 4));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(_boardSize - 1, 5));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(_boardSize - 1, 6));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(_boardSize - 1, 7));
-            InstantiateUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(_boardSize - 2, 5));
-
-            //Bottom side attackers
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(3,  _boardSize - 1));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(4,  _boardSize - 1));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(5,  _boardSize - 1));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(6,  _boardSize - 1));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(7,  _boardSize - 1));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(5,  _boardSize - 2));
-
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(3, 5));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(4, 4));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(4, 5));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(4, 6));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(5, 3));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(5, 4));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(5, 6));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(5, 7));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(6, 4));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(6, 5));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(6, 6));
-            InstantiateUnit(TeamType.White, UnitType.Warrior, new Vector2Int(7, 5));
-
-            float boardSizeHalf = (float)_boardSize / 2 - 0.5f;
-            InstantiateUnit(TeamType.White, UnitType.King, new Vector2Int((int)boardSizeHalf,  (int)boardSizeHalf));
-        }
-
-        public void InstantiateUnit(TeamType teamType,UnitType battleUnitType, Vector2Int index)
-        {
-            _intsUnit = Instantiate(AssetsProvider.GetCachedAsset<BattleUnit>(AssetsPath.PathToBattleUnit(teamType,battleUnitType)));
-            _intsUnit.Initialize(index, _board, this);
-            AddUnitToTile(_intsUnit, index);
+            _units = new BattleUnit[ConstValues.BOARD_SIZE, ConstValues.BOARD_SIZE];
+            _unitsSpawner.Restart();
         }
 
         public BattleUnit GetUnitByIndex(Vector2Int index)
@@ -117,9 +66,10 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             AddUnitToTile(_selectedUnit, finalTile.Index);
 
             _killsHandler.TryToKill(_selectedUnit, finalTile);
+            if (_selectedUnit.UnitType == UnitType.King && finalTile.Type == TileType.Shelter) _gameManager.WinGame();
         }
 
-        void AddUnitToTile(BattleUnit unit, Vector2Int pos)
+        public void AddUnitToTile(BattleUnit unit, Vector2Int pos)
         {
             _units[pos.x, pos.y] = unit;
             unit.SetPosition(pos);
