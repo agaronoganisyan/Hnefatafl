@@ -11,8 +11,6 @@ namespace CodeBase.GameplayLogic.BoardLogic
 {
     public class Board : MonoBehaviour, IService
     {
-        Tile _intsTile;
-
         Tile[,] _tiles;
 
         Vector2Int _thronIndex;
@@ -52,9 +50,9 @@ namespace CodeBase.GameplayLogic.BoardLogic
 
         void InstantiateTile(TileType tileType, Vector2Int index)
         {
-            _intsTile = Instantiate(AssetsProvider.GetCachedAsset<Tile>(AssetsPath.PathToTile(tileType)), this.transform);
-            _intsTile.Initialize(index);
-            _tiles[index.x, index.y] = _intsTile;
+            Tile intsTile = Instantiate(AssetsProvider.GetCachedAsset<Tile>(AssetsPath.PathToTile(tileType)), transform);
+            intsTile.Initialize(index);
+            _tiles[index.x, index.y] = intsTile;
         }
 
         public TileType GetTileTypeByIndex(Vector2Int index)

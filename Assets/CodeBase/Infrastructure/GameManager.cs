@@ -11,18 +11,15 @@ using CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic;
 
 namespace CodeBase.Infrastructure
 {
-    public enum GameState
-    {
-        None,
-        Active,
-        Won,
-        Defeat
-    }
-
     public class GameManager : IService
     {
-        public static event Action OnGameWon;
-        public static event Action OnGameDefeated;
+        public static event Action OnGameStarted;
+        public static event Action OnGameRestarted;
+        public static event Action OnWhiteTeamWon;
+        public static event Action OnBlackTeamWon;
+
+        bool _isGameFinished;
+        public bool IsGameFinished => _isGameFinished;
 
         public void InitializeGame()
         {
@@ -37,27 +34,32 @@ namespace CodeBase.Infrastructure
 
         public void StartGame()
         {
-            ServiceLocator.Get<DebriefingCanvas>().Close();
-            ServiceLocator.Get<GameplayCanvas>().Open();
-            ServiceLocator.Get<Controller>().Prepare();
+            _isGameFinished = false;
+
+            OnGameStarted?.Invoke();
         }
 
         public void RestartGame()
         {
-            ServiceLocator.Get<UnitsManager>().Restart();
-            ServiceLocator.Get<BoardHighlight>().Restart();
+            OnGameRestarted?.Invoke();
 
             StartGame();
         }
 
-        public void DefeatGame()
+        public void BlackTeamWin()
         {
-            OnGameDefeated?.Invoke();
+            if (_isGameFinished) return;
+            _isGameFinished = true;
+
+            OnBlackTeamWon?.Invoke();
         }
 
-        public void WinGame()
+        public void WhiteTeamWin()
         {
-            OnGameWon?.Invoke();
+            if (_isGameFinished) return;
+            _isGameFinished = true;
+
+            OnWhiteTeamWon?.Invoke();
         }
     }
 }

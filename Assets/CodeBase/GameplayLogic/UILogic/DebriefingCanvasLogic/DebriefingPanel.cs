@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CodeBase.Infrastructure;
+using CodeBase.GameplayLogic.BattleUnitLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {
@@ -12,23 +13,23 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 
         [SerializeField] Image _panel;
 
-        [SerializeField] Color _winPanelColor;
-        [SerializeField] Color _defeatPanelColor;
+        [SerializeField] Color _whitePanelColor;
+        [SerializeField] Color _blackPanelColor;
 
         public void Initialize(GameManager gameManager)
         {
             _gameManager = gameManager;
         }
 
-        public void Open(DebriefingType type)
+        public void Open(TeamType type)
         {
             Prepare(type);
         }
 
-        void Prepare(DebriefingType type)
+        void Prepare(TeamType type)
         {
-            if (type == DebriefingType.Win) _panel.color = _winPanelColor;
-            else if (type == DebriefingType.Defeat) _panel.color = _defeatPanelColor;
+            if (type == TeamType.White) _panel.color = _whitePanelColor;
+            else if (type == TeamType.Black) _panel.color = _blackPanelColor;
         }
 
         public void RestartButtonVoid()

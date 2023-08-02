@@ -27,7 +27,7 @@ namespace CodeBase.GameplayLogic
 
         public static event Action<BattleUnit> OnUnitSelected;
         public static event Action<Tile> OnUnitPlaced;
-        public static event Action<Tile> OnDisableHighlight;
+        public static event Action OnDisableHighlight;
 
         public static event Action<TeamType> OnCurrentTeamOfTurnChanged;
 
@@ -35,8 +35,8 @@ namespace CodeBase.GameplayLogic
         {
             _unitsManager = unitsManager;
 
-            GameManager.OnGameDefeated += () => SetControlLockStatus(true);
-            GameManager.OnGameWon += () => SetControlLockStatus(true);
+            GameManager.OnBlackTeamWon += () => SetControlLockStatus(true);
+            GameManager.OnWhiteTeamWon += () => SetControlLockStatus(true);
         }
 
         public void Prepare()
@@ -65,10 +65,8 @@ namespace CodeBase.GameplayLogic
                             SwitchTeamOfTurn();
                             OnUnitPlaced?.Invoke(_selectedTile);
                         }
-                        else
-                        {
-                            OnDisableHighlight?.Invoke(_selectedTile);
-                        }
+
+                        OnDisableHighlight?.Invoke();
 
                         _selectedUnit = null;
                     }
@@ -85,15 +83,6 @@ namespace CodeBase.GameplayLogic
                         }
 
                         OnUnitSelected?.Invoke(_selectedUnit);
-
-                        //if (_selectedUnit != null)
-                        //{
-                        //    OnUnitSelected?.Invoke(_selectedUnit);
-                        //}
-                        //else
-                        //{
-
-                        //}
                     }
                 }
             }
@@ -113,5 +102,15 @@ namespace CodeBase.GameplayLogic
         }
 
         void SetControlLockStatus(bool status) => _isLocked = status;
+
+        private void OnEnable()
+        {
+            GameManager.OnGameStarted += Prepare;
+        }
+
+        private void OnDisable()
+        {
+            GameManager.OnGameStarted -= Prepare;
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
     public class UnitsManager : MonoBehaviour, IService
     {
         UnitsSpawner _unitsSpawner;
-        KillsHandler _killsHandler;
+        UnitsPlacementHandler _unitsPlacementHandler;
 
         GameManager _gameManager;
         Board _board;
@@ -29,11 +29,13 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             _gameManager = gameManager;
             _board = board;
 
-            _unitsSpawner = new UnitsSpawner(_board, this, ConstValues.BOARD_SIZE);
-            _killsHandler = new KillsHandler(_gameManager, _board, this);
+            _unitsSpawner = new UnitsSpawner(_board, this);
+            _unitsPlacementHandler = new UnitsPlacementHandler(_gameManager, _board, this);
 
             _units = new BattleUnit[ConstValues.BOARD_SIZE, ConstValues.BOARD_SIZE];
-            _unitsSpawner.PrepareUnits(true);
+            _unitsSpawner.InitUnits();
+            _unitsSpawner.PrepareUnits();
+
         }
 
         public void Restart()
@@ -53,6 +55,36 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             return _units[index.x, index.y] != null ? true : false;
         }
 
+        public bool IsThisTeamHaveaAnyAvailableMoves(TeamType teamType)
+        {
+            bool status = false;
+
+            if (teamType == TeamType.White)
+            {
+                for (int i = 0; i < _unitsSpawner.AllWhiteUnits.Count; i++)
+                {
+                    if (!_unitsSpawner.AllWhiteUnits[i].IsKilled && _unitsSpawner.AllWhiteUnits[i].IsThereAvailableMoves())
+                    {
+                        status = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < _unitsSpawner.AllBlackUnits.Count; i++)
+                {
+                    if (!_unitsSpawner.AllBlackUnits[i].IsKilled && _unitsSpawner.AllBlackUnits[i].IsThereAvailableMoves())
+                    {
+                        status = true;
+                        break;
+                    }
+                }
+            }
+
+            return status;
+        }
+
         void SelectUnit(BattleUnit selectedUnit)
         {
             _selectedUnit = _units[selectedUnit.Index.x, selectedUnit.Index.y];
@@ -65,14 +97,13 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             RemoveUnitFromTile(_selectedUnit);
             AddUnitToTile(_selectedUnit, finalTile.Index);
 
-            _killsHandler.TryToKill(_selectedUnit, finalTile);
-            if (_selectedUnit.UnitType == UnitType.King && finalTile.Type == TileType.Shelter) _gameManager.WinGame();
+            _unitsPlacementHandler.ProcessUnitPlacement(_selectedUnit, finalTile);
         }
 
         public void AddUnitToTile(BattleUnit unit, Vector2Int pos)
         {
             _units[pos.x, pos.y] = unit;
-            unit.SetPosition(pos);
+            unit.PrepareUnit(pos);
         }
 
         public void RemoveUnitFromTile(BattleUnit unit)
@@ -82,12 +113,14 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
         private void OnEnable()
         {
+            GameManager.OnGameRestarted += Restart;
             Controller.OnUnitSelected += SelectUnit;
             Controller.OnUnitPlaced += PlaceUnit;
         }
 
         private void OnDisable()
         {
+            GameManager.OnGameRestarted -= Restart;
             Controller.OnUnitSelected -= SelectUnit;
             Controller.OnUnitPlaced -= PlaceUnit;
         }

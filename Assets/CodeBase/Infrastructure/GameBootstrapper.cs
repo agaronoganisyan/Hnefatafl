@@ -23,16 +23,16 @@ namespace CodeBase.Infrastructure
 
         private void Awake()
         {
-            ServiceLocator.Register<Board>(_board);
-            ServiceLocator.Register<UnitsManager>(_unitsManager);
-            ServiceLocator.Register<Controller>(_controller);
-            ServiceLocator.Register<BoardHighlight>(_boardHighlight);
+            ServiceLocator.Register(_board);
+            ServiceLocator.Register(_unitsManager);
+            ServiceLocator.Register(_controller);
+            ServiceLocator.Register(_boardHighlight);
 
-            ServiceLocator.Register<GameplayCanvas>(_gameplayCanvas);
-            ServiceLocator.Register<DebriefingCanvas>(_debriefingCanvas);
+            ServiceLocator.Register(_gameplayCanvas);
+            ServiceLocator.Register(_debriefingCanvas);
 
             GameManager gameManager = new GameManager();
-            ServiceLocator.Register<GameManager>(gameManager);
+            ServiceLocator.Register(gameManager);
 
             ServiceLocator.Get<GameManager>().InitializeGame();
         }

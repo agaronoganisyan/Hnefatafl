@@ -2,16 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CodeBase.Infrastructure;
+using CodeBase.GameplayLogic.BattleUnitLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {
-    public enum DebriefingType
-    {
-        None,
-        Win,
-        Defeat
-    }
-
     public class DebriefingCanvas : UICanvas
     {
         [SerializeField] DebriefingPanel _debriefingPanel;
@@ -21,22 +15,33 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
             base.Close();
 
             _debriefingPanel.Initialize(gameManager);
-
-            GameManager.OnGameWon += OpenWinScreen;
-            GameManager.OnGameDefeated += OpenDefeatScreen;
         }
 
 
-        void OpenWinScreen()
+        void OpenWhiteScreen()
         {
             base.Open();
-            _debriefingPanel.Open(DebriefingType.Win);
+            _debriefingPanel.Open(TeamType.White);
         }
 
-        void OpenDefeatScreen()
+        void OpenBlackScreen()
         {
             base.Open();
-            _debriefingPanel.Open(DebriefingType.Defeat);
+            _debriefingPanel.Open(TeamType.Black);
+        }
+
+        private void OnEnable()
+        {
+            GameManager.OnGameStarted += base.Close;
+            GameManager.OnWhiteTeamWon += OpenWhiteScreen;
+            GameManager.OnBlackTeamWon += OpenBlackScreen;
+        }
+
+        private void OnDisable()
+        {
+            GameManager.OnGameStarted -= base.Close;
+            GameManager.OnWhiteTeamWon -= OpenWhiteScreen;
+            GameManager.OnBlackTeamWon -= OpenBlackScreen;
         }
     }
 }

@@ -35,19 +35,33 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         protected Vector2Int _index;
         public Vector2Int Index => _index;
 
-        protected List<Vector2Int> _availableMoves = new List<Vector2Int>();
-        public List<Vector2Int> AvailableMoves => _availableMoves;
+        protected Vector2Int _indexBeforeMove;
+        public Vector2Int IndexBeforeMove => _indexBeforeMove;
 
-        public void Initialize(Vector2Int index, Board board , UnitsManager unitsManager)
+        bool _isKilled;
+        public bool IsKilled => _isKilled;
+
+        protected List<Vector2Int> _availableMoves = new List<Vector2Int>();
+        public IReadOnlyList<Vector2Int> AvailableMoves => _availableMoves;
+
+
+
+        public void Initialize(Board board , UnitsManager unitsManager)
         {
             _board = board;
             _unitsManager = unitsManager;
         }
 
-        public void SetPosition(Vector2Int index)
+        void SetPosition(Vector2Int index)
         {
             transform.position = new Vector3(index.x,0, index.y);
             _index = new Vector2Int(index.x, index.y);
+        }
+
+        public void PrepareUnit(Vector2Int index)
+        {
+            SetPosition(index);
+            SetActiveStatus(true);
         }
 
         public void Kill()
@@ -57,12 +71,15 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
         public void SetActiveStatus(bool status)
         {
+            _isKilled = !status;
             gameObject.SetActive(status);
         }
 
         public void CalculateAvailableMoves()
         {
             _availableMoves.Clear();
+
+            _indexBeforeMove = _index;
 
             //Down
             for (int i = _index.y - 1; i >= 0; i--)
@@ -102,6 +119,12 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         }
 
         protected abstract bool IsThereProblemWithIndex(Vector2Int index);
+
+        public bool IsThereAvailableMoves()
+        {
+            CalculateAvailableMoves();
+            return _availableMoves.Count>0 ? true : false;
+        }
 
         public bool IsThisIndexAvailableToMove(Vector2Int index)
         {

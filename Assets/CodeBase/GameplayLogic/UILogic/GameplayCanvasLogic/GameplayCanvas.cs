@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CodeBase.Infrastructure;
 
 namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
 {
@@ -15,6 +16,14 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
             _gameplayPanel.Initialize();
         }
 
-        
+        private void OnEnable()
+        {
+            GameManager.OnGameStarted += base.Open;
+        }
+
+        private void OnDisable()
+        {
+            GameManager.OnGameStarted -= base.Open;
+        }
     }
 }
