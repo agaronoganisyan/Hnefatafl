@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,7 @@ using CodeBase.GameplayLogic;
 using CodeBase.GameplayLogic.UILogic;
 using CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic;
 using CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic;
+using CodeBase.Infrastructure.Services.Input;
 
 namespace CodeBase.Infrastructure
 {
@@ -21,6 +23,10 @@ namespace CodeBase.Infrastructure
         [SerializeField] GameplayCanvas _gameplayCanvas;
         [SerializeField] DebriefingCanvas _debriefingCanvas;
 
+        public static IInputService IInputService;
+
+        InputService InputService;
+        
         private void Awake()
         {
             ServiceLocator.Register(_board);
@@ -35,11 +41,23 @@ namespace CodeBase.Infrastructure
             ServiceLocator.Register(gameManager);
 
             ServiceLocator.Get<GameManager>().InitializeGame();
+
+            InputService = new InputService();
+            InputService.SetGameplay();
+            IInputService = InputService;
         }
 
         private void Start()
         {
             ServiceLocator.Get<GameManager>().StartGame();
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.A))InputService.SetGameplay();
+            if (Input.GetKeyDown(KeyCode.S))InputService.SetUI();
+            
+            if (Input.GetKeyDown(KeyCode.W)) _debriefingCanvas.Open();
         }
     }
 }
