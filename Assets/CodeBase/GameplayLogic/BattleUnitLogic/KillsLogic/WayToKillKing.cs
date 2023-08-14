@@ -30,7 +30,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
         {
             if (_board.IsIndexOnBoard(index))
             {
-                BattleUnit neighboringUnit = _unitsManager.GetUnitByIndex(index);
+                BattleUnit neighboringUnit = _unitsStateContainer.GetUnitByIndex(index);
 
                 if (neighboringUnit != null)
                 {

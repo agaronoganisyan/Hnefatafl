@@ -25,7 +25,8 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
     {
         protected Board _board;
         protected UnitsManager _unitsManager;
-
+        protected IUnitsStateContainer _unitsStateContainer;
+        
         [SerializeField] protected TeamType _teamType;
         public TeamType TeamType => _teamType;
 

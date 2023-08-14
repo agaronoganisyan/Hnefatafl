@@ -6,33 +6,40 @@ using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic;
+using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.GameplayLogic.UILogic;
 using CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic;
 using CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic;
+using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.Infrastructure.Services.Input;
+using CodeBase.Infrastructure.Services.StaticData;
 
 namespace CodeBase.Infrastructure
 {
     public class GameBootstrapper : MonoBehaviour
     {
-        [SerializeField] Board _board;
-        [SerializeField] BoardHighlight _boardHighlight;
-        [SerializeField] UnitsManager _unitsManager;
+        private GameModeStaticData _modeStaticData;
+
+        private IBoard _board;
+        private IBoardHighlight _boardHighlight;
+        private IUnitsManager _unitsManager;
         [SerializeField] Controller _controller;
 
+        private IInputService _inputService;
+        private IInputHandler _inputHandler;
+        
         [SerializeField] GameplayCanvas _gameplayCanvas;
         [SerializeField] DebriefingCanvas _debriefingCanvas;
-
-        public static IInputService IInputService;
-
-        InputService InputService;
         
         private void Awake()
         {
-            ServiceLocator.Register(_board);
-            ServiceLocator.Register(_unitsManager);
+            //Classic mode
+            _modeStaticData = Resources.Load<GameModeStaticData>(AssetsPath.PathToClassicModeStaticData);
+            
+            //ServiceLocator.Register(_board);
+            //ServiceLocator.Register(_unitsManager);
             ServiceLocator.Register(_controller);
-            ServiceLocator.Register(_boardHighlight);
+            //ServiceLocator.Register(_boardHighlight);
 
             ServiceLocator.Register(_gameplayCanvas);
             ServiceLocator.Register(_debriefingCanvas);
@@ -42,9 +49,18 @@ namespace CodeBase.Infrastructure
 
             ServiceLocator.Get<GameManager>().InitializeGame();
 
-            InputService = new InputService();
-            InputService.SetGameplay();
-            IInputService = InputService;
+            _inputService = new InputService();
+            _inputService.SetGameplayMode();
+
+            _inputHandler = new InputHandler(_inputService);
+            
+            _board =  Instantiate(AssetsProvider.GetCachedAsset<Board>(AssetsPath.PathToBoard));
+            _board.GenerateBoard(_modeStaticData.BoardSize);
+            
+            _boardHighlight =  Instantiate(AssetsProvider.GetCachedAsset<BoardHighlight>(AssetsPath.PathToBoardHighlight));
+            _boardHighlight.GenerateBoardHighlight(_modeStaticData.BoardSize);
+
+            _unitsManager = new UnitsManager();
         }
 
         private void Start()
@@ -54,8 +70,8 @@ namespace CodeBase.Infrastructure
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.A))InputService.SetGameplay();
-            if (Input.GetKeyDown(KeyCode.S))InputService.SetUI();
+            if (Input.GetKeyDown(KeyCode.A))_inputService.SetGameplayMode();
+            if (Input.GetKeyDown(KeyCode.S))_inputService.SetUIMode();
             
             if (Input.GetKeyDown(KeyCode.W)) _debriefingCanvas.Open();
         }

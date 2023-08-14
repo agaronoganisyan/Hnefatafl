@@ -14,7 +14,8 @@ namespace CodeBase.GameplayLogic
         UnitsManager _unitsManager;
         Tile _selectedTile;
         BattleUnit _selectedUnit;
-
+        private IUnitsStateContainer _unitsStateContainer;
+        
         TeamType _currentTeamOfTurn;
 
         [SerializeField] Camera _camera;
@@ -72,7 +73,7 @@ namespace CodeBase.GameplayLogic
                     }
                     else
                     {
-                        _selectedUnit = _unitsManager.GetUnitByIndex(_selectedTile.Index);
+                        _selectedUnit = _unitsStateContainer.GetUnitByIndex(_selectedTile.Index);
 
                         if (_selectedUnit == null) return;
 

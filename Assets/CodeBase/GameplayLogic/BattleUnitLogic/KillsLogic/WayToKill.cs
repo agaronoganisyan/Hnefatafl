@@ -10,6 +10,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
     {
         protected Board _board;
         protected UnitsManager _unitsManager;
+        protected IUnitsStateContainer _unitsStateContainer;
 
         public WayToKill(Board board, UnitsManager unitsManager)
         {

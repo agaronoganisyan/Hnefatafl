@@ -15,6 +15,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
         GameManager _gameManager;
         Board _board;
         UnitsManager _unitsManager;
+        IUnitsStateContainer _unitsStateContainer;
 
         WayToKill _wayToKillKing;
         WayToKill _wayToKillWarrior;
@@ -52,7 +53,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
             Vector2Int neighboringIndex = currentIndex + direction;
             if (_board.IsIndexOnBoard(neighboringIndex))
             {
-                BattleUnit caughtUnit = _unitsManager.GetUnitByIndex(neighboringIndex);
+                BattleUnit caughtUnit = _unitsStateContainer.GetUnitByIndex(neighboringIndex);
 
                 if (caughtUnit != null && caughtUnit.TeamType != currentTeam)
                 {
@@ -72,7 +73,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
 
         void KillUnit(BattleUnit unit)
         {
-            _unitsManager.RemoveUnitFromTile(unit);
+            _unitsStateContainer.RemoveUnitFromTile(unit);
             unit.Kill();
 
             if (unit.UnitType == UnitType.King) _gameManager.BlackTeamWin();

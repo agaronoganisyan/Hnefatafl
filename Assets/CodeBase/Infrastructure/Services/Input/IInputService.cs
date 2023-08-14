@@ -1,9 +1,12 @@
 using System;
+using UnityEngine;
 
 namespace CodeBase.Infrastructure.Services.Input
 {
     public interface IInputService
     {
-        Action OnClicked { get; }  
+        void SetGameplayMode();
+        void SetUIMode();
+        Action<Vector2> OnClickedOnBoard { get;  set; }
     }
 }

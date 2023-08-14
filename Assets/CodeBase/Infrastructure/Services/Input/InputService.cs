@@ -8,33 +8,33 @@ namespace CodeBase.Infrastructure.Services.Input
     public class InputService :  IInputService, GameInput.IGameplayActions
     {
         private GameInput _gameInput;
-        public Action OnClicked { get; }
+        public Action<Vector2> OnClickedOnBoard { get; set; }
+
         public InputService()
         {
             _gameInput = new GameInput();
                 
             _gameInput.Gameplay.SetCallbacks(this);
-            //_gameInput.UI.SetCallbacks(this);
         }
 
-        public void SetGameplay()
+        public void SetGameplayMode()
         {
             _gameInput.Gameplay.Enable();
             _gameInput.UI.Disable();
         }
 
-        public void SetUI()
+        public void SetUIMode()
         {
             _gameInput.Gameplay.Disable();
             _gameInput.UI.Enable();
         }
-        
-        public void OnClick(InputAction.CallbackContext context)
+
+        public void OnClickOnBoard(InputAction.CallbackContext context)
         {
             if (context.phase == InputActionPhase.Performed)
             {
-                Debug.Log("OnClick");
-                OnClicked?.Invoke();   
+                Debug.Log("443");
+                OnClickedOnBoard?.Invoke(Mouse.current.position.ReadValue());   
             }
         }
     }

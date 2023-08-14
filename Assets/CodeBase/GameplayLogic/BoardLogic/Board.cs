@@ -9,7 +9,7 @@ using CodeBase.GameplayLogic.BattleUnitLogic;
 
 namespace CodeBase.GameplayLogic.BoardLogic
 {
-    public class Board : MonoBehaviour, IService
+    public class Board : MonoBehaviour, IBoard
     {
         Tile[,] _tiles;
 
@@ -20,15 +20,10 @@ namespace CodeBase.GameplayLogic.BoardLogic
         Vector2Int _lowerRightShelterIndex;
 
         int _boardSize;
-
-        public void Initialize()
+        
+        public void GenerateBoard(int boardSize)
         {
-            _boardSize = ConstValues.BOARD_SIZE;
-            GenerateBoard();
-        }
-
-        void GenerateBoard()
-        {
+            _boardSize = boardSize;
             _tiles = new Tile[_boardSize, _boardSize];
 
             int boardSizeHalf = (int)((float)_boardSize / 2 - 0.5f);

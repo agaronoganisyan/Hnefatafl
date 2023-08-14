@@ -6,18 +6,18 @@ namespace CodeBase.Infrastructure.Services.AssetManagement
 {
     public static class AssetsProvider 
     {
-        private static readonly Dictionary<string, Component> _cachedAssets = new Dictionary<string, Component>();
+        private static readonly Dictionary<string, Component> CachedAssets = new Dictionary<string, Component>();
 
         public static T GetCachedAsset<T>(string path) where T : Component
         {
-            if (_cachedAssets.ContainsKey(path))
+            if (CachedAssets.TryGetValue(path, out var asset))
             {
-                return _cachedAssets[path] as T;
+                return asset as T;
             }
             else
             {
                 T resource = Resources.Load<T>(path);
-                _cachedAssets.Add(path, resource);
+                CachedAssets.Add(path, resource);
                 return resource;
             }
         }

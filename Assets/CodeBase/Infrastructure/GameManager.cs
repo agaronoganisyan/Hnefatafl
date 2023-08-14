@@ -23,10 +23,10 @@ namespace CodeBase.Infrastructure
 
         public void InitializeGame()
         {
-            ServiceLocator.Get<Board>().Initialize();
-            ServiceLocator.Get<BoardHighlight>().Initialize();
-            ServiceLocator.Get<UnitsManager>().Initialize(this,ServiceLocator.Get<Board>());
-            ServiceLocator.Get<Controller>().Initialize(ServiceLocator.Get<UnitsManager>());
+            //ServiceLocator.Get<Board>().Initialize();
+            //ServiceLocator.Get<BoardHighlight>().Initialize();
+            //ServiceLocator.Get<UnitsManager>().Initialize(this,ServiceLocator.Get<Board>());
+            //ServiceLocator.Get<Controller>().Initialize(ServiceLocator.Get<UnitsManager>());
 
             ServiceLocator.Get<GameplayCanvas>().Initialize();
             ServiceLocator.Get<DebriefingCanvas>().Initialize(this);

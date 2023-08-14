@@ -10,7 +10,7 @@ using CodeBase.GameplayLogic.BattleUnitLogic;
 
 namespace CodeBase.GameplayLogic.BoardLogic
 {
-    public class BoardHighlight : MonoBehaviour,IService
+    public class BoardHighlight : MonoBehaviour,IBoardHighlight
     {
         [SerializeField] Color _currentTileColor;
         [SerializeField] Color _availableTileColor;
@@ -21,20 +21,15 @@ namespace CodeBase.GameplayLogic.BoardLogic
 
         int _boardSize;
 
-        public void Initialize()
-        {
-            _boardSize = ConstValues.BOARD_SIZE;
-            GenerateBoardHighlight();
-        }
-
-        public void Restart()
+        void Restart()
         {
             _selectedUnit = null;
             DisableAllHighlights();
         }
 
-        void GenerateBoardHighlight()
+        public void GenerateBoardHighlight(int boardSize)
         {
+            _boardSize = boardSize;
             _highlights = new TileHighlight[_boardSize, _boardSize];
 
             for (int x = 0; x < _boardSize; x++)

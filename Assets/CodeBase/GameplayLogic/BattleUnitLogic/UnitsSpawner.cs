@@ -12,7 +12,8 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
     {
         Board _board;
         UnitsManager _unitsManager;
-
+        private UnitsStateContainer _unitsStateContainer;
+        
         int _boardSize;
 
         CustomPool<BattleUnit> _whiteWarriorsPool;
@@ -142,7 +143,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
                 if (battleUnitType == UnitType.Warrior) intsUnit = _blackWarriorsPool.Get();
             }
 
-            _unitsManager.AddUnitToTile(intsUnit, index);
+            _unitsStateContainer.AddUnitToTile(intsUnit, index);
         }
     }
 }

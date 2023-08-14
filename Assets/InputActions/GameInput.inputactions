@@ -6,7 +6,7 @@
             "id": "9c8f202e-2e41-48bf-8640-fe62c7932606",
             "actions": [
                 {
-                    "name": "Click",
+                    "name": "ClickOnBoard",
                     "type": "Button",
                     "id": "0bcbbdef-8203-407b-a5ff-092ff2376eea",
                     "expectedControlType": "Button",
@@ -23,7 +23,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Click",
+                    "action": "ClickOnBoard",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
