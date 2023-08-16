@@ -11,12 +11,12 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
     public class UnitsPlacementHandler 
     {
         GameManager _gameManager;
-        Board _board;
+        IBoardTilesContainer _board;
         UnitsManager _unitsManager;
 
         KillsHandler _killsHandler;
 
-        public UnitsPlacementHandler(GameManager gameManager, Board board, UnitsManager unitsManager)
+        public UnitsPlacementHandler(GameManager gameManager, IBoardTilesContainer board, UnitsManager unitsManager)
         {
             _gameManager = gameManager;
             _board = board;

@@ -8,9 +8,9 @@ namespace CodeBase.Infrastructure
     {
         public const int BOARD_SIZE = 11;
 
-        public const int WHITE_WARRIORS_AMOUNT = 12;
-        public const int BLACK_WARRIORS_AMOUNT = 24;
-        public const int WHITE_KINGS_AMOUNT = 1;
+        // public const int WHITE_WARRIORS_AMOUNT = 12;
+        // public const int BLACK_WARRIORS_AMOUNT = 24;
+        // public const int WHITE_KINGS_AMOUNT = 1;
 
     }
 }

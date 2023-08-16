@@ -33,7 +33,6 @@ namespace CodeBase.Infrastructure.Services.Input
         {
             if (context.phase == InputActionPhase.Performed)
             {
-                Debug.Log("443");
                 OnClickedOnBoard?.Invoke(Mouse.current.position.ReadValue());   
             }
         }

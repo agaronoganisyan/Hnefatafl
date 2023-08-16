@@ -9,9 +9,6 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
     public class Warrior : BattleUnit
     {
-        protected override bool IsThereProblemWithIndex(Vector2Int index)
-        {
-            return !_board.IsIndexAvailableToMove(index) || _board.GetTileTypeByIndex(index) == TileType.Shelter || _unitsStateContainer.IsThereUnit(index) ? true : false;
-        }
+
     }
 }

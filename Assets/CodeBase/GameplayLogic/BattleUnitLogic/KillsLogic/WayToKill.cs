@@ -8,13 +8,13 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
 {
     public abstract class WayToKill 
     {
-        protected Board _board;
+        protected IBoardTilesContainer _boardTilesContainer;
         protected UnitsManager _unitsManager;
         protected IUnitsStateContainer _unitsStateContainer;
 
-        public WayToKill(Board board, UnitsManager unitsManager)
+        public WayToKill(IBoardTilesContainer boardTilesContainer, UnitsManager unitsManager)
         {
-            _board = board;
+            _boardTilesContainer = boardTilesContainer;
             _unitsManager = unitsManager;
         }
 

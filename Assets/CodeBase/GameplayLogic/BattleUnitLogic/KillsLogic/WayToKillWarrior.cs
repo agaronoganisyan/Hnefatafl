@@ -9,7 +9,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
 {
     public class WayToKillWarrior : WayToKill
     {
-        public WayToKillWarrior(Board board, UnitsManager unitsManager) : base(board, unitsManager)
+        public WayToKillWarrior(IBoardTilesContainer boardTilesContainer, UnitsManager unitsManager) : base(boardTilesContainer, unitsManager)
         {
         }
 
@@ -21,7 +21,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
 
         public override bool IsCaughtUnitSurroundedOnThisSide(Vector2Int index, TeamType currentUnitTeam, UnitType caughtUnitType)
         {
-            if(_board.IsIndexOnBoard(index))
+            if(_boardTilesContainer.IsIndexOnBoard(index))
             {
                 BattleUnit neighboringUnit = _unitsStateContainer.GetUnitByIndex(index);
 
@@ -32,7 +32,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
                 }
                 else
                 {
-                    TileType tileType = _board.GetTileTypeByIndex(index);
+                    TileType tileType = _boardTilesContainer.GetTileTypeByIndex(index);
 
                     if (tileType == TileType.Thron || tileType == TileType.Shelter) return true;
                     else return false;

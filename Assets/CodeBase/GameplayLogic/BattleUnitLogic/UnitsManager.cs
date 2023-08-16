@@ -17,7 +17,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
     private UnitsPlacementHandler _unitsPlacementHandler;
 
     private GameManager _gameManager;
-    private Board _board;
+    IBoardTilesContainer  _board;
 
     private BattleUnit _selectedUnit;
 
@@ -28,17 +28,16 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
                 
     }
 
-    public void Initialize(GameManager gameManager, Board board)
+    public void Initialize(GameManager gameManager, IBoardTilesContainer board)
     {
         _gameManager = gameManager;
         _board = board;
 
-        _unitsSpawner = new UnitsSpawner(_board, this);
+        //_unitsSpawner = new UnitsSpawner(_board, this);
         _unitsPlacementHandler = new UnitsPlacementHandler(_gameManager, _board, this);
 
-        //_units = new BattleUnit[ConstValues.BOARD_SIZE, ConstValues.BOARD_SIZE];
-        _unitsSpawner.InitUnits();
-        _unitsSpawner.PrepareUnits();
+        //_unitsSpawner.InitUnits();
+        //_unitsSpawner.PrepareUnits();
 
     }
 
@@ -48,43 +47,32 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         _unitsSpawner.Restart();
     }
 
-    // public BattleUnit GetUnitByIndex(Vector2Int index)
-    // {
-    //     if (IsThereUnit(index)) return _units[index.x, index.y];
-    //     else return null;
-    // }
-
-    // public bool IsThereUnit(Vector2Int index)
-    // {
-    //     return _units[index.x, index.y] != null ? true : false;
-    // }
-
     public bool IsThisTeamHaveaAnyAvailableMoves(TeamType teamType)
     {
         bool status = false;
 
-        if (teamType == TeamType.White)
-        {
-            for (int i = 0; i < _unitsSpawner.AllWhiteUnits.Count; i++)
-            {
-                if (!_unitsSpawner.AllWhiteUnits[i].IsKilled && _unitsSpawner.AllWhiteUnits[i].IsThereAvailableMoves())
-                {
-                    status = true;
-                    break;
-                }
-            }
-        }
-        else
-        {
-            for (int i = 0; i < _unitsSpawner.AllBlackUnits.Count; i++)
-            {
-                if (!_unitsSpawner.AllBlackUnits[i].IsKilled && _unitsSpawner.AllBlackUnits[i].IsThereAvailableMoves())
-                {
-                    status = true;
-                    break;
-                }
-            }
-        }
+        // if (teamType == TeamType.White)
+        // {
+        //     for (int i = 0; i < _unitsSpawner.AllWhiteUnits.Count; i++)
+        //     {
+        //         if (!_unitsSpawner.AllWhiteUnits[i].IsKilled && _unitsSpawner.AllWhiteUnits[i].IsThereAvailableMoves())
+        //         {
+        //             status = true;
+        //             break;
+        //         }
+        //     }
+        // }
+        // else
+        // {
+        //     for (int i = 0; i < _unitsSpawner.AllBlackUnits.Count; i++)
+        //     {
+        //         if (!_unitsSpawner.AllBlackUnits[i].IsKilled && _unitsSpawner.AllBlackUnits[i].IsThereAvailableMoves())
+        //         {
+        //             status = true;
+        //             break;
+        //         }
+        //     }
+        // }
 
         return status;
     }
@@ -104,16 +92,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
     //     _unitsPlacementHandler.ProcessUnitPlacement(_selectedUnit, finalTile);
     // }
 
-    // public void AddUnitToTile(BattleUnit unit, Vector2Int pos)
-    // {
-    //     _units[pos.x, pos.y] = unit;
-    //     unit.PrepareUnit(pos);
-    // }
-    //
-    // public void RemoveUnitFromTile(BattleUnit unit)
-    // {
-    //     _units[unit.Index.x, unit.Index.y] = null;
-    // }
+  
 
     private void OnEnable()
     {

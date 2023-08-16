@@ -47,47 +47,47 @@ namespace CodeBase.GameplayLogic
             SetControlLockStatus(false);
         }
 
-        private void Update()
-        {
-            if (_isLocked) return;
-
-            if (Input.GetMouseButtonDown(0))
-            {
-                _ray = _camera.ScreenPointToRay(Input.mousePosition);
-
-                if (Physics.Raycast(_ray, out _hit, 100, _tileLayer))
-                {
-                    _selectedTile = _hit.transform.GetComponent<Tile>();
-
-                    if (_selectedUnit != null)
-                    {
-                        if (_selectedUnit.IsThisIndexAvailableToMove(_selectedTile.Index))
-                        {
-                            SwitchTeamOfTurn();
-                            OnUnitPlaced?.Invoke(_selectedTile);
-                        }
-
-                        OnDisableHighlight?.Invoke();
-
-                        _selectedUnit = null;
-                    }
-                    else
-                    {
-                        _selectedUnit = _unitsStateContainer.GetUnitByIndex(_selectedTile.Index);
-
-                        if (_selectedUnit == null) return;
-
-                        if (_selectedUnit.TeamType != _currentTeamOfTurn)
-                        {
-                            _selectedUnit = null;
-                            return;
-                        }
-
-                        OnUnitSelected?.Invoke(_selectedUnit);
-                    }
-                }
-            }
-        }
+        // private void Update()
+        // {
+        //     if (_isLocked) return;
+        //
+        //     if (Input.GetMouseButtonDown(0))
+        //     {
+        //         _ray = _camera.ScreenPointToRay(Input.mousePosition);
+        //
+        //         if (Physics.Raycast(_ray, out _hit, 100, _tileLayer))
+        //         {
+        //             _selectedTile = _hit.transform.GetComponent<Tile>();
+        //
+        //             if (_selectedUnit != null)
+        //             {
+        //                 if (_selectedUnit.IsThisIndexAvailableToMove(_selectedTile.Index))
+        //                 {
+        //                     SwitchTeamOfTurn();
+        //                     OnUnitPlaced?.Invoke(_selectedTile);
+        //                 }
+        //
+        //                 OnDisableHighlight?.Invoke();
+        //
+        //                 _selectedUnit = null;
+        //             }
+        //             else
+        //             {
+        //                 _selectedUnit = _unitsStateContainer.GetUnitByIndex(_selectedTile.Index);
+        //
+        //                 if (_selectedUnit == null) return;
+        //
+        //                 if (_selectedUnit.TeamType != _currentTeamOfTurn)
+        //                 {
+        //                     _selectedUnit = null;
+        //                     return;
+        //                 }
+        //
+        //                 OnUnitSelected?.Invoke(_selectedUnit);
+        //             }
+        //         }
+        //     }
+        // }
 
         void SwitchTeamOfTurn()
         {

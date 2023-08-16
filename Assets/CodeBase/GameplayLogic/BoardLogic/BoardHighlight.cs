@@ -14,16 +14,13 @@ namespace CodeBase.GameplayLogic.BoardLogic
     {
         [SerializeField] Color _currentTileColor;
         [SerializeField] Color _availableTileColor;
-
-        BattleUnit _selectedUnit;
-
+        
         TileHighlight[,] _highlights;
 
         int _boardSize;
 
         void Restart()
         {
-            _selectedUnit = null;
             DisableAllHighlights();
         }
 
@@ -49,25 +46,24 @@ namespace CodeBase.GameplayLogic.BoardLogic
             _highlights[(int)pos.x, (int)pos.z] = intsHighlight;
         }
 
-        void EnableHighlight(BattleUnit currentUnit)
+        public void EnableHighlight(UnitPathCalculator pathCalculator)
         {
-            _selectedUnit = currentUnit;
+            _highlights[pathCalculator.CurrentIndex.x, pathCalculator.CurrentIndex.y].Show(ShowingType.Current);
 
-            _highlights[_selectedUnit.IndexBeforeMove.x, _selectedUnit.IndexBeforeMove.y].Show(ShowingType.Current);
-
-            for (int i = 0; i < _selectedUnit.AvailableMoves.Count; i++)
+            for (int i = 0; i < pathCalculator.AvailableMoves.Count; i++)
             {
-                _highlights[_selectedUnit.AvailableMoves[i].x, _selectedUnit.AvailableMoves[i].y].Show(ShowingType.Available);
+                _highlights[pathCalculator.AvailableMoves[i].x, pathCalculator.AvailableMoves[i].y].Show(ShowingType.Available);
             }
         }
 
         void DisableHighlight()
         {
-            _highlights[_selectedUnit.IndexBeforeMove.x, _selectedUnit.IndexBeforeMove.y].Hide();
-
-            for (int i = 0; i < _selectedUnit.AvailableMoves.Count; i++)
+            for (int x = 0; x < _boardSize; x++)
             {
-                _highlights[_selectedUnit.AvailableMoves[i].x, _selectedUnit.AvailableMoves[i].y].Hide();
+                for (int y = 0; y < _boardSize; y++)
+                {
+                    _highlights[x,y].Hide();
+                }
             }
         }
 
@@ -85,14 +81,14 @@ namespace CodeBase.GameplayLogic.BoardLogic
         private void OnEnable()
         {
             GameManager.OnGameRestarted += Restart;
-            UnitsManager.OnSelectedUnitMovesCalculated += EnableHighlight;
+            //UnitsManager.OnSelectedUnitMovesCalculated += EnableHighlight;
             Controller.OnDisableHighlight += DisableHighlight;
         }
 
         private void OnDisable()
         {
             GameManager.OnGameRestarted -= Restart;
-            UnitsManager.OnSelectedUnitMovesCalculated -= EnableHighlight;
+            //UnitsManager.OnSelectedUnitMovesCalculated -= EnableHighlight;
             Controller.OnDisableHighlight -= DisableHighlight;
         }
     }

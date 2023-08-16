@@ -1,13 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic;
-using CodeBase.GameplayLogic.TileLogic;
-using CodeBase.GameplayLogic.UILogic;
 using CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic;
 using CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic;
 using CodeBase.Infrastructure.Services.AssetManagement;
@@ -20,10 +15,13 @@ namespace CodeBase.Infrastructure
     {
         private GameModeStaticData _modeStaticData;
 
+        private IBoardTilesContainer _boardTilesContainer;
         private IBoard _board;
         private IBoardHighlight _boardHighlight;
         private IUnitsManager _unitsManager;
-        [SerializeField] Controller _controller;
+        private IUnitsStateContainer _unitsStateContainer;
+        private IUnitsComander _unitsComander;
+        private IUnitsSpawner _unitsSpawner;
 
         private IInputService _inputService;
         private IInputHandler _inputHandler;
@@ -38,7 +36,7 @@ namespace CodeBase.Infrastructure
             
             //ServiceLocator.Register(_board);
             //ServiceLocator.Register(_unitsManager);
-            ServiceLocator.Register(_controller);
+            //ServiceLocator.Register(_controller);
             //ServiceLocator.Register(_boardHighlight);
 
             ServiceLocator.Register(_gameplayCanvas);
@@ -49,13 +47,25 @@ namespace CodeBase.Infrastructure
 
             ServiceLocator.Get<GameManager>().InitializeGame();
 
+            _boardTilesContainer = new BoardTilesContainer();
+            _boardTilesContainer.GenerateBoard(_modeStaticData.BoardSize);
+
+            _unitsStateContainer = new UnitsStateContainer(_modeStaticData.BoardSize);
+            
+            //добавить менеджер способов расчета путей 
+            //_unitsComander = new UnitsComander(new unitpa);
+
+            _unitsSpawner = new UnitsSpawner(_modeStaticData, new UnitsFactory(_modeStaticData),_unitsStateContainer);
+            _unitsSpawner.Initialize();
+            _unitsSpawner.PrepareUnits();
+            
             _inputService = new InputService();
             _inputService.SetGameplayMode();
 
-            _inputHandler = new InputHandler(_inputService);
+            _inputHandler = new InputHandler(_inputService,_unitsComander, _boardTilesContainer,_unitsStateContainer);
             
             _board =  Instantiate(AssetsProvider.GetCachedAsset<Board>(AssetsPath.PathToBoard));
-            _board.GenerateBoard(_modeStaticData.BoardSize);
+            _board.GenerateBoard(_modeStaticData.BoardSize,_boardTilesContainer);
             
             _boardHighlight =  Instantiate(AssetsProvider.GetCachedAsset<BoardHighlight>(AssetsPath.PathToBoardHighlight));
             _boardHighlight.GenerateBoardHighlight(_modeStaticData.BoardSize);
