@@ -8,5 +8,6 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         bool IsThereUnit(Vector2Int index);
         BattleUnit GetUnitByIndex(Vector2Int neighboringIndex);
         void AddUnitToTile(BattleUnit intsUnit, Vector2Int index);
+        void RelocateUnit(BattleUnit unit, Vector2Int newIndex);
     }
 }

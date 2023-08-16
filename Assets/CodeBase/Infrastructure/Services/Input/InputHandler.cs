@@ -1,26 +1,29 @@
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic.TileLogic;
+using CodeBase.GameplayLogic.TurnLogic;
 using UnityEngine;
 
 namespace CodeBase.Infrastructure.Services.Input
 {
     public class InputHandler : IInputHandler
     {
-        private BattleUnit _selectedUnit;
-        private Tile _selectedTile;
         private IBoardTilesContainer _boardTilesContainer;
         private IUnitsStateContainer _unitsStateContainer;
         private IUnitsComander _unitsComander;
+        private ITurnManager _turnManager;
         
         private Camera _camera;
 
-        public InputHandler(IInputService inputService,IUnitsComander unitsComander, IBoardTilesContainer boardTilesContainer, IUnitsStateContainer unitsStateContainer)
+        public InputHandler(IInputService inputService,ITurnManager turnManager, IUnitsComander unitsComander,
+            IBoardTilesContainer boardTilesContainer, IUnitsStateContainer unitsStateContainer)
         {
             _camera = Camera.main;
             _unitsComander = unitsComander;
             _boardTilesContainer = boardTilesContainer;
             _unitsStateContainer = unitsStateContainer;
+            _turnManager = turnManager;
             
             inputService.OnClickedOnBoard += ProcessClickOnBoard;
         }
@@ -31,13 +34,11 @@ namespace CodeBase.Infrastructure.Services.Input
             
             Vector2Int index = _boardTilesContainer.GetIndexByWorldPos(_camera.ScreenToWorldPoint(mousePosition));
             
-            _selectedUnit = _unitsStateContainer.GetUnitByIndex(index);
-            
-            if (_selectedUnit != null)
+            if (_turnManager.SelectedUnit != null)
             {
-                _unitsComander.MoveUnit(_selectedUnit, index);
+                _unitsComander.MoveUnit(index);
                 
-                _selectedUnit = null;
+                //_selectedUnit = null;
                 
                 // if (_selectedUnit.IsThisIndexAvailableToMove(index))
                 // {
@@ -49,10 +50,10 @@ namespace CodeBase.Infrastructure.Services.Input
             }
             else
             {
-                _selectedUnit = _unitsStateContainer.GetUnitByIndex(index);
-            
-                _unitsComander.SelectUnit(_selectedUnit)
-                    ;
+                if(!_unitsStateContainer.IsThereUnit(index)) return;
+                 
+                _unitsComander.SelectUnit(_unitsStateContainer.GetUnitByIndex(index));
+                
                 // if (_selectedUnit == null) return;
                 //
                 // if (_selectedUnit.TeamType != _currentTeamOfTurn)
@@ -63,38 +64,6 @@ namespace CodeBase.Infrastructure.Services.Input
                 //
                 // OnUnitSelected?.Invoke(_selectedUnit);
             }
-            
-            // if (Physics.Raycast(_ray, out _hit, 100, _tileLayer))
-            // {
-            //     _selectedTile = _hit.transform.GetComponent<Tile>();
-            //
-            //     // if (_selectedUnit != null)
-            //     // {
-            //     //     if (_selectedUnit.IsThisIndexAvailableToMove(_selectedTile.Index))
-            //     //     {
-            //     //         SwitchTeamOfTurn();
-            //     //         OnUnitPlaced?.Invoke(_selectedTile);
-            //     //     }
-            //     //
-            //     //     OnDisableHighlight?.Invoke();
-            //     //
-            //     //     _selectedUnit = null;
-            //     // }
-            //     // else
-            //     // {
-            //     //     _selectedUnit = _unitsStateContainer.GetUnitByIndex(_selectedTile.Index);
-            //     //
-            //     //     if (_selectedUnit == null) return;
-            //     //
-            //     //     if (_selectedUnit.TeamType != _currentTeamOfTurn)
-            //     //     {
-            //     //         _selectedUnit = null;
-            //     //         return;
-            //     //     }
-            //     //
-            //     //     OnUnitSelected?.Invoke(_selectedUnit);
-            //     // }
-            // }
         }
     }
 }

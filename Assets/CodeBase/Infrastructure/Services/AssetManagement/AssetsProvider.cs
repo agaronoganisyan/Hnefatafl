@@ -14,12 +14,10 @@ namespace CodeBase.Infrastructure.Services.AssetManagement
             {
                 return asset as T;
             }
-            else
-            {
-                T resource = Resources.Load<T>(path);
-                CachedAssets.Add(path, resource);
-                return resource;
-            }
+
+            T resource = Resources.Load<T>(path);
+            CachedAssets.Add(path, resource);
+            return resource;
         }
     }
 }

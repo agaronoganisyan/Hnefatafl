@@ -23,10 +23,6 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
     public abstract class BattleUnit : MonoBehaviour
     {
-        //protected IBoardTilesContainer _boardTilesContainer;
-        //protected UnitsManager _unitsManager;
-        //protected IUnitsStateContainer _unitsStateContainer;
-        
         [SerializeField] protected TeamType _teamType;
         public TeamType TeamType => _teamType;
 
@@ -35,24 +31,10 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
         protected Vector2Int _index;
         public Vector2Int Index => _index;
-
-        // protected Vector2Int _indexBeforeMove;
-        // public Vector2Int IndexBeforeMove => _indexBeforeMove;
-
+        
         bool _isKilled;
         public bool IsKilled => _isKilled;
-
-        // protected List<Vector2Int> _availableMoves = new List<Vector2Int>();
-        // public IReadOnlyList<Vector2Int> AvailableMoves => _availableMoves;
-
-
-        //
-        // public void Initialize(IBoardTilesContainer boardTilesContainer , UnitsManager unitsManager)
-        // {
-        //     _boardTilesContainer = boardTilesContainer;
-        //     _unitsManager = unitsManager;
-        // }
-
+        
         void SetPosition(Vector2Int index)
         {
             transform.position = new Vector3(index.x,0, index.y);

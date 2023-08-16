@@ -5,9 +5,6 @@ namespace CodeBase.GameplayLogic.BoardLogic
 {
     public class BoardTilesContainer : IBoardTilesContainer
     {
-        
-    Tile[,] _tiles;
-
     Vector2Int _thronIndex;
     Vector2Int _upperLeftShelterIndex;
     Vector2Int _upperRightShelterIndex;
@@ -19,7 +16,6 @@ namespace CodeBase.GameplayLogic.BoardLogic
     public void GenerateBoard(int boardSize)
     {
         _boardSize = boardSize;
-        _tiles = new Tile[_boardSize, _boardSize];
 
         int boardSizeHalf = (int)((float)_boardSize / 2 - 0.5f);
         _thronIndex = new Vector2Int(boardSizeHalf, boardSizeHalf);
@@ -37,11 +33,6 @@ namespace CodeBase.GameplayLogic.BoardLogic
         if (index == _thronIndex) return TileType.Thron;
         
         return TileType.Regular;
-    }
-
-    public bool IsIndexAvailableToMove(Vector2Int index)
-    {
-        return _tiles[index.x, index.y] != null;
     }
 
     public bool IsIndexOnBoard(Vector2Int index)

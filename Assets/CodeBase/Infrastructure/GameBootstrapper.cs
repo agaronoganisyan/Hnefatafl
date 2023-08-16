@@ -3,6 +3,8 @@ using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic;
+using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
+using CodeBase.GameplayLogic.TurnLogic;
 using CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic;
 using CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic;
 using CodeBase.Infrastructure.Services.AssetManagement;
@@ -22,6 +24,9 @@ namespace CodeBase.Infrastructure
         private IUnitsStateContainer _unitsStateContainer;
         private IUnitsComander _unitsComander;
         private IUnitsSpawner _unitsSpawner;
+        private IUnitsPathCalculatorsManager _unitsPathCalculatorsManager;
+        private ITurnManager _turnManager;
+        private IUnitsMoveValidator _unitsMoveValidator;
 
         private IInputService _inputService;
         private IInputHandler _inputHandler;
@@ -52,22 +57,31 @@ namespace CodeBase.Infrastructure
 
             _unitsStateContainer = new UnitsStateContainer(_modeStaticData.BoardSize);
             
-            //добавить менеджер способов расчета путей 
-            //_unitsComander = new UnitsComander(new unitpa);
+            _unitsPathCalculatorsManager= new UnitsPathCalculatorsManager();
+            _unitsPathCalculatorsManager.AddUnitPathCalculator(UnitType.King, new KingPathCalculator(_boardTilesContainer,_unitsStateContainer));
+            _unitsPathCalculatorsManager.AddUnitPathCalculator(UnitType.Warrior, new WarriorPathCalculator(_boardTilesContainer,_unitsStateContainer));
+            
+            _turnManager = new TurnManager();
+            _turnManager.Prepare();
 
+            _unitsMoveValidator = new UnitsMoveValidator();
+            
+            _unitsComander = new UnitsComander(_turnManager,_unitsStateContainer,_unitsPathCalculatorsManager,_unitsMoveValidator);
+            
             _unitsSpawner = new UnitsSpawner(_modeStaticData, new UnitsFactory(_modeStaticData),_unitsStateContainer);
             _unitsSpawner.Initialize();
             _unitsSpawner.PrepareUnits();
             
             _inputService = new InputService();
             _inputService.SetGameplayMode();
-
-            _inputHandler = new InputHandler(_inputService,_unitsComander, _boardTilesContainer,_unitsStateContainer);
+            
+            _inputHandler = new InputHandler(_inputService,_turnManager,_unitsComander, _boardTilesContainer,_unitsStateContainer);
             
             _board =  Instantiate(AssetsProvider.GetCachedAsset<Board>(AssetsPath.PathToBoard));
             _board.GenerateBoard(_modeStaticData.BoardSize,_boardTilesContainer);
             
             _boardHighlight =  Instantiate(AssetsProvider.GetCachedAsset<BoardHighlight>(AssetsPath.PathToBoardHighlight));
+            _boardHighlight.Initialize(_unitsPathCalculatorsManager);
             _boardHighlight.GenerateBoardHighlight(_modeStaticData.BoardSize);
 
             _unitsManager = new UnitsManager();

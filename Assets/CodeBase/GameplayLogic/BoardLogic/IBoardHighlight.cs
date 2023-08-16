@@ -1,10 +1,11 @@
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 
 namespace CodeBase.GameplayLogic.BoardLogic
 {
     public interface IBoardHighlight
     {
-        void EnableHighlight(UnitPathCalculator pathCalculator);
+        public void Initialize(IUnitsPathCalculatorsManager unitsPathCalculatorsManager);
         void GenerateBoardHighlight(int boardSize);
     }
 }

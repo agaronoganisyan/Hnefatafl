@@ -22,7 +22,6 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
     public void Clear()
     {
         _units = new BattleUnit[_boardSize, _boardSize];
-        //_unitsSpawner.Restart();
     }
 
     public BattleUnit GetUnitByIndex(Vector2Int index)
@@ -32,11 +31,14 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
     public bool IsThereUnit(Vector2Int index)
     {
-        return _units[index.x, index.y] != null ? true : false;
+        return _units[index.x, index.y] != null;
     }
 
-    void SelectUnit(BattleUnit selectedUnit)
+    public void RelocateUnit(BattleUnit unit, Vector2Int newIndex)
     {
+        RemoveUnitFromTile(unit);
+        AddUnitToTile(unit,newIndex);
+        
         // _selectedUnit = _units[selectedUnit.Index.x, selectedUnit.Index.y];
         // _selectedUnit.CalculateAvailableMoves();
         // OnSelectedUnitMovesCalculated?.Invoke(_selectedUnit);

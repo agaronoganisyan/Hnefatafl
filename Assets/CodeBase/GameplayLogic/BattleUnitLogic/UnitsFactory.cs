@@ -75,8 +75,6 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         
         void InitSingleUnit(BattleUnit unit, TeamType teamType)
         {
-            //unit.Initialize(_board, _unitsManager);
-
             if (teamType == TeamType.White) _allWhiteUnits.Add(unit);
             else _allBlackUnits.Add(unit);
         }

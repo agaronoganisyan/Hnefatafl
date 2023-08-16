@@ -7,6 +7,7 @@ using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.GameplayLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 
 namespace CodeBase.GameplayLogic.BoardLogic
 {
@@ -19,9 +20,14 @@ namespace CodeBase.GameplayLogic.BoardLogic
 
         int _boardSize;
 
+        public void Initialize(IUnitsPathCalculatorsManager unitsPathCalculatorsManager)
+        {
+            unitsPathCalculatorsManager.OnPathCalculated += EnableHighlight;
+        }
+
         void Restart()
         {
-            DisableAllHighlights();
+            DisableHighlight();
         }
 
         public void GenerateBoardHighlight(int boardSize)
@@ -46,13 +52,13 @@ namespace CodeBase.GameplayLogic.BoardLogic
             _highlights[(int)pos.x, (int)pos.z] = intsHighlight;
         }
 
-        public void EnableHighlight(UnitPathCalculator pathCalculator)
+        void EnableHighlight(IUnitPath path)
         {
-            _highlights[pathCalculator.CurrentIndex.x, pathCalculator.CurrentIndex.y].Show(ShowingType.Current);
+            _highlights[path.CurrentIndex.x, path.CurrentIndex.y].Show(ShowingType.Current);
 
-            for (int i = 0; i < pathCalculator.AvailableMoves.Count; i++)
+            for (int i = 0; i < path.AvailableMoves.Count; i++)
             {
-                _highlights[pathCalculator.AvailableMoves[i].x, pathCalculator.AvailableMoves[i].y].Show(ShowingType.Available);
+                _highlights[path.AvailableMoves[i].x, path.AvailableMoves[i].y].Show(ShowingType.Available);
             }
         }
 
@@ -67,29 +73,26 @@ namespace CodeBase.GameplayLogic.BoardLogic
             }
         }
 
-        void DisableAllHighlights()
-        {
-            for (int x = 0; x < _boardSize; x++)
-            {
-                for (int y = 0; y < _boardSize; y++)
-                {
-                    _highlights[x, y].Hide();
-                }
-            }
-        }
-
-        private void OnEnable()
-        {
-            GameManager.OnGameRestarted += Restart;
-            //UnitsManager.OnSelectedUnitMovesCalculated += EnableHighlight;
-            Controller.OnDisableHighlight += DisableHighlight;
-        }
-
-        private void OnDisable()
-        {
-            GameManager.OnGameRestarted -= Restart;
-            //UnitsManager.OnSelectedUnitMovesCalculated -= EnableHighlight;
-            Controller.OnDisableHighlight -= DisableHighlight;
-        }
+        // private void OnEnable()
+        // {
+        //     
+        //     
+        //     
+        //     
+        //     GameManager.OnGameRestarted += Restart;
+        //     //UnitsManager.OnSelectedUnitMovesCalculated += EnableHighlight;
+        //     Controller.OnDisableHighlight += DisableHighlight;
+        // }
+        //
+        // private void OnDisable()
+        // {
+        //     
+        //     
+        //     
+        //     
+        //     GameManager.OnGameRestarted -= Restart;
+        //     //UnitsManager.OnSelectedUnitMovesCalculated -= EnableHighlight;
+        //     Controller.OnDisableHighlight -= DisableHighlight;
+        // }
     }
 }
