@@ -7,7 +7,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
     {
         private static readonly Dictionary<UnitType, UnitPathCalculator> Calculators = new Dictionary<UnitType, UnitPathCalculator>();
 
-        public Action<IUnitPath> OnPathCalculated { get; set; }
+        public event Action<IUnitPath> OnPathCalculated;
 
         public void AddUnitPathCalculator(UnitType unitType, UnitPathCalculator calculator)
         {
@@ -26,6 +26,16 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
             }
 
             return null;
+        }
+        
+        public bool IsUnitHasAvailableMoves(BattleUnit battleUnit)
+        {
+            if (Calculators.TryGetValue(battleUnit.UnitType, out var calculator))
+            {
+                return calculator.IsThereAvailableMoves(battleUnit.Index);
+            }
+
+            return false;
         }
     }
 }

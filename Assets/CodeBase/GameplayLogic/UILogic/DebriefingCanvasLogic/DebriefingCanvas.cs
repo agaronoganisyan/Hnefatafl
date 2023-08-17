@@ -6,14 +6,18 @@ using CodeBase.GameplayLogic.BattleUnitLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {
-    public class DebriefingCanvas : UICanvas
+    public class DebriefingCanvas : UICanvas,IDebriefingCanvas
     {
         [SerializeField] DebriefingPanel _debriefingPanel;
 
-        public void Initialize(GameManager gameManager)
+        public void Initialize(IGameManager gameManager)
         {
             base.Close();
 
+            gameManager.OnGameStarted += base.Close;
+            gameManager.OnWhiteTeamWon += OpenWhiteScreen;
+            gameManager.OnBlackTeamWon += OpenBlackScreen;
+            
             _debriefingPanel.Initialize(gameManager);
         }
 
@@ -28,20 +32,6 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
         {
             base.Open();
             _debriefingPanel.Open(TeamType.Black);
-        }
-
-        private void OnEnable()
-        {
-            GameManager.OnGameStarted += base.Close;
-            GameManager.OnWhiteTeamWon += OpenWhiteScreen;
-            GameManager.OnBlackTeamWon += OpenBlackScreen;
-        }
-
-        private void OnDisable()
-        {
-            GameManager.OnGameStarted -= base.Close;
-            GameManager.OnWhiteTeamWon -= OpenWhiteScreen;
-            GameManager.OnBlackTeamWon -= OpenBlackScreen;
         }
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,23 +6,26 @@ namespace CodeBase.Infrastructure.Services.Input
 {
     public class InputService :  IInputService, GameInput.IGameplayActions
     {
-        private GameInput _gameInput;
-        public Action<Vector2> OnClickedOnBoard { get; set; }
+        private readonly GameInput _gameInput;
+        public event Action<Vector2> OnClickedOnBoard;
 
-        public InputService()
+        public InputService(IGameManager gameManager)
         {
             _gameInput = new GameInput();
                 
             _gameInput.Gameplay.SetCallbacks(this);
+
+            gameManager.OnGameStarted += SetGameplayMode;
+            gameManager.OnGameFinished += SetUIMode;
         }
 
-        public void SetGameplayMode()
+        void SetGameplayMode()
         {
             _gameInput.Gameplay.Enable();
             _gameInput.UI.Disable();
         }
 
-        public void SetUIMode()
+        void SetUIMode()
         {
             _gameInput.Gameplay.Disable();
             _gameInput.UI.Enable();

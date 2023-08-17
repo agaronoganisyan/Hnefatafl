@@ -1,5 +1,6 @@
 using CodeBase.GameplayLogic.TileLogic;
 using UnityEngine;
+using Tile = UnityEngine.WSA.Tile;
 
 namespace CodeBase.GameplayLogic.BoardLogic
 {
@@ -24,7 +25,7 @@ namespace CodeBase.GameplayLogic.BoardLogic
         _lowerLeftShelterIndex = new Vector2Int(_boardSize - 1, 0);
         _lowerRightShelterIndex = new Vector2Int(_boardSize - 1, _boardSize - 1);
     }
-
+    
     public TileType GetTileTypeByIndex(Vector2Int index)
     {
         if (index == _upperLeftShelterIndex || index == _upperRightShelterIndex ||
@@ -33,6 +34,11 @@ namespace CodeBase.GameplayLogic.BoardLogic
         if (index == _thronIndex) return TileType.Thron;
         
         return TileType.Regular;
+    }
+
+    public Tile GetTileByIndex(Vector2Int index)
+    {
+        throw new System.NotImplementedException();
     }
 
     public bool IsIndexOnBoard(Vector2Int index)

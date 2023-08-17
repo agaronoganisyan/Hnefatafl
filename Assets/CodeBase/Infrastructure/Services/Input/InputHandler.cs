@@ -9,20 +9,17 @@ namespace CodeBase.Infrastructure.Services.Input
 {
     public class InputHandler : IInputHandler
     {
-        private IBoardTilesContainer _boardTilesContainer;
-        private IUnitsStateContainer _unitsStateContainer;
-        private IUnitsComander _unitsComander;
-        private ITurnManager _turnManager;
-        
-        private Camera _camera;
+        private readonly IBoardTilesContainer _boardTilesContainer;
+        private readonly IUnitsComander _unitsComander;
+        private readonly ITurnManager _turnManager;
+        private readonly Camera _camera;
 
         public InputHandler(IInputService inputService,ITurnManager turnManager, IUnitsComander unitsComander,
-            IBoardTilesContainer boardTilesContainer, IUnitsStateContainer unitsStateContainer)
+            IBoardTilesContainer boardTilesContainer)
         {
             _camera = Camera.main;
             _unitsComander = unitsComander;
             _boardTilesContainer = boardTilesContainer;
-            _unitsStateContainer = unitsStateContainer;
             _turnManager = turnManager;
             
             inputService.OnClickedOnBoard += ProcessClickOnBoard;
@@ -37,32 +34,10 @@ namespace CodeBase.Infrastructure.Services.Input
             if (_turnManager.SelectedUnit != null)
             {
                 _unitsComander.MoveUnit(index);
-                
-                //_selectedUnit = null;
-                
-                // if (_selectedUnit.IsThisIndexAvailableToMove(index))
-                // {
-                //     SwitchTeamOfTurn();
-                //     OnUnitPlaced?.Invoke(_selectedTile);
-                // }
-                //
-                // OnDisableHighlight?.Invoke();
             }
             else
             {
-                if(!_unitsStateContainer.IsThereUnit(index)) return;
-                 
-                _unitsComander.SelectUnit(_unitsStateContainer.GetUnitByIndex(index));
-                
-                // if (_selectedUnit == null) return;
-                //
-                // if (_selectedUnit.TeamType != _currentTeamOfTurn)
-                // {
-                //     _selectedUnit = null;
-                //     return;
-                // }
-                //
-                // OnUnitSelected?.Invoke(_selectedUnit);
+                _unitsComander.SelectUnit(index);
             }
         }
     }

@@ -33,6 +33,14 @@ namespace CodeBase.Infrastructure.Services.CustomPoolLogic
             obj.gameObject.SetActive(false);
         }
 
+        public void Expand(int amount)
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                _objects.Add(_prefab);
+            }
+        }
+
         private T Create()
         {
             var obj = Object.Instantiate(_prefab);

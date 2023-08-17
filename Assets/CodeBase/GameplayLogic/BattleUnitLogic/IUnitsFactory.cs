@@ -9,8 +9,5 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         CustomPool<BattleUnit> WhiteKingsPool{ get; }
         
         public void Initialize();
-        void DisableAllUnits();
-        
-        
     }
 }

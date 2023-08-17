@@ -20,9 +20,12 @@ namespace CodeBase.GameplayLogic.BoardLogic
 
         int _boardSize;
 
-        public void Initialize(IUnitsPathCalculatorsManager unitsPathCalculatorsManager)
+        public void Initialize(IGameManager gameManager, IUnitsPathCalculatorsManager unitsPathCalculatorsManager, IUnitsComander unitsComander)
         {
             unitsPathCalculatorsManager.OnPathCalculated += EnableHighlight;
+            unitsComander.OnUnitUnselected += DisableHighlight;
+
+            gameManager.OnGameRestarted += Restart;
         }
 
         void Restart()

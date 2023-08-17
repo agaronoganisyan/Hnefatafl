@@ -17,6 +17,9 @@ namespace CodeBase.Infrastructure.Services.AssetManagement
 
         public const string PathToBoardHighlight = "BoardHighlights/BoardHighlight";
         
+        public const string PathToGameplayCanvas = "UI/GameplayCanvas";
+        public const string PathToDebriefingCanvas = "UI/DebriefingCanvas";
+
         public static string PathToBattleUnit(TeamType teamType, UnitType unitType) => $"Units/{teamType}/{unitType}";
     }
 }

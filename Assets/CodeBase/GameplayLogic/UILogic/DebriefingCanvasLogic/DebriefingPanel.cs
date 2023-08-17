@@ -9,14 +9,14 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {
     public class DebriefingPanel : MonoBehaviour
     {
-        GameManager _gameManager;
+        IGameManager _gameManager;
 
         [SerializeField] Image _panel;
 
         [SerializeField] Color _whitePanelColor;
         [SerializeField] Color _blackPanelColor;
 
-        public void Initialize(GameManager gameManager)
+        public void Initialize(IGameManager gameManager)
         {
             _gameManager = gameManager;
         }

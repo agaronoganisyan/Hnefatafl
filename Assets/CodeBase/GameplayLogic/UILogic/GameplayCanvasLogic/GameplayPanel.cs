@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.GameplayLogic.TurnLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
 {
@@ -10,9 +11,9 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
     {
         [SerializeField] TextMeshProUGUI _currentTeamOfTurn;
 
-        public void Initialize()
+        public void Initialize(ITurnManager turnManager)
         {
-            Controller.OnCurrentTeamOfTurnChanged += SetTeamOfTurn;
+            turnManager.OnTeamOfTurnChanged += SetTeamOfTurn;
         }
 
         void SetTeamOfTurn(TeamType teamType)

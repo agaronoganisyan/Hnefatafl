@@ -1,40 +1,33 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.Infrastructure;
-using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.GameplayLogic.TileLogic;
-using System;
 using CodeBase.GameplayLogic.BoardLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
 {
-    public class KillsHandler 
+    public class KillsHandler : IKillsHandler
     {
-        GameManager _gameManager;
+        IGameManager _gameManager;
         IBoardTilesContainer _board;
-        UnitsManager _unitsManager;
         IUnitsStateContainer _unitsStateContainer;
 
         WayToKill _wayToKillKing;
         WayToKill _wayToKillWarrior;
 
-        public KillsHandler(GameManager gameManager,IBoardTilesContainer board, UnitsManager unitsManager)
+        public KillsHandler(IGameManager gameManager,IBoardTilesContainer board,IUnitsStateContainer unitsStateContainer, WayToKill wayToKillKing, WayToKill wayToKillWarrior)
         {
             _gameManager = gameManager;
             _board = board;
-            _unitsManager = unitsManager;
 
-            _wayToKillKing = new WayToKillKing(_board, _unitsManager);
-            _wayToKillWarrior = new WayToKillWarrior(_board, _unitsManager);
+            _wayToKillKing = wayToKillKing;
+            _wayToKillWarrior = wayToKillWarrior;
+            _unitsStateContainer = unitsStateContainer;
         }
 
-        public void TryToKill(BattleUnit unit, Tile finalTile)
+        public void FindTargetsToKill(BattleUnit unit)
         {
             TeamType currentUnitTeamType = unit.TeamType;
-            Vector2Int finalTileIndex = finalTile.Index;
-
+            Vector2Int finalTileIndex = unit.Index;
+            
             //Down
             FindTargetToKill(currentUnitTeamType, finalTileIndex, new Vector2Int(0, -1));
 
@@ -75,7 +68,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
         {
             _unitsStateContainer.RemoveUnitFromTile(unit);
             unit.Kill();
-
+            
             if (unit.UnitType == UnitType.King) _gameManager.BlackTeamWin();
         }
     }

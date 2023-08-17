@@ -1,36 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using System;
-using UnityEngine;
-using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.GameplayLogic;
-using CodeBase.GameplayLogic.BattleUnitLogic;
-using CodeBase.GameplayLogic.BoardLogic;
-using CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic;
-using CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic;
 
 namespace CodeBase.Infrastructure
 {
-    public class GameManager : IService
+    public class GameManager : IGameManager
     {
-        public static event Action OnGameStarted;
-        public static event Action OnGameRestarted;
-        public static event Action OnWhiteTeamWon;
-        public static event Action OnBlackTeamWon;
+        public event Action OnGameStarted;
+        public event Action OnGameRestarted;
+        public event Action OnGameFinished;
+        public event Action OnWhiteTeamWon;
+        public event Action OnBlackTeamWon;
 
         bool _isGameFinished;
         public bool IsGameFinished => _isGameFinished;
-
-        public void InitializeGame()
-        {
-            //ServiceLocator.Get<Board>().Initialize();
-            //ServiceLocator.Get<BoardHighlight>().Initialize();
-            //ServiceLocator.Get<UnitsManager>().Initialize(this,ServiceLocator.Get<Board>());
-            //ServiceLocator.Get<Controller>().Initialize(ServiceLocator.Get<UnitsManager>());
-
-            ServiceLocator.Get<GameplayCanvas>().Initialize();
-            ServiceLocator.Get<DebriefingCanvas>().Initialize(this);
-        }
 
         public void StartGame()
         {
@@ -50,8 +31,10 @@ namespace CodeBase.Infrastructure
         {
             if (_isGameFinished) return;
             _isGameFinished = true;
-
+            
             OnBlackTeamWon?.Invoke();
+            OnGameFinished?.Invoke();
+
         }
 
         public void WhiteTeamWin()
@@ -60,6 +43,8 @@ namespace CodeBase.Infrastructure
             _isGameFinished = true;
 
             OnWhiteTeamWon?.Invoke();
+            OnGameFinished?.Invoke();
+
         }
     }
 }

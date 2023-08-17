@@ -1,28 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
-using CodeBase.GameplayLogic.BoardLogic;
-using CodeBase.Infrastructure.Services.AssetManagement;
-using UnityEngine;
-using CodeBase.Infrastructure.Services.CustomPoolLogic;
 using CodeBase.Infrastructure;
-using CodeBase.Infrastructure.Services.StaticData;
+using UnityEngine;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
     public class UnitsSpawner : IUnitsSpawner
     {
         
-    private IUnitsFactory _unitsFactory;    
-    private IUnitsStateContainer _unitsStateContainer;
-    
-    private int _boardSize;
+    private readonly IUnitsFactory _unitsFactory;    
+    private readonly IUnitsStateContainer _unitsStateContainer;
+    private readonly ITeamsUnitsContainer _teamsUnitsContainer;
+    private readonly int _boardSize;
 
-    public UnitsSpawner(GameModeStaticData gameModeStaticData, IUnitsFactory unitsFactory,IUnitsStateContainer unitsStateContainer)
+    public UnitsSpawner(IGameManager gameManager, IUnitsFactory unitsFactory, IUnitsStateContainer unitsStateContainer,ITeamsUnitsContainer teamsUnitsContainer, int boardSize)
     {
         _unitsFactory = unitsFactory;
         _unitsStateContainer = unitsStateContainer;
-        
-        _boardSize = gameModeStaticData.BoardSize;
+        _teamsUnitsContainer = teamsUnitsContainer;
+        _boardSize = boardSize;
+
+        gameManager.OnGameRestarted += Restart;
     }
 
     public void Initialize()
@@ -30,8 +26,8 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         _unitsFactory.Initialize();
         DisableAllUnits();
     }
-    
-    public void Restart()
+        
+    void Restart()
     {
         DisableAllUnits();
         PrepareUnits();
@@ -39,6 +35,8 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
     public void PrepareUnits()
     {
+        _unitsStateContainer.Clear();
+        
         //Upper side attackers
         for (int i = 0; i < 5; i++) PrepareSingleUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(3 + i, 0));
         PrepareSingleUnit(TeamType.Black, UnitType.Warrior, new Vector2Int(5, 1));
@@ -74,9 +72,19 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         PrepareSingleUnit(TeamType.White, UnitType.King, new Vector2Int(boardSizeHalf, boardSizeHalf));
     }
     
-    private void DisableAllUnits()
+     void DisableAllUnits()
     {
-        _unitsFactory.DisableAllUnits();
+        int allWhiteUnitsAmount = _teamsUnitsContainer.AllWhiteUnits.Count;
+        for (int i = 0; i < allWhiteUnitsAmount; i++)
+        {
+            _teamsUnitsContainer.AllWhiteUnits[i].SetActiveStatus(false);
+        }
+
+        int allBlackUnitsAmount = _teamsUnitsContainer.AllBlackUnits.Count;
+        for (int i = 0; i < allBlackUnitsAmount; i++)
+        {
+            _teamsUnitsContainer.AllBlackUnits[i].SetActiveStatus(false);
+        }
     }
     
     void PrepareSingleUnit(TeamType teamType, UnitType battleUnitType, Vector2Int index)
@@ -95,5 +103,6 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
         _unitsStateContainer.AddUnitToTile(intsUnit, index);
     }
+    
     }
 }

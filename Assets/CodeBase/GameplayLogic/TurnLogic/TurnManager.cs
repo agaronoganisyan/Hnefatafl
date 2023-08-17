@@ -1,5 +1,7 @@
+using System;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
+using CodeBase.Infrastructure;
 
 namespace CodeBase.GameplayLogic.TurnLogic
 {
@@ -12,15 +14,23 @@ namespace CodeBase.GameplayLogic.TurnLogic
         private BattleUnit _selectedUnit;
 
         public IUnitPath SelectedUnitPath => _selectedUnitPath;
+        public event Action<TeamType> OnTeamOfTurnChanged;
         private IUnitPath _selectedUnitPath;
+
+        public TurnManager(IGameManager gameManager)
+        {
+            gameManager.OnGameStarted += Prepare;
+        }
 
         public void SwitchTeamOfTurn()
         {
-            if (_teamOfTurn == TeamType.Black) _teamOfTurn = TeamType.White;
+            if (_teamOfTurn == TeamType.Black)_teamOfTurn = TeamType.White;
             else if (_teamOfTurn == TeamType.White) _teamOfTurn = TeamType.Black;
             
             _selectedUnit = null;
             _selectedUnitPath = null;
+            
+            OnTeamOfTurnChanged?.Invoke(_teamOfTurn);
         }
 
         public void Prepare()
@@ -34,6 +44,12 @@ namespace CodeBase.GameplayLogic.TurnLogic
         {
             _selectedUnit = unit;
             _selectedUnitPath = selectedUnitPath;
+        }
+
+        public void UnselectUnit()
+        {
+            _selectedUnit = null;
+            _selectedUnitPath = null;
         }
     }
 }

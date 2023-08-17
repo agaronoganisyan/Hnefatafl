@@ -6,7 +6,7 @@ using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.UILogic
 {
-    public abstract class UICanvas : MonoBehaviour, IService
+    public abstract class UICanvas : MonoBehaviour
     {
         [SerializeField] protected Canvas canvas;
         [SerializeField] protected GraphicRaycaster graphicRaycaster;

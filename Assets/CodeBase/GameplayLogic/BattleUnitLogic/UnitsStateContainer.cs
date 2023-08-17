@@ -10,13 +10,11 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
     private int _boardSize;
 
-    public UnitsStateContainer(int boardSize)
+    public UnitsStateContainer(IGameManager gameManager, int boardSize)
     {
         _boardSize = boardSize;
 
         _units = new BattleUnit[_boardSize, _boardSize];
-
-        GameManager.OnGameRestarted += Clear;
     }
 
     public void Clear()
@@ -34,22 +32,10 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         return _units[index.x, index.y] != null;
     }
 
-    public void RelocateUnit(BattleUnit unit, Vector2Int newIndex)
+    public void ChangeUnitIndex(BattleUnit unit, Vector2Int newIndex)
     {
         RemoveUnitFromTile(unit);
         AddUnitToTile(unit,newIndex);
-        
-        // _selectedUnit = _units[selectedUnit.Index.x, selectedUnit.Index.y];
-        // _selectedUnit.CalculateAvailableMoves();
-        // OnSelectedUnitMovesCalculated?.Invoke(_selectedUnit);
-    }
-
-    void PlaceUnit(Tile finalTile)
-    {
-        // RemoveUnitFromTile(_selectedUnit);
-        // AddUnitToTile(_selectedUnit, finalTile.Index);
-        //
-        // _unitsPlacementHandler.ProcessUnitPlacement(_selectedUnit, finalTile);
     }
 
     public void AddUnitToTile(BattleUnit unit, Vector2Int pos)

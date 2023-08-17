@@ -1,47 +1,39 @@
-using System.Collections;
-using System.Collections.Generic;
-using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.Infrastructure;
-using UnityEngine;
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic;
+using CodeBase.GameplayLogic.BattleUnitLogic.MoveLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
-    public class UnitsPlacementHandler 
+    public class UnitsPlacementHandler : IUnitsPlacementHandler
     {
-        GameManager _gameManager;
-        IBoardTilesContainer _board;
-        UnitsManager _unitsManager;
-
-        KillsHandler _killsHandler;
-
-        public UnitsPlacementHandler(GameManager gameManager, IBoardTilesContainer board, UnitsManager unitsManager)
+        IGameManager _gameManager;
+        IKillsHandler _killsHandler;
+        private ITeamMoveValidator _teamMoveValidator;
+        public UnitsPlacementHandler(IGameManager gameManager, IKillsHandler killsHandler,ITeamMoveValidator teamMoveValidator)
         {
             _gameManager = gameManager;
-            _board = board;
-            _unitsManager = unitsManager;
-
-            _killsHandler = new KillsHandler(_gameManager, _board, _unitsManager);
+            _killsHandler = killsHandler;
+            _teamMoveValidator = teamMoveValidator;
         }
-
-        public void ProcessUnitPlacement(BattleUnit placedUnit, Tile finalTile)
+        
+        public void ProcessPlacement(BattleUnit placedUnit, TileType finalTileType)
         {
-            _killsHandler.TryToKill(placedUnit, finalTile);
+            _killsHandler.FindTargetsToKill(placedUnit);
 
             if (_gameManager.IsGameFinished) return;
 
-            if (placedUnit.UnitType == UnitType.King && finalTile.Type == TileType.Shelter) _gameManager.WhiteTeamWin();
+            if (placedUnit.UnitType == UnitType.King && finalTileType == TileType.Shelter) _gameManager.WhiteTeamWin();
 
             if (_gameManager.IsGameFinished) return;
 
             if (placedUnit.TeamType == TeamType.White)
             {
-                if (!_unitsManager.IsThisTeamHaveaAnyAvailableMoves(TeamType.Black)) _gameManager.WhiteTeamWin();
+                if (!_teamMoveValidator.IsThisTeamHaveAnyAvailableMoves(TeamType.Black)) _gameManager.WhiteTeamWin();
             }
             else
             {
-                if (!_unitsManager.IsThisTeamHaveaAnyAvailableMoves(TeamType.White)) _gameManager.BlackTeamWin();
+                if (!_teamMoveValidator.IsThisTeamHaveAnyAvailableMoves(TeamType.White)) _gameManager.BlackTeamWin();
             }
         }
     }

@@ -1,12 +1,11 @@
 using CodeBase.GameplayLogic.BoardLogic;
-using CodeBase.GameplayLogic.TileLogic;
 using UnityEngine;
 
-namespace CodeBase.GameplayLogic.BattleUnitLogic
+namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
 {
     public class KingPathCalculator: UnitPathCalculator
     {
-        public KingPathCalculator(IBoardTilesContainer boardTilesContainer, IUnitsStateContainer unitsStateContainer) : base(boardTilesContainer,unitsStateContainer)
+        public KingPathCalculator(IBoardTilesContainer boardTilesContainer, IUnitsStateContainer unitsStateContainer, int boardSize) : base(boardTilesContainer,unitsStateContainer, boardSize)
         {
 
         }

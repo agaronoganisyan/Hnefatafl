@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.GameplayLogic.BoardLogic;
@@ -9,7 +8,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
 {
     public class WayToKillWarrior : WayToKill
     {
-        public WayToKillWarrior(IBoardTilesContainer boardTilesContainer, UnitsManager unitsManager) : base(boardTilesContainer, unitsManager)
+        public WayToKillWarrior(IBoardTilesContainer boardTilesContainer, IUnitsStateContainer unitsStateContainer) : base(boardTilesContainer,unitsStateContainer)
         {
         }
 

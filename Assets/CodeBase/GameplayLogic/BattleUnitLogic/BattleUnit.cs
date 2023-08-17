@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using CodeBase.GameplayLogic.BattleUnitLogic;
-using CodeBase.GameplayLogic.BoardLogic;
-using CodeBase.Infrastructure;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
@@ -57,61 +52,5 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             _isKilled = !status;
             gameObject.SetActive(status);
         }
-
-        // public void CalculateAvailableMoves()
-        // {
-        //     _availableMoves.Clear();
-        //
-        //     _indexBeforeMove = _index;
-        //
-        //     //Down
-        //     for (int i = _index.y - 1; i >= 0; i--)
-        //     {
-        //         Vector2Int index = new Vector2Int(_index.x, i);
-        //
-        //         if (IsThereProblemWithIndex(index)) break;
-        //         else _availableMoves.Add(index);
-        //     }
-        //
-        //     //Up
-        //     for (int i = _index.y + 1; i < ConstValues.BOARD_SIZE; i++)
-        //     {
-        //         Vector2Int index = new Vector2Int(_index.x, i);
-        //
-        //         if (IsThereProblemWithIndex(index)) break;
-        //         else _availableMoves.Add(index);
-        //     }
-        //
-        //     //Left
-        //     for (int i = _index.x - 1; i >= 0; i--)
-        //     {
-        //         Vector2Int index = new Vector2Int(i, _index.y);
-        //
-        //         if (IsThereProblemWithIndex(index)) break;
-        //         else _availableMoves.Add(index);
-        //     }
-        //
-        //     //Right
-        //     for (int i = _index.x + 1; i < ConstValues.BOARD_SIZE; i++)
-        //     {
-        //         Vector2Int index = new Vector2Int(i, _index.y);
-        //
-        //         if (IsThereProblemWithIndex(index)) break;
-        //         else _availableMoves.Add(index);
-        //     }
-        // }
-
-        // protected abstract bool IsThereProblemWithIndex(Vector2Int index);
-        //
-        // public bool IsThereAvailableMoves()
-        // {
-        //     CalculateAvailableMoves();
-        //     return _availableMoves.Count>0 ? true : false;
-        // }
-        //
-        // public bool IsThisIndexAvailableToMove(Vector2Int index)
-        // {
-        //     return _availableMoves.Contains(index) ? true : false;
-        // }
     }
 }

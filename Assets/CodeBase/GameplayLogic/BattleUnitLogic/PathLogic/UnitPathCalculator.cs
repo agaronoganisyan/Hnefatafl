@@ -1,20 +1,21 @@
-using System.Collections.Generic;
-using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using CodeBase.GameplayLogic.BoardLogic;
-using CodeBase.Infrastructure;
 using UnityEngine;
 
-namespace CodeBase.GameplayLogic.BattleUnitLogic
+namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
 {
     public abstract class UnitPathCalculator
     {
         protected IBoardTilesContainer _boardTilesContainer;
         protected IUnitsStateContainer _unitsStateContainer;
+
+        private readonly int _boardSize;
         
-        public UnitPathCalculator(IBoardTilesContainer boardTilesContainer,IUnitsStateContainer unitsStateContainer)
+        public UnitPathCalculator(IBoardTilesContainer boardTilesContainer,IUnitsStateContainer unitsStateContainer, int boardSize)
         {
             _boardTilesContainer = boardTilesContainer;
             _unitsStateContainer = unitsStateContainer;
+
+            _boardSize = boardSize;
         }
 
         public IUnitPath CalculatePaths(Vector2Int currentIndex)
@@ -33,7 +34,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             }
 
             //Up
-            for (int i = currentIndex.y + 1; i < ConstValues.BOARD_SIZE; i++)
+            for (int i = currentIndex.y + 1; i < _boardSize; i++)
             {
                 Vector2Int index = new Vector2Int(currentIndex.x, i);
 
@@ -51,7 +52,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             }
 
             //Right
-            for (int i = currentIndex.x + 1; i < ConstValues.BOARD_SIZE; i++)
+            for (int i = currentIndex.x + 1; i < _boardSize; i++)
             {
                 Vector2Int index = new Vector2Int(i, currentIndex.y);
 
@@ -64,15 +65,11 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         
         protected abstract bool IsThereProblemWithIndex(Vector2Int index);
 
-        // public bool IsThereAvailableMoves(Vector2Int currentIndex)
-        // {
-        //     CalculatePaths(currentIndex);
-        //     return _availableMoves.Count>0;
-        // }
-        //
-        // public bool IsThisIndexAvailableToMove(Vector2Int index)
-        // {
-        //     return _availableMoves.Contains(index);
-        // }
+        public bool IsThereAvailableMoves(Vector2Int currentIndex)
+        {
+            IUnitPath unitPath = CalculatePaths(currentIndex);
+            return unitPath.AvailableMoves.Count>0;
+        }
+        
     }
 }

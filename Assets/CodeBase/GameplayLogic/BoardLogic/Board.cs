@@ -1,11 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.Infrastructure.Services.AssetManagement;
-using CodeBase.Infrastructure;
-using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.GameplayLogic.BattleUnitLogic;
 
 namespace CodeBase.GameplayLogic.BoardLogic
 {
