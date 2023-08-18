@@ -37,7 +37,8 @@ namespace CodeBase.Infrastructure.Services.CustomPoolLogic
         {
             for (int i = 0; i < amount; i++)
             {
-                _objects.Add(_prefab);
+                var obj = Create();
+                obj.gameObject.SetActive(false);
             }
         }
 
