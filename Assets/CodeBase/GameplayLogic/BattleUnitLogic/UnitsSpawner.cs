@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using CodeBase.Infrastructure;
 using UnityEngine;
 
@@ -21,9 +22,9 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         gameManager.OnGameRestarted += Restart;
     }
 
-    public void Initialize()
+    public async Task Initialize()
     {
-        _unitsFactory.Initialize();
+        await _unitsFactory.Initialize();
         DisableAllUnits();
     }
         

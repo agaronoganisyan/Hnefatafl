@@ -16,7 +16,51 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 30e9a735da4ad4a54bf9afbef39b62c0
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: b8e80c44a8a794654aec26dccf702e03
+    m_Address: Board
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b444818d414bc483aa04f4bba578cf13
+    m_Address: Tile_Regular
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8e342f0ea2e004431957af694bac8cce
+    m_Address: Tile_Thron
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c9031e78933cf48a99eacc3af371a8e7
+    m_Address: Tile_Shelter
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 777d82d50603f41f7bcf373e6350db54
+    m_Address: TileHighlight
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 15bd2632e8b9348919f73d8dd24c5c87
+    m_Address: BoardHighlight
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 052ccda2ef4584ae39480a050a5f7118
+    m_Address: GameplayCanvas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 906086b90dfde4372b3b6eb4638b8891
+    m_Address: DebriefingCanvas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4ae2227efab2b493b8bc62a90f335409
+    m_Address: White_Warrior
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e39efa7554ef941078ac53460d9bc3f8
+    m_Address: White_King
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 171c824c24f644fd6bbd72fdceadfd2d
+    m_Address: Black_Warrior
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: a63ba498d74ee4f299b053bb79c19898, type: 2}
   m_SchemaSet:

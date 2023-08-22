@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using CodeBase.Infrastructure.Services.CustomPoolLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
@@ -8,6 +9,6 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         CustomPool<BattleUnit> BlackWarriorsPool{ get; }
         CustomPool<BattleUnit> WhiteKingsPool{ get; }
         
-        public void Initialize();
+        public Task Initialize();
     }
 }

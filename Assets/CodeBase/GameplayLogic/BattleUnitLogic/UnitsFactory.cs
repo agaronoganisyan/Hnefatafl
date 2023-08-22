@@ -1,13 +1,16 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.Infrastructure.Services.CustomPoolLogic;
 using CodeBase.Infrastructure.Services.StaticData;
+using UnityEngine;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
     public class UnitsFactory : IUnitsFactory
     {
         private ITeamsUnitsContainer _teamsUnitsContainer;
+        private IAssetsProvider _assetsProvider;
         public CustomPool<BattleUnit> WhiteWarriorsPool => _whiteWarriorsPool;
         CustomPool<BattleUnit> _whiteWarriorsPool;
         public CustomPool<BattleUnit> BlackWarriorsPool => _blackWarriorsPool;
@@ -17,23 +20,27 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         
         private int _whiteWarriorsAmount;
         private int _blackWarriorsAmount;
+
+        private string BattleUnitAddress(TeamType teamType, UnitType unitType) => $"{teamType}_{unitType}";
         
-        public UnitsFactory(ITeamsUnitsContainer teamsUnitsContainer, GameModeStaticData gameModeStaticData)
+        public UnitsFactory(ITeamsUnitsContainer teamsUnitsContainer, IAssetsProvider assetsProvider, GameModeStaticData gameModeStaticData)
         {
             _teamsUnitsContainer = teamsUnitsContainer;
-            
+            _assetsProvider = assetsProvider;
             _whiteWarriorsAmount = gameModeStaticData.WhiteWarriorsAmount;
             _blackWarriorsAmount= gameModeStaticData.BlackWarriorsAmount;
         }
 
-        public void Initialize()
+        public async Task Initialize()
         {
-            _whiteWarriorsPool = new CustomPool<BattleUnit>(
-                AssetsProvider.GetCachedAsset<BattleUnit>(AssetsPath.PathToBattleUnit(TeamType.White, UnitType.Warrior)));
-            _blackWarriorsPool = new CustomPool<BattleUnit>(
-                AssetsProvider.GetCachedAsset<BattleUnit>(AssetsPath.PathToBattleUnit(TeamType.Black, UnitType.Warrior)));
-            _whiteKingsPool = new CustomPool<BattleUnit>(
-                AssetsProvider.GetCachedAsset<BattleUnit>(AssetsPath.PathToBattleUnit(TeamType.White, UnitType.King)));
+            GameObject whiteWarriorPrefab = await _assetsProvider.Load<GameObject>(BattleUnitAddress(TeamType.White, UnitType.Warrior));
+            _whiteWarriorsPool = new CustomPool<BattleUnit>(whiteWarriorPrefab.GetComponent<BattleUnit>());
+
+            GameObject blackWarriorPrefab = await _assetsProvider.Load<GameObject>(BattleUnitAddress(TeamType.Black, UnitType.Warrior));
+            _blackWarriorsPool = new CustomPool<BattleUnit>(blackWarriorPrefab.GetComponent<BattleUnit>());
+
+            GameObject whiteKingPrefab = await _assetsProvider.Load<GameObject>(BattleUnitAddress(TeamType.White, UnitType.King));
+            _whiteKingsPool = new CustomPool<BattleUnit>(whiteKingPrefab.GetComponent<BattleUnit>());
 
             BattleUnit intsUnit;
 

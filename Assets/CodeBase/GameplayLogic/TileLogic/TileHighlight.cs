@@ -12,7 +12,7 @@ namespace CodeBase.GameplayLogic.TileLogic
         Available
     }
 
-    public class TileHighlight : MonoBehaviour
+    public class TileHighlight : MonoBehaviour, ITileHighlight
     {
         [SerializeField] SpriteRenderer _image;
 

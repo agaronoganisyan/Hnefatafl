@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
-using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.Infrastructure;
 using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.GameplayLogic.TileLogic;
-using CodeBase.GameplayLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 
@@ -13,15 +10,21 @@ namespace CodeBase.GameplayLogic.BoardLogic
 {
     public class BoardHighlight : MonoBehaviour,IBoardHighlight
     {
+        private IAssetsProvider _assetsProvider;
+        
         [SerializeField] Color _currentTileColor;
         [SerializeField] Color _availableTileColor;
         
-        TileHighlight[,] _highlights;
+        ITileHighlight[,] _highlights;
 
         int _boardSize;
 
-        public void Initialize(IGameManager gameManager, IUnitsPathCalculatorsManager unitsPathCalculatorsManager, IUnitsComander unitsComander)
+        private string _tileHighlightAddress = "TileHighlight"; 
+        
+        public void Initialize(IGameManager gameManager,IAssetsProvider assetsProvider, IUnitsPathCalculatorsManager unitsPathCalculatorsManager, IUnitsComander unitsComander)
         {
+            _assetsProvider = assetsProvider;
+            
             unitsPathCalculatorsManager.OnPathCalculated += EnableHighlight;
             unitsComander.OnUnitUnselected += DisableHighlight;
 
@@ -33,24 +36,26 @@ namespace CodeBase.GameplayLogic.BoardLogic
             DisableHighlight();
         }
 
-        public void GenerateBoardHighlight(int boardSize)
+        public async Task GenerateBoardHighlight(int boardSize)
         {
             _boardSize = boardSize;
-            _highlights = new TileHighlight[_boardSize, _boardSize];
+            _highlights = new ITileHighlight[_boardSize, _boardSize];
 
             for (int x = 0; x < _boardSize; x++)
             {
                 for (int y = 0; y < _boardSize; y++)
                 {
                     Vector3 pos = new Vector3(x, 0, y);
-                    InstantiateTile( pos);
+                    await InstantiateTile(pos);
                 }
             }
         }
 
-        void InstantiateTile(Vector3 pos)
+        async Task InstantiateTile(Vector3 pos)   
         {
-            TileHighlight intsHighlight = Instantiate(AssetsProvider.GetCachedAsset<TileHighlight>(AssetsPath.PathToTileHighlight), transform);
+            GameObject highlightPrefab = await _assetsProvider.Load<GameObject>(_tileHighlightAddress);
+
+            ITileHighlight intsHighlight = Instantiate(highlightPrefab, transform).GetComponent<TileHighlight>();
             intsHighlight.Initialize(pos,_currentTileColor, _availableTileColor);
             _highlights[(int)pos.x, (int)pos.z] = intsHighlight;
         }
@@ -76,26 +81,5 @@ namespace CodeBase.GameplayLogic.BoardLogic
             }
         }
 
-        // private void OnEnable()
-        // {
-        //     
-        //     
-        //     
-        //     
-        //     GameManager.OnGameRestarted += Restart;
-        //     //UnitsManager.OnSelectedUnitMovesCalculated += EnableHighlight;
-        //     Controller.OnDisableHighlight += DisableHighlight;
-        // }
-        //
-        // private void OnDisable()
-        // {
-        //     
-        //     
-        //     
-        //     
-        //     GameManager.OnGameRestarted -= Restart;
-        //     //UnitsManager.OnSelectedUnitMovesCalculated -= EnableHighlight;
-        //     Controller.OnDisableHighlight -= DisableHighlight;
-        // }
     }
 }

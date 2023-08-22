@@ -1,6 +1,5 @@
 using CodeBase.GameplayLogic.TileLogic;
 using UnityEngine;
-using Tile = UnityEngine.WSA.Tile;
 
 namespace CodeBase.GameplayLogic.BoardLogic
 {

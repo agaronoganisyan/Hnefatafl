@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BoardLogic;
@@ -17,15 +18,29 @@ namespace CodeBase.Infrastructure
     public class GameBootstrapper : MonoBehaviour
     {
         private IGameManager _gameManager;
-         
+        
+        string PathToClassicModeStaticData = "StaticData/ClassicModeStaticData";
+        string BoardAddress = "Board";
+        string BoardHighlightAddress = "BoardHighlight";
+        string GameplayCanvasAddress = "GameplayCanvas";
+        string DebriefingCanvasAddress = "DebriefingCanvas";
+
         private void Awake()
         {
+            GameInitialization();
+        }
+
+        async void GameInitialization()
+        {
             //Classic mode
-            GameModeStaticData modeStaticData = Resources.Load<GameModeStaticData>(AssetsPath.PathToClassicModeStaticData);
+            GameModeStaticData modeStaticData = Resources.Load<GameModeStaticData>(PathToClassicModeStaticData);
 
             _gameManager = new GameManager();
             
             IInputService inputService = new InputService(_gameManager);
+
+            IAssetsProvider assetsProvider = new AssetsProvider();
+            assetsProvider.Initialize();
             
             IBoardTilesContainer boardTilesContainer = new BoardTilesContainer();
             boardTilesContainer.GenerateBoard(modeStaticData.BoardSize);
@@ -54,27 +69,43 @@ namespace CodeBase.Infrastructure
                 new UnitsPlacementHandler(_gameManager, killsHandler, teamMoveValidator),
                 boardTilesContainer);
             
-            IUnitsSpawner  unitsSpawner = new UnitsSpawner(_gameManager,new UnitsFactory(teamsUnitsContainer,modeStaticData),unitsStateContainer,teamsUnitsContainer,modeStaticData.BoardSize);
-            unitsSpawner.Initialize();
+            IUnitsSpawner  unitsSpawner = new UnitsSpawner(
+                _gameManager,
+                new UnitsFactory(teamsUnitsContainer,assetsProvider,modeStaticData),
+                unitsStateContainer,
+                teamsUnitsContainer,
+                modeStaticData.BoardSize);
+            await unitsSpawner.Initialize();
             unitsSpawner.PrepareUnits();
             
             IInputHandler inputHandler = new InputHandler(inputService,turnManager,unitsComander, boardTilesContainer);
             
-            IBoard  board =  Instantiate(AssetsProvider.GetCachedAsset<Board>(AssetsPath.PathToBoard));
-            board.GenerateBoard(modeStaticData.BoardSize,boardTilesContainer);
+            GameObject boardPrefab = await assetsProvider.Load<GameObject>(BoardAddress);
+            IBoard board = Instantiate(boardPrefab).GetComponent<Board>();
+            await board.GenerateBoard(modeStaticData.BoardSize,boardTilesContainer, assetsProvider);
             
-            IBoardHighlight boardHighlight =  Instantiate(AssetsProvider.GetCachedAsset<BoardHighlight>(AssetsPath.PathToBoardHighlight));
-            boardHighlight.Initialize(_gameManager, unitsPathCalculatorsManager,unitsComander);
-            boardHighlight.GenerateBoardHighlight(modeStaticData.BoardSize);
+            GameObject boardHighlightPrefab = await assetsProvider.Load<GameObject>(BoardHighlightAddress);
+            IBoardHighlight boardHighlight = Instantiate(boardHighlightPrefab).GetComponent<BoardHighlight>();
+            boardHighlight.Initialize(_gameManager,
+                assetsProvider,
+                unitsPathCalculatorsManager,
+                unitsComander);
+            await boardHighlight.GenerateBoardHighlight(modeStaticData.BoardSize);
             
-            IGameplayCanvas gameplayCanvas = Instantiate(AssetsProvider.GetCachedAsset<GameplayCanvas>(AssetsPath.PathToGameplayCanvas));
+            GameObject gameplayCanvasPrefab = await assetsProvider.Load<GameObject>(GameplayCanvasAddress); 
+            IGameplayCanvas gameplayCanvas = Instantiate(gameplayCanvasPrefab).GetComponent<GameplayCanvas>();
             gameplayCanvas.Initialize(_gameManager,turnManager);
             
-            IDebriefingCanvas debriefingCanvas = Instantiate(AssetsProvider.GetCachedAsset<DebriefingCanvas>(AssetsPath.PathToDebriefingCanvas));
+            GameObject debriefingCanvasPrefab = await assetsProvider.Load<GameObject>(DebriefingCanvasAddress);
+            IDebriefingCanvas debriefingCanvas = Instantiate(debriefingCanvasPrefab).GetComponent<DebriefingCanvas>();
             debriefingCanvas.Initialize(_gameManager);
+
+            StartGame();
+            
+            assetsProvider.CleanUp();
         }
 
-        private void Start()
+        void StartGame()
         {
             _gameManager.StartGame();
         }
