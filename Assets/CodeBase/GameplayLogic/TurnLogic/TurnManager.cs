@@ -17,9 +17,9 @@ namespace CodeBase.GameplayLogic.TurnLogic
         public event Action<TeamType> OnTeamOfTurnChanged;
         private IUnitPath _selectedUnitPath;
 
-        public TurnManager(IGameManager gameManager)
+        public TurnManager(IRuleManager ruleManager)
         {
-            gameManager.OnGameStarted += Prepare;
+            ruleManager.OnGameStarted += Prepare;
         }
 
         public void SwitchTeamOfTurn()

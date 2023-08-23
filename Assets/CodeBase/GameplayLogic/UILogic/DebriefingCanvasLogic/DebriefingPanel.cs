@@ -9,16 +9,16 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {
     public class DebriefingPanel : MonoBehaviour
     {
-        IGameManager _gameManager;
+        IRuleManager _ruleManager;
 
         [SerializeField] Image _panel;
 
         [SerializeField] Color _whitePanelColor;
         [SerializeField] Color _blackPanelColor;
 
-        public void Initialize(IGameManager gameManager)
+        public void Initialize(IRuleManager ruleManager)
         {
-            _gameManager = gameManager;
+            _ruleManager = ruleManager;
         }
 
         public void Open(TeamType type)
@@ -34,7 +34,7 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 
         public void RestartButtonVoid()
         {
-            _gameManager.RestartGame();
+            _ruleManager.RestartGame();
         }
     }
 }

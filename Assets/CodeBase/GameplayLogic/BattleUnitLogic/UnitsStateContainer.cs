@@ -10,7 +10,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
     private int _boardSize;
 
-    public UnitsStateContainer(IGameManager gameManager, int boardSize)
+    public UnitsStateContainer(IRuleManager ruleManager, int boardSize)
     {
         _boardSize = boardSize;
 

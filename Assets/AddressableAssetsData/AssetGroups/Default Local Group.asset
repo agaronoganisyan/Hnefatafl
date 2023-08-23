@@ -61,6 +61,10 @@ MonoBehaviour:
     m_Address: Black_Warrior
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 257601affb39a4b6bba3f920e095174b
+    m_Address: ClassicModeStaticData
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: a63ba498d74ee4f299b053bb79c19898, type: 2}
   m_SchemaSet:

@@ -12,14 +12,14 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
     private readonly ITeamsUnitsContainer _teamsUnitsContainer;
     private readonly int _boardSize;
 
-    public UnitsSpawner(IGameManager gameManager, IUnitsFactory unitsFactory, IUnitsStateContainer unitsStateContainer,ITeamsUnitsContainer teamsUnitsContainer, int boardSize)
+    public UnitsSpawner(IRuleManager ruleManager, IUnitsFactory unitsFactory, IUnitsStateContainer unitsStateContainer,ITeamsUnitsContainer teamsUnitsContainer, int boardSize)
     {
         _unitsFactory = unitsFactory;
         _unitsStateContainer = unitsStateContainer;
         _teamsUnitsContainer = teamsUnitsContainer;
         _boardSize = boardSize;
 
-        gameManager.OnGameRestarted += Restart;
+        ruleManager.OnGameRestarted += Restart;
     }
 
     public async Task Initialize()

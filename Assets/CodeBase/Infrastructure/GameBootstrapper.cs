@@ -12,18 +12,19 @@ using CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic;
 using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.Infrastructure.Services.Input;
 using CodeBase.Infrastructure.Services.StaticData;
+using Unity.VisualScripting;
 
 namespace CodeBase.Infrastructure
 {
     public class GameBootstrapper : MonoBehaviour
     {
-        private IGameManager _gameManager;
+        private IRuleManager _ruleManager;
         
-        string PathToClassicModeStaticData = "StaticData/ClassicModeStaticData";
-        string BoardAddress = "Board";
-        string BoardHighlightAddress = "BoardHighlight";
-        string GameplayCanvasAddress = "GameplayCanvas";
-        string DebriefingCanvasAddress = "DebriefingCanvas";
+        string _classicModeStaticDataAddress = "ClassicModeStaticData";
+        string _boardAddress = "Board";
+        string _boardHighlightAddress = "BoardHighlight";
+        string _gameplayCanvasAddress = "GameplayCanvas";
+        string _debriefingCanvasAddress = "DebriefingCanvas";
 
         private void Awake()
         {
@@ -32,24 +33,24 @@ namespace CodeBase.Infrastructure
 
         async void GameInitialization()
         {
-            //Classic mode
-            GameModeStaticData modeStaticData = Resources.Load<GameModeStaticData>(PathToClassicModeStaticData);
-
-            _gameManager = new GameManager();
-            
-            IInputService inputService = new InputService(_gameManager);
-
             IAssetsProvider assetsProvider = new AssetsProvider();
             assetsProvider.Initialize();
+            
+            //Classic mode
+            GameModeStaticData modeStaticData = await assetsProvider.Load<GameModeStaticData>(_classicModeStaticDataAddress);
+
+            _ruleManager = new RuleManager();
+            
+            IInputService inputService = new InputService(_ruleManager);
             
             IBoardTilesContainer boardTilesContainer = new BoardTilesContainer();
             boardTilesContainer.GenerateBoard(modeStaticData.BoardSize);
 
-            IUnitsStateContainer unitsStateContainer = new UnitsStateContainer(_gameManager,modeStaticData.BoardSize);
+            IUnitsStateContainer unitsStateContainer = new UnitsStateContainer(_ruleManager,modeStaticData.BoardSize);
 
             ITeamsUnitsContainer teamsUnitsContainer = new TeamsUnitsContainer();
             
-            IKillsHandler killsHandler = new KillsHandler(_gameManager,boardTilesContainer,unitsStateContainer,
+            IKillsHandler killsHandler = new KillsHandler(boardTilesContainer,unitsStateContainer,
                 new WayToKillKing(boardTilesContainer,unitsStateContainer),
                 new WayToKillWarrior(boardTilesContainer,unitsStateContainer));
             
@@ -59,18 +60,18 @@ namespace CodeBase.Infrastructure
             
             ITeamMoveValidator teamMoveValidator = new TeamMoveValidator(teamsUnitsContainer,unitsPathCalculatorsManager);
             
-            ITurnManager turnManager = new TurnManager(_gameManager);
+            ITurnManager turnManager = new TurnManager(_ruleManager);
             turnManager.Prepare();
             
             IUnitsComander  unitsComander = new UnitsComander(turnManager,unitsStateContainer,
                 unitsPathCalculatorsManager,
                 new UnitMoveValidator(unitsStateContainer),
                 new UnitSelectValidator(unitsStateContainer),
-                new UnitsPlacementHandler(_gameManager, killsHandler, teamMoveValidator),
+                new UnitsPlacementHandler(_ruleManager, killsHandler, teamMoveValidator, teamsUnitsContainer),
                 boardTilesContainer);
             
             IUnitsSpawner  unitsSpawner = new UnitsSpawner(
-                _gameManager,
+                _ruleManager,
                 new UnitsFactory(teamsUnitsContainer,assetsProvider,modeStaticData),
                 unitsStateContainer,
                 teamsUnitsContainer,
@@ -80,25 +81,25 @@ namespace CodeBase.Infrastructure
             
             IInputHandler inputHandler = new InputHandler(inputService,turnManager,unitsComander, boardTilesContainer);
             
-            GameObject boardPrefab = await assetsProvider.Load<GameObject>(BoardAddress);
+            GameObject boardPrefab = await assetsProvider.Load<GameObject>(_boardAddress);
             IBoard board = Instantiate(boardPrefab).GetComponent<Board>();
             await board.GenerateBoard(modeStaticData.BoardSize,boardTilesContainer, assetsProvider);
             
-            GameObject boardHighlightPrefab = await assetsProvider.Load<GameObject>(BoardHighlightAddress);
+            GameObject boardHighlightPrefab = await assetsProvider.Load<GameObject>(_boardHighlightAddress);
             IBoardHighlight boardHighlight = Instantiate(boardHighlightPrefab).GetComponent<BoardHighlight>();
-            boardHighlight.Initialize(_gameManager,
+            boardHighlight.Initialize(_ruleManager,
                 assetsProvider,
                 unitsPathCalculatorsManager,
                 unitsComander);
             await boardHighlight.GenerateBoardHighlight(modeStaticData.BoardSize);
             
-            GameObject gameplayCanvasPrefab = await assetsProvider.Load<GameObject>(GameplayCanvasAddress); 
+            GameObject gameplayCanvasPrefab = await assetsProvider.Load<GameObject>(_gameplayCanvasAddress); 
             IGameplayCanvas gameplayCanvas = Instantiate(gameplayCanvasPrefab).GetComponent<GameplayCanvas>();
-            gameplayCanvas.Initialize(_gameManager,turnManager);
+            gameplayCanvas.Initialize(_ruleManager,turnManager);
             
-            GameObject debriefingCanvasPrefab = await assetsProvider.Load<GameObject>(DebriefingCanvasAddress);
+            GameObject debriefingCanvasPrefab = await assetsProvider.Load<GameObject>(_debriefingCanvasAddress);
             IDebriefingCanvas debriefingCanvas = Instantiate(debriefingCanvasPrefab).GetComponent<DebriefingCanvas>();
-            debriefingCanvas.Initialize(_gameManager);
+            debriefingCanvas.Initialize(_ruleManager);
 
             StartGame();
             
@@ -107,7 +108,7 @@ namespace CodeBase.Infrastructure
 
         void StartGame()
         {
-            _gameManager.StartGame();
+            _ruleManager.StartGame();
         }
     }
 }

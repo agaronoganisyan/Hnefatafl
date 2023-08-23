@@ -7,33 +7,41 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
     public class UnitsPlacementHandler : IUnitsPlacementHandler
     {
-        IGameManager _gameManager;
-        IKillsHandler _killsHandler;
+        private IRuleManager _ruleManager;
+        private IKillsHandler _killsHandler;
         private ITeamMoveValidator _teamMoveValidator;
-        public UnitsPlacementHandler(IGameManager gameManager, IKillsHandler killsHandler,ITeamMoveValidator teamMoveValidator)
+        private ITeamsUnitsContainer _teamsUnitsContainer;
+        public UnitsPlacementHandler(IRuleManager ruleManager, IKillsHandler killsHandler,ITeamMoveValidator teamMoveValidator, ITeamsUnitsContainer teamsUnitsContainer)
         {
-            _gameManager = gameManager;
+            _ruleManager = ruleManager;
             _killsHandler = killsHandler;
             _teamMoveValidator = teamMoveValidator;
+            _teamsUnitsContainer = teamsUnitsContainer;
         }
         
         public void ProcessPlacement(BattleUnit placedUnit, TileType finalTileType)
         {
             _killsHandler.FindTargetsToKill(placedUnit);
 
-            if (_gameManager.IsGameFinished) return;
+            if (!_teamsUnitsContainer.IsThisUnitTypeIsAlive(TeamType.White, UnitType.King))
+            {
+                _ruleManager.BlackTeamWin();
+                return;
+            }
 
-            if (placedUnit.UnitType == UnitType.King && finalTileType == TileType.Shelter) _gameManager.WhiteTeamWin();
+            if (_ruleManager.IsGameFinished) return;
 
-            if (_gameManager.IsGameFinished) return;
+            if (placedUnit.UnitType == UnitType.King && finalTileType == TileType.Shelter) _ruleManager.WhiteTeamWin();
+
+            if (_ruleManager.IsGameFinished) return;
 
             if (placedUnit.TeamType == TeamType.White)
             {
-                if (!_teamMoveValidator.IsThisTeamHaveAnyAvailableMoves(TeamType.Black)) _gameManager.WhiteTeamWin();
+                if (!_teamMoveValidator.IsThisTeamHaveAnyAvailableMoves(TeamType.Black)) _ruleManager.WhiteTeamWin();
             }
             else
             {
-                if (!_teamMoveValidator.IsThisTeamHaveAnyAvailableMoves(TeamType.White)) _gameManager.BlackTeamWin();
+                if (!_teamMoveValidator.IsThisTeamHaveAnyAvailableMoves(TeamType.White)) _ruleManager.BlackTeamWin();
             }
         }
     }

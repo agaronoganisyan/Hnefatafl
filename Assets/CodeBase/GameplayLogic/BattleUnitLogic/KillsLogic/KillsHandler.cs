@@ -6,16 +6,14 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
 {
     public class KillsHandler : IKillsHandler
     {
-        IGameManager _gameManager;
         IBoardTilesContainer _board;
         IUnitsStateContainer _unitsStateContainer;
 
         WayToKill _wayToKillKing;
         WayToKill _wayToKillWarrior;
 
-        public KillsHandler(IGameManager gameManager,IBoardTilesContainer board,IUnitsStateContainer unitsStateContainer, WayToKill wayToKillKing, WayToKill wayToKillWarrior)
+        public KillsHandler(IBoardTilesContainer board,IUnitsStateContainer unitsStateContainer, WayToKill wayToKillKing, WayToKill wayToKillWarrior)
         {
-            _gameManager = gameManager;
             _board = board;
 
             _wayToKillKing = wayToKillKing;
@@ -68,8 +66,6 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
         {
             _unitsStateContainer.RemoveUnitFromTile(unit);
             unit.Kill();
-            
-            if (unit.UnitType == UnitType.King) _gameManager.BlackTeamWin();
         }
     }
 }

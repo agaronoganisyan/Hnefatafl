@@ -9,14 +9,14 @@ namespace CodeBase.Infrastructure.Services.Input
         private readonly GameInput _gameInput;
         public event Action<Vector2> OnClickedOnBoard;
 
-        public InputService(IGameManager gameManager)
+        public InputService(IRuleManager ruleManager)
         {
             _gameInput = new GameInput();
                 
             _gameInput.Gameplay.SetCallbacks(this);
 
-            gameManager.OnGameStarted += SetGameplayMode;
-            gameManager.OnGameFinished += SetUIMode;
+            ruleManager.OnGameStarted += SetGameplayMode;
+            ruleManager.OnGameFinished += SetUIMode;
         }
 
         void SetGameplayMode()

@@ -5,6 +5,6 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
 {
     public interface IGameplayCanvas
     {
-        void Initialize(IGameManager gameManager, ITurnManager turnManager);
+        void Initialize(IRuleManager ruleManager, ITurnManager turnManager);
     }
 }

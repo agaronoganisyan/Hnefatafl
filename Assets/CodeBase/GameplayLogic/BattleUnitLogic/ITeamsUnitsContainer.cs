@@ -6,7 +6,8 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
     {
         IReadOnlyList<BattleUnit> AllWhiteUnits { get; }
         IReadOnlyList<BattleUnit> AllBlackUnits{ get; }
-        public void AddWhiteUnit(BattleUnit newUnit);
-        public void AddBlackUnit(BattleUnit newUnit);
+        void AddWhiteUnit(BattleUnit newUnit);
+        void AddBlackUnit(BattleUnit newUnit);
+        bool IsThisUnitTypeIsAlive(TeamType teamType, UnitType unitType);
     }
 }
