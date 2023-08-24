@@ -9,9 +9,6 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
     public class UnitsComander : IUnitsComander
     {
-        public event Action OnUnitSelected;
-        public event Action OnUnitUnselected;
-        
         private readonly ITurnManager _turnManager;
         private readonly IUnitsPathCalculatorsManager _unitsPathCalculatorsManager;
         private readonly IUnitMoveValidator _unitMoveValidator;
@@ -19,8 +16,9 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         private readonly IUnitsStateContainer _unitsStateContainer;
         private readonly IUnitsPlacementHandler _unitsPlacementHandler;
         private readonly IBoardTilesContainer _boardTilesContainer;
+        private IUnitsComanderMediator _comanderMediator;
         
-        public UnitsComander(ITurnManager turnManager,IUnitsStateContainer unitsStateContainer, IUnitsPathCalculatorsManager unitsPathCalculatorsManager,
+        public UnitsComander(IUnitsComanderMediator comanderMediator, ITurnManager turnManager,IUnitsStateContainer unitsStateContainer, IUnitsPathCalculatorsManager unitsPathCalculatorsManager,
             IUnitMoveValidator unitMoveValidator,IUnitSelectValidator unitSelectValidator, IUnitsPlacementHandler unitsPlacementHandler, IBoardTilesContainer boardTilesContainer)
         {
             _turnManager = turnManager;
@@ -30,6 +28,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             _unitSelectValidator = unitSelectValidator;
             _unitsPlacementHandler = unitsPlacementHandler;
             _boardTilesContainer = boardTilesContainer;
+            _comanderMediator = comanderMediator;
         }
 
         public void SelectUnit(Vector2Int index)
@@ -40,7 +39,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             
             _turnManager.SelectUnit(selectedUnit,_unitsPathCalculatorsManager.CalculatePath(selectedUnit));
             
-            OnUnitSelected?.Invoke();
+            _comanderMediator.NotifyAboutSelectedUnit();
         }
 
         public void MoveUnit(Vector2Int newIndex)
@@ -57,7 +56,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
                 _turnManager.UnselectUnit();
             }
             
-            OnUnitUnselected?.Invoke();
+            _comanderMediator.NotifyAboutUnselectedUnit();
         }
     }
 }

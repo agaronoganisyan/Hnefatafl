@@ -11,9 +11,9 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
     {
         [SerializeField] TextMeshProUGUI _currentTeamOfTurn;
 
-        public void Initialize(ITurnManager turnManager)
+        public void Initialize(ITurnManagerMediator turnManagerMediator)
         {
-            turnManager.OnTeamOfTurnChanged += SetTeamOfTurn;
+            turnManagerMediator.OnTeamOfTurnChanged += SetTeamOfTurn;
         }
 
         void SetTeamOfTurn(TeamType teamType)

@@ -4,26 +4,26 @@ namespace CodeBase.Infrastructure
 {
     public class RuleManager : IRuleManager
     {
-        public event Action OnGameStarted;
-        public event Action OnGameRestarted;
-        public event Action OnGameFinished;
-        public event Action OnWhiteTeamWon;
-        public event Action OnBlackTeamWon;
-
+        private IRuleManagerMediator _managerMediator;
+        
         bool _isGameFinished;
         public bool IsGameFinished => _isGameFinished;
 
+        public RuleManager(IRuleManagerMediator managerMediator)
+        {
+            _managerMediator = managerMediator;
+        }
+        
         public void StartGame()
         {
             _isGameFinished = false;
 
-            OnGameStarted?.Invoke();
+            _managerMediator.NotifyAboutStartedGame();
         }
 
         public void RestartGame()
         {
-            OnGameRestarted?.Invoke();
-
+            _managerMediator.NotifyAboutRestartedGame();
             StartGame();
         }
 
@@ -32,9 +32,7 @@ namespace CodeBase.Infrastructure
             if (_isGameFinished) return;
             _isGameFinished = true;
             
-            OnBlackTeamWon?.Invoke();
-            OnGameFinished?.Invoke();
-
+            _managerMediator.NotifyAboutBlackTeamWon();
         }
 
         public void WhiteTeamWin()
@@ -42,9 +40,7 @@ namespace CodeBase.Infrastructure
             if (_isGameFinished) return;
             _isGameFinished = true;
 
-            OnWhiteTeamWon?.Invoke();
-            OnGameFinished?.Invoke();
-
+            _managerMediator.NotifyAboutWhiteTeamWon();
         }
     }
 }

@@ -8,8 +8,10 @@ namespace CodeBase.GameplayLogic.BoardLogic
 {
     public interface IBoardHighlight
     {
-        void Initialize(IRuleManager ruleManager, IAssetsProvider assetsProvider,
-            IUnitsPathCalculatorsManager unitsPathCalculatorsManager, IUnitsComander unitsComander);
+        public void Initialize(IRuleManagerMediator ruleManagerMediator, IAssetsProvider assetsProvider,
+            IUnitsPathCalculatorsManagerMediator unitsPathCalculatorsManagerMediator,
+            IUnitsComanderMediator unitsComanderMediator);
+
         Task GenerateBoardHighlight(int boardSize);
     }
 }

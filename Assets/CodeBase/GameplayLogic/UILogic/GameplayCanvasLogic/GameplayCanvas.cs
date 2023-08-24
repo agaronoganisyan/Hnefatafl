@@ -10,13 +10,13 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
     {
         [SerializeField] GameplayPanel _gameplayPanel;
 
-        public void Initialize(IRuleManager ruleManager, ITurnManager turnManager)
+        public void Initialize(IRuleManagerMediator ruleManager, ITurnManagerMediator turnManagerMediator)
         {
             base.Close();
 
             ruleManager.OnGameStarted += base.Open;
             
-            _gameplayPanel.Initialize(turnManager);
+            _gameplayPanel.Initialize(turnManagerMediator);
         }
     }
 }

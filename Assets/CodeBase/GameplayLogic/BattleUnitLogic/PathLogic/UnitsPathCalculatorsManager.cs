@@ -5,9 +5,14 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
 {
     public class UnitsPathCalculatorsManager : IUnitsPathCalculatorsManager
     {
+        private IUnitsPathCalculatorsManagerMediator _unitsPathCalculatorsManagerMediator;
+        
         private static readonly Dictionary<UnitType, UnitPathCalculator> Calculators = new Dictionary<UnitType, UnitPathCalculator>();
 
-        public event Action<IUnitPath> OnPathCalculated;
+        public UnitsPathCalculatorsManager(IUnitsPathCalculatorsManagerMediator unitsPathCalculatorsManagerMediator)
+        {
+            _unitsPathCalculatorsManagerMediator = unitsPathCalculatorsManagerMediator;
+        }
 
         public void AddUnitPathCalculator(UnitType unitType, UnitPathCalculator calculator)
         {
@@ -20,7 +25,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
             {
                 IUnitPath unitPath = calculator.CalculatePaths(battleUnit.Index);
                 
-                OnPathCalculated?.Invoke(unitPath);
+                _unitsPathCalculatorsManagerMediator.Notify(unitPath);
                 
                 return unitPath;
             }

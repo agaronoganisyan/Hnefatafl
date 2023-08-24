@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using UnityEngine;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BoardLogic;
@@ -12,7 +10,6 @@ using CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic;
 using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.Infrastructure.Services.Input;
 using CodeBase.Infrastructure.Services.StaticData;
-using Unity.VisualScripting;
 
 namespace CodeBase.Infrastructure
 {
@@ -39,9 +36,11 @@ namespace CodeBase.Infrastructure
             //Classic mode
             GameModeStaticData modeStaticData = await assetsProvider.Load<GameModeStaticData>(_classicModeStaticDataAddress);
 
-            _ruleManager = new RuleManager();
-            
-            IInputService inputService = new InputService(_ruleManager);
+            IRuleManagerMediator ruleManagerMediator = new RuleManagerMediator(); 
+            _ruleManager = new RuleManager(ruleManagerMediator);
+
+            IInputServiceMediator inputServiceMediator = new InputServiceMediator();
+            IInputService inputService = new InputService(inputServiceMediator,ruleManagerMediator);
             
             IBoardTilesContainer boardTilesContainer = new BoardTilesContainer();
             boardTilesContainer.GenerateBoard(modeStaticData.BoardSize);
@@ -53,17 +52,25 @@ namespace CodeBase.Infrastructure
             IKillsHandler killsHandler = new KillsHandler(boardTilesContainer,unitsStateContainer,
                 new WayToKillKing(boardTilesContainer,unitsStateContainer),
                 new WayToKillWarrior(boardTilesContainer,unitsStateContainer));
+
+            IUnitsPathCalculatorsManagerMediator unitsPathCalculatorsManagerMediator = new UnitsPathCalculatorsManagerMediator();
             
-            IUnitsPathCalculatorsManager unitsPathCalculatorsManager= new UnitsPathCalculatorsManager();
+            IUnitsPathCalculatorsManager unitsPathCalculatorsManager= new UnitsPathCalculatorsManager(unitsPathCalculatorsManagerMediator);
             unitsPathCalculatorsManager.AddUnitPathCalculator(UnitType.King, new KingPathCalculator(boardTilesContainer,unitsStateContainer,modeStaticData.BoardSize));
             unitsPathCalculatorsManager.AddUnitPathCalculator(UnitType.Warrior, new WarriorPathCalculator(boardTilesContainer,unitsStateContainer,modeStaticData.BoardSize));
             
             ITeamMoveValidator teamMoveValidator = new TeamMoveValidator(teamsUnitsContainer,unitsPathCalculatorsManager);
+
+            ITurnManagerMediator turnManagerMediator = new TurnManagerMediator();
             
-            ITurnManager turnManager = new TurnManager(_ruleManager);
+            ITurnManager turnManager = new TurnManager(turnManagerMediator,ruleManagerMediator);
             turnManager.Prepare();
+
+            IUnitsComanderMediator unitsComanderMediator = new UnitsComanderMediator();
             
-            IUnitsComander  unitsComander = new UnitsComander(turnManager,unitsStateContainer,
+            IUnitsComander  unitsComander = new UnitsComander(unitsComanderMediator,
+                turnManager,
+                unitsStateContainer,
                 unitsPathCalculatorsManager,
                 new UnitMoveValidator(unitsStateContainer),
                 new UnitSelectValidator(unitsStateContainer),
@@ -71,7 +78,7 @@ namespace CodeBase.Infrastructure
                 boardTilesContainer);
             
             IUnitsSpawner  unitsSpawner = new UnitsSpawner(
-                _ruleManager,
+                ruleManagerMediator,
                 new UnitsFactory(teamsUnitsContainer,assetsProvider,modeStaticData),
                 unitsStateContainer,
                 teamsUnitsContainer,
@@ -79,7 +86,11 @@ namespace CodeBase.Infrastructure
             await unitsSpawner.Initialize();
             unitsSpawner.PrepareUnits();
             
-            IInputHandler inputHandler = new InputHandler(inputService,turnManager,unitsComander, boardTilesContainer);
+            IInputHandler inputHandler = new InputHandler(
+                inputServiceMediator,
+                turnManager,
+                unitsComander,
+                boardTilesContainer);
             
             GameObject boardPrefab = await assetsProvider.Load<GameObject>(_boardAddress);
             IBoard board = Instantiate(boardPrefab).GetComponent<Board>();
@@ -87,19 +98,19 @@ namespace CodeBase.Infrastructure
             
             GameObject boardHighlightPrefab = await assetsProvider.Load<GameObject>(_boardHighlightAddress);
             IBoardHighlight boardHighlight = Instantiate(boardHighlightPrefab).GetComponent<BoardHighlight>();
-            boardHighlight.Initialize(_ruleManager,
+            boardHighlight.Initialize(ruleManagerMediator,
                 assetsProvider,
-                unitsPathCalculatorsManager,
-                unitsComander);
+                unitsPathCalculatorsManagerMediator,
+                unitsComanderMediator);
             await boardHighlight.GenerateBoardHighlight(modeStaticData.BoardSize);
             
             GameObject gameplayCanvasPrefab = await assetsProvider.Load<GameObject>(_gameplayCanvasAddress); 
             IGameplayCanvas gameplayCanvas = Instantiate(gameplayCanvasPrefab).GetComponent<GameplayCanvas>();
-            gameplayCanvas.Initialize(_ruleManager,turnManager);
+            gameplayCanvas.Initialize(ruleManagerMediator,turnManagerMediator);
             
             GameObject debriefingCanvasPrefab = await assetsProvider.Load<GameObject>(_debriefingCanvasAddress);
             IDebriefingCanvas debriefingCanvas = Instantiate(debriefingCanvasPrefab).GetComponent<DebriefingCanvas>();
-            debriefingCanvas.Initialize(_ruleManager);
+            debriefingCanvas.Initialize(_ruleManager,ruleManagerMediator);
 
             StartGame();
             

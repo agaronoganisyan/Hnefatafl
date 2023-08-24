@@ -4,6 +4,6 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {
     public interface IDebriefingCanvas
     {
-        void Initialize(IRuleManager ruleManager);
+        void Initialize(IRuleManager ruleManager, IRuleManagerMediator ruleManagerMediator);
     }
 }

@@ -21,14 +21,15 @@ namespace CodeBase.GameplayLogic.BoardLogic
 
         private string _tileHighlightAddress = "TileHighlight"; 
         
-        public void Initialize(IRuleManager ruleManager,IAssetsProvider assetsProvider, IUnitsPathCalculatorsManager unitsPathCalculatorsManager, IUnitsComander unitsComander)
+        public void Initialize(IRuleManagerMediator ruleManagerMediator,IAssetsProvider assetsProvider,
+            IUnitsPathCalculatorsManagerMediator unitsPathCalculatorsManagerMediator, IUnitsComanderMediator unitsComanderMediator)
         {
             _assetsProvider = assetsProvider;
             
-            unitsPathCalculatorsManager.OnPathCalculated += EnableHighlight;
-            unitsComander.OnUnitUnselected += DisableHighlight;
+            unitsPathCalculatorsManagerMediator.OnPathCalculated += EnableHighlight;
+            unitsComanderMediator.OnUnitUnselected += DisableHighlight;
 
-            ruleManager.OnGameRestarted += Restart;
+            ruleManagerMediator.OnGameRestarted += Restart;
         }
 
         void Restart()

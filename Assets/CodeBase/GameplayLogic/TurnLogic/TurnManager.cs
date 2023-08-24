@@ -14,12 +14,15 @@ namespace CodeBase.GameplayLogic.TurnLogic
         private BattleUnit _selectedUnit;
 
         public IUnitPath SelectedUnitPath => _selectedUnitPath;
-        public event Action<TeamType> OnTeamOfTurnChanged;
         private IUnitPath _selectedUnitPath;
 
-        public TurnManager(IRuleManager ruleManager)
+        private readonly ITurnManagerMediator _managerMediator;
+
+        public TurnManager(ITurnManagerMediator managerMediator, IRuleManagerMediator ruleManagerMediator)
         {
-            ruleManager.OnGameStarted += Prepare;
+            _managerMediator = managerMediator;
+            
+            ruleManagerMediator.OnGameStarted += Prepare;
         }
 
         public void SwitchTeamOfTurn()
@@ -30,7 +33,7 @@ namespace CodeBase.GameplayLogic.TurnLogic
             _selectedUnit = null;
             _selectedUnitPath = null;
             
-            OnTeamOfTurnChanged?.Invoke(_teamOfTurn);
+            _managerMediator.Notify(_teamOfTurn);
         }
 
         public void Prepare()

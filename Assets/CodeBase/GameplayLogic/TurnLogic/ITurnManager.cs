@@ -9,7 +9,6 @@ namespace CodeBase.GameplayLogic.TurnLogic
         public TeamType TeamOfTurn { get; }
         public BattleUnit SelectedUnit  { get; }
         public IUnitPath SelectedUnitPath { get; }
-        event Action<TeamType> OnTeamOfTurnChanged;
         public void SwitchTeamOfTurn();
         public void Prepare();
         void SelectUnit(BattleUnit unit, IUnitPath selectedUnitPath);

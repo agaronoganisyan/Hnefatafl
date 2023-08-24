@@ -10,13 +10,13 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
     {
         [SerializeField] DebriefingPanel _debriefingPanel;
 
-        public void Initialize(IRuleManager ruleManager)
+        public void Initialize(IRuleManager ruleManager, IRuleManagerMediator ruleManagerMediator)
         {
             base.Close();
 
-            ruleManager.OnGameStarted += base.Close;
-            ruleManager.OnWhiteTeamWon += OpenWhiteScreen;
-            ruleManager.OnBlackTeamWon += OpenBlackScreen;
+            ruleManagerMediator.OnGameStarted += base.Close;
+            ruleManagerMediator.OnWhiteTeamWon += OpenWhiteScreen;
+            ruleManagerMediator.OnBlackTeamWon += OpenBlackScreen;
             
             _debriefingPanel.Initialize(ruleManager);
         }

@@ -14,7 +14,7 @@ namespace CodeBase.Infrastructure.Services.Input
         private readonly ITurnManager _turnManager;
         private readonly Camera _camera;
 
-        public InputHandler(IInputService inputService,ITurnManager turnManager, IUnitsComander unitsComander,
+        public InputHandler(IInputServiceMediator inputServiceMediator,ITurnManager turnManager, IUnitsComander unitsComander,
             IBoardTilesContainer boardTilesContainer)
         {
             _camera = Camera.main;
@@ -22,7 +22,7 @@ namespace CodeBase.Infrastructure.Services.Input
             _boardTilesContainer = boardTilesContainer;
             _turnManager = turnManager;
             
-            inputService.OnClickedOnBoard += ProcessClickOnBoard;
+            inputServiceMediator.OnClickedOnBoard += ProcessClickOnBoard;
         }
 
         public void ProcessClickOnBoard(Vector2 mousePosition)
