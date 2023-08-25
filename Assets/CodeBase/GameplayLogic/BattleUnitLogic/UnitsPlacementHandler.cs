@@ -2,6 +2,7 @@ using CodeBase.Infrastructure;
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.MoveLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
@@ -11,12 +12,13 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         private IKillsHandler _killsHandler;
         private ITeamMoveValidator _teamMoveValidator;
         private ITeamsUnitsContainer _teamsUnitsContainer;
-        public UnitsPlacementHandler(IRuleManager ruleManager, IKillsHandler killsHandler,ITeamMoveValidator teamMoveValidator, ITeamsUnitsContainer teamsUnitsContainer)
+        
+        public void Initialize()
         {
-            _ruleManager = ruleManager;
-            _killsHandler = killsHandler;
-            _teamMoveValidator = teamMoveValidator;
-            _teamsUnitsContainer = teamsUnitsContainer;
+            _ruleManager = ServiceLocator.Get<IRuleManager>();
+            _killsHandler  = ServiceLocator.Get<IKillsHandler>();
+            _teamMoveValidator = ServiceLocator.Get<ITeamMoveValidator>();
+            _teamsUnitsContainer  = ServiceLocator.Get<ITeamsUnitsContainer>();
         }
         
         public void ProcessPlacement(BattleUnit placedUnit, TileType finalTileType)

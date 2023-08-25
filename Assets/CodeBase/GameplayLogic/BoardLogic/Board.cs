@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.Infrastructure.Services.AssetManagement;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.Infrastructure.Services.StaticData;
 
 namespace CodeBase.GameplayLogic.BoardLogic
 {
@@ -9,18 +11,27 @@ namespace CodeBase.GameplayLogic.BoardLogic
     {
         private IBoardTilesContainer _boardTilesContainer;
         private IAssetsProvider _assetsProvider;
+
+        private int _boardSize;
         
         string TileAddress(TileType type) => "Tile_" + type;
-        
-        public async Task GenerateBoard(int boardSize, IBoardTilesContainer boardTilesContainer,
-            IAssetsProvider assetsProvider)
+
+        public void Initialize()
         {
-            _boardTilesContainer = boardTilesContainer;
-            _assetsProvider = assetsProvider;
+            GameModeStaticData currentModeData =
+                ServiceLocator.Get<IGameModeStaticDataService>().GetModeData(GameModeType.Classic);
+
+            _boardSize = currentModeData.BoardSize;
             
-            for (int x = 0; x < boardSize; x++)
+            _boardTilesContainer = ServiceLocator.Get<IBoardTilesContainer>();
+            _assetsProvider = ServiceLocator.Get<IAssetsProvider>();
+        }
+
+        public async Task GenerateBoard()
+        {
+            for (int x = 0; x < _boardSize; x++)
             {
-                for (int y = 0; y < boardSize; y++)
+                for (int y = 0; y < _boardSize; y++)
                 {
                     Vector2Int index = new Vector2Int(x,  y);
                     await InstantiateTile(_boardTilesContainer.GetTileTypeByIndex(index), index);

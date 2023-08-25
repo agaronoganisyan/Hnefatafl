@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BoardLogic;
@@ -5,24 +6,16 @@ using CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.MoveLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using CodeBase.GameplayLogic.TurnLogic;
-using CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic;
-using CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic;
 using CodeBase.Infrastructure.Services.AssetManagement;
+using CodeBase.Infrastructure.Services.GameFactoryLogic;
 using CodeBase.Infrastructure.Services.Input;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.Infrastructure.Services.StaticData;
 
 namespace CodeBase.Infrastructure
 {
     public class GameBootstrapper : MonoBehaviour
     {
-        private IRuleManager _ruleManager;
-        
-        string _classicModeStaticDataAddress = "ClassicModeStaticData";
-        string _boardAddress = "Board";
-        string _boardHighlightAddress = "BoardHighlight";
-        string _gameplayCanvasAddress = "GameplayCanvas";
-        string _debriefingCanvasAddress = "DebriefingCanvas";
-
         private void Awake()
         {
             GameInitialization();
@@ -30,96 +23,109 @@ namespace CodeBase.Infrastructure
 
         async void GameInitialization()
         {
-            IAssetsProvider assetsProvider = new AssetsProvider();
-            assetsProvider.Initialize();
+            RegisterServices();
+            await InitializeServices();
             
-            //Classic mode
-            GameModeStaticData modeStaticData = await assetsProvider.Load<GameModeStaticData>(_classicModeStaticDataAddress);
-
-            IRuleManagerMediator ruleManagerMediator = new RuleManagerMediator(); 
-            _ruleManager = new RuleManager(ruleManagerMediator);
-
-            IInputServiceMediator inputServiceMediator = new InputServiceMediator();
-            IInputService inputService = new InputService(inputServiceMediator,ruleManagerMediator);
-            
-            IBoardTilesContainer boardTilesContainer = new BoardTilesContainer();
-            boardTilesContainer.GenerateBoard(modeStaticData.BoardSize);
-
-            IUnitsStateContainer unitsStateContainer = new UnitsStateContainer(_ruleManager,modeStaticData.BoardSize);
-
-            ITeamsUnitsContainer teamsUnitsContainer = new TeamsUnitsContainer();
-            
-            IKillsHandler killsHandler = new KillsHandler(boardTilesContainer,unitsStateContainer,
-                new WayToKillKing(boardTilesContainer,unitsStateContainer),
-                new WayToKillWarrior(boardTilesContainer,unitsStateContainer));
-
-            IUnitsPathCalculatorsManagerMediator unitsPathCalculatorsManagerMediator = new UnitsPathCalculatorsManagerMediator();
-            
-            IUnitsPathCalculatorsManager unitsPathCalculatorsManager= new UnitsPathCalculatorsManager(unitsPathCalculatorsManagerMediator);
-            unitsPathCalculatorsManager.AddUnitPathCalculator(UnitType.King, new KingPathCalculator(boardTilesContainer,unitsStateContainer,modeStaticData.BoardSize));
-            unitsPathCalculatorsManager.AddUnitPathCalculator(UnitType.Warrior, new WarriorPathCalculator(boardTilesContainer,unitsStateContainer,modeStaticData.BoardSize));
-            
-            ITeamMoveValidator teamMoveValidator = new TeamMoveValidator(teamsUnitsContainer,unitsPathCalculatorsManager);
-
-            ITurnManagerMediator turnManagerMediator = new TurnManagerMediator();
-            
-            ITurnManager turnManager = new TurnManager(turnManagerMediator,ruleManagerMediator);
-            turnManager.Prepare();
-
-            IUnitsComanderMediator unitsComanderMediator = new UnitsComanderMediator();
-            
-            IUnitsComander  unitsComander = new UnitsComander(unitsComanderMediator,
-                turnManager,
-                unitsStateContainer,
-                unitsPathCalculatorsManager,
-                new UnitMoveValidator(unitsStateContainer),
-                new UnitSelectValidator(unitsStateContainer),
-                new UnitsPlacementHandler(_ruleManager, killsHandler, teamMoveValidator, teamsUnitsContainer),
-                boardTilesContainer);
-            
-            IUnitsSpawner  unitsSpawner = new UnitsSpawner(
-                ruleManagerMediator,
-                new UnitsFactory(teamsUnitsContainer,assetsProvider,modeStaticData),
-                unitsStateContainer,
-                teamsUnitsContainer,
-                modeStaticData.BoardSize);
-            await unitsSpawner.Initialize();
-            unitsSpawner.PrepareUnits();
-            
-            IInputHandler inputHandler = new InputHandler(
-                inputServiceMediator,
-                turnManager,
-                unitsComander,
-                boardTilesContainer);
-            
-            GameObject boardPrefab = await assetsProvider.Load<GameObject>(_boardAddress);
-            IBoard board = Instantiate(boardPrefab).GetComponent<Board>();
-            await board.GenerateBoard(modeStaticData.BoardSize,boardTilesContainer, assetsProvider);
-            
-            GameObject boardHighlightPrefab = await assetsProvider.Load<GameObject>(_boardHighlightAddress);
-            IBoardHighlight boardHighlight = Instantiate(boardHighlightPrefab).GetComponent<BoardHighlight>();
-            boardHighlight.Initialize(ruleManagerMediator,
-                assetsProvider,
-                unitsPathCalculatorsManagerMediator,
-                unitsComanderMediator);
-            await boardHighlight.GenerateBoardHighlight(modeStaticData.BoardSize);
-            
-            GameObject gameplayCanvasPrefab = await assetsProvider.Load<GameObject>(_gameplayCanvasAddress); 
-            IGameplayCanvas gameplayCanvas = Instantiate(gameplayCanvasPrefab).GetComponent<GameplayCanvas>();
-            gameplayCanvas.Initialize(ruleManagerMediator,turnManagerMediator);
-            
-            GameObject debriefingCanvasPrefab = await assetsProvider.Load<GameObject>(_debriefingCanvasAddress);
-            IDebriefingCanvas debriefingCanvas = Instantiate(debriefingCanvasPrefab).GetComponent<DebriefingCanvas>();
-            debriefingCanvas.Initialize(_ruleManager,ruleManagerMediator);
-
             StartGame();
             
-            assetsProvider.CleanUp();
+            ServiceLocator.Get<IAssetsProvider>().CleanUp();
         }
+        
+        void RegisterServices()
+        {
+            ServiceLocator.Register<IAssetsProvider>( new AssetsProvider());
+            ServiceLocator.Register<IGameModeStaticDataService>(new GameModeStaticDataService());
+            ServiceLocator.Register<IRuleManagerMediator>(new RuleManagerMediator());
+            ServiceLocator.Register<IRuleManager>(new RuleManager());
+            ServiceLocator.Register<IInputServiceMediator>(new InputServiceMediator());
+            ServiceLocator.Register<IInputService>(new InputService());
+            ServiceLocator.Register<IBoardTilesContainer>(new BoardTilesContainer());
+            ServiceLocator.Register<IUnitsStateContainer>(new UnitsStateContainer());
+            ServiceLocator.Register<ITeamsUnitsContainer>(new TeamsUnitsContainer());
+            ServiceLocator.Register<WayToKillKing>(new WayToKillKing());
+            ServiceLocator.Register<WayToKillWarrior>(new WayToKillWarrior());
+            ServiceLocator.Register<IKillsHandler>( new KillsHandler());
+            ServiceLocator.Register<IUnitsPathCalculatorsManagerMediator>(new UnitsPathCalculatorsManagerMediator());
+            ServiceLocator.Register<IUnitsPathCalculatorsManager>(new UnitsPathCalculatorsManager());
+            ServiceLocator.Register<KingPathCalculator>(new KingPathCalculator());
+            ServiceLocator.Register<WarriorPathCalculator>(new WarriorPathCalculator());
+            ServiceLocator.Register<ITeamMoveValidator>(new TeamMoveValidator());
+            ServiceLocator.Register<ITurnManagerMediator>(new TurnManagerMediator());
+            ServiceLocator.Register<ITurnManager>(new TurnManager());
+            ServiceLocator.Register<IUnitsComanderMediator>(new UnitsComanderMediator());
+            ServiceLocator.Register<IUnitMoveValidator>(new UnitMoveValidator());
+            ServiceLocator.Register<IUnitSelectValidator>(new UnitSelectValidator());
+            ServiceLocator.Register<IUnitsPlacementHandler>(new UnitsPlacementHandler());
+            ServiceLocator.Register<IUnitsComander>(new UnitsComander());
+            ServiceLocator.Register<IUnitsFactory>(new UnitsFactory());
+            ServiceLocator.Register<IUnitsSpawner>(new UnitsSpawner());
+            ServiceLocator.Register<IInputHandler>( new InputHandler());
+            ServiceLocator.Register<IGameInfrastructureFactory>(new GameInfrastructureFactory());
+        }
+        
+        private async Task InitializeServices()
+        {
+            ServiceLocator.Get<IAssetsProvider>().Initialize();
+            
+            ServiceLocator.Get<IGameModeStaticDataService>().Initialize();
+            await ServiceLocator.Get<IGameModeStaticDataService>().LoadModeData(GameModeType.Classic);
 
+            ServiceLocator.Get<IRuleManagerMediator>().Initialize();
+            ServiceLocator.Get<IRuleManager>().Initialize();
+            ServiceLocator.Get<IInputServiceMediator>().Initialize();
+            ServiceLocator.Get<IInputService>().Initialize();
+            
+            ServiceLocator.Get<IBoardTilesContainer>().Initialize();
+            ServiceLocator.Get<IBoardTilesContainer>().GenerateBoard();
+
+            ServiceLocator.Get<IUnitsStateContainer>().Initialize();
+            ServiceLocator.Get<IUnitsStateContainer>().GenerateContainer();
+
+            ServiceLocator.Get<ITeamsUnitsContainer>().Initialize();
+            ServiceLocator.Get<WayToKillKing>().Initialize();
+            ServiceLocator.Get<WayToKillWarrior>().Initialize();
+            
+            ServiceLocator.Get<IKillsHandler>().Initialize();
+            ServiceLocator.Get<IKillsHandler>().AddWayToKill(UnitType.King, ServiceLocator.Get<WayToKillKing>());
+            ServiceLocator.Get<IKillsHandler>().AddWayToKill(UnitType.Warrior, ServiceLocator.Get<WayToKillWarrior>());
+            
+            ServiceLocator.Get<IUnitsPathCalculatorsManagerMediator>().Initialize();
+            ServiceLocator.Get<IUnitsPathCalculatorsManager>().Initialize();
+            ServiceLocator.Get<KingPathCalculator>().Initialize();
+            ServiceLocator.Get<WarriorPathCalculator>().Initialize();
+            
+            ServiceLocator.Get<IUnitsPathCalculatorsManager>().AddUnitPathCalculator(UnitType.King,ServiceLocator.Get<KingPathCalculator>());
+            ServiceLocator.Get<IUnitsPathCalculatorsManager>().AddUnitPathCalculator(UnitType.Warrior,ServiceLocator.Get<WarriorPathCalculator>());
+
+            ServiceLocator.Get<ITeamMoveValidator>().Initialize();
+            ServiceLocator.Get<ITurnManagerMediator>().Initialize();
+            
+            ServiceLocator.Get<ITurnManager>().Initialize();
+            ServiceLocator.Get<ITurnManager>().Prepare();
+
+            ServiceLocator.Get<IUnitsComanderMediator>().Initialize();
+            ServiceLocator.Get<IUnitMoveValidator>().Initialize();
+            ServiceLocator.Get<IUnitSelectValidator>().Initialize();
+            ServiceLocator.Get<IUnitsPlacementHandler>().Initialize();
+            ServiceLocator.Get<IUnitsComander>().Initialize();
+            ServiceLocator.Get<IUnitsFactory>().Initialize();
+            
+            ServiceLocator.Get<IUnitsSpawner>().Initialize();
+            await ServiceLocator.Get<IUnitsSpawner>().InitializeUnits();
+            ServiceLocator.Get<IUnitsSpawner>().PrepareUnits();
+            
+            ServiceLocator.Get<IInputHandler>().Initialize();
+            
+            ServiceLocator.Get<IGameInfrastructureFactory>().Initialize();
+            await ServiceLocator.Get<IGameInfrastructureFactory>().CreateBoard();
+            await ServiceLocator.Get<IGameInfrastructureFactory>().CreateBoardHighlight();
+            await ServiceLocator.Get<IGameInfrastructureFactory>().CreateGameplayCanvas();
+            await ServiceLocator.Get<IGameInfrastructureFactory>().CreateDebriefingCanvas();
+        }
+        
         void StartGame()
         {
-            _ruleManager.StartGame();
+            ServiceLocator.Get<IRuleManager>().StartGame();
         }
     }
 }

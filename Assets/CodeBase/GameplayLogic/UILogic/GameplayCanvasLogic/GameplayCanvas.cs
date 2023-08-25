@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CodeBase.GameplayLogic.TurnLogic;
 using UnityEngine;
 using CodeBase.Infrastructure;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
 {
@@ -10,13 +11,13 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
     {
         [SerializeField] GameplayPanel _gameplayPanel;
 
-        public void Initialize(IRuleManagerMediator ruleManager, ITurnManagerMediator turnManagerMediator)
+        public void Initialize()
         {
             base.Close();
 
-            ruleManager.OnGameStarted += base.Open;
+            ServiceLocator.Get<IRuleManagerMediator>().OnGameStarted += base.Open;
             
-            _gameplayPanel.Initialize(turnManagerMediator);
+            _gameplayPanel.Initialize();
         }
     }
 }

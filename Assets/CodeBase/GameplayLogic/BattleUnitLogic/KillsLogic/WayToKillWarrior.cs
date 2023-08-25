@@ -8,10 +8,6 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
 {
     public class WayToKillWarrior : WayToKill
     {
-        public WayToKillWarrior(IBoardTilesContainer boardTilesContainer, IUnitsStateContainer unitsStateContainer) : base(boardTilesContainer,unitsStateContainer)
-        {
-        }
-
         public override void TryToKill(Vector2Int caughtUnitIndex, TeamType currentUnitTeamType, UnitType caughtUnitType, Action killActon, Vector2Int direction = new Vector2Int())
         {
             Vector2Int nextIndex = caughtUnitIndex + direction;

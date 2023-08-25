@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.Infrastructure.Services.CustomPoolLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.Infrastructure.Services.StaticData;
 using UnityEngine;
 
@@ -22,16 +23,20 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         private int _blackWarriorsAmount;
 
         private string BattleUnitAddress(TeamType teamType, UnitType unitType) => $"{teamType}_{unitType}";
-        
-        public UnitsFactory(ITeamsUnitsContainer teamsUnitsContainer, IAssetsProvider assetsProvider, GameModeStaticData gameModeStaticData)
+
+        public void Initialize()
         {
-            _teamsUnitsContainer = teamsUnitsContainer;
-            _assetsProvider = assetsProvider;
-            _whiteWarriorsAmount = gameModeStaticData.WhiteWarriorsAmount;
-            _blackWarriorsAmount= gameModeStaticData.BlackWarriorsAmount;
+            GameModeStaticData currentModeData =
+                ServiceLocator.Get<IGameModeStaticDataService>().GetModeData(GameModeType.Classic);
+            
+            _teamsUnitsContainer = ServiceLocator.Get<ITeamsUnitsContainer>();
+            _assetsProvider  = ServiceLocator.Get<IAssetsProvider>();
+            
+            _whiteWarriorsAmount = currentModeData.WhiteWarriorsAmount;
+            _blackWarriorsAmount = currentModeData.BlackWarriorsAmount;
         }
 
-        public async Task Initialize()
+        public async Task InitializePool()
         {
             GameObject whiteWarriorPrefab = await _assetsProvider.Load<GameObject>(BattleUnitAddress(TeamType.White, UnitType.Warrior));
             _whiteWarriorsPool = new CustomPool<BattleUnit>(whiteWarriorPrefab.GetComponent<BattleUnit>());

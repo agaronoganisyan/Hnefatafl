@@ -5,6 +5,7 @@ namespace CodeBase.GameplayLogic.BoardLogic
 {
     public interface IBoard
     {
-        Task GenerateBoard(int boardSize, IBoardTilesContainer boardTilesContainer, IAssetsProvider assetsProvider);
+        void Initialize();
+        Task GenerateBoard();
     }
 }

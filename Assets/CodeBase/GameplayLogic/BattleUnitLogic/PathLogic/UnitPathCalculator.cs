@@ -1,75 +1,78 @@
 using CodeBase.GameplayLogic.BoardLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.Infrastructure.Services.StaticData;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
 {
-    public abstract class UnitPathCalculator
+    public abstract class UnitPathCalculator : IService
     {
-        protected IBoardTilesContainer _boardTilesContainer;
-        protected IUnitsStateContainer _unitsStateContainer;
+    protected IBoardTilesContainer _boardTilesContainer;
+    protected IUnitsStateContainer _unitsStateContainer;
 
-        private readonly int _boardSize;
+    private int _boardSize;
+    
+    public void Initialize()
+    {
+        GameModeStaticData currentModeData =
+            ServiceLocator.Get<IGameModeStaticDataService>().GetModeData(GameModeType.Classic);
         
-        public UnitPathCalculator(IBoardTilesContainer boardTilesContainer,IUnitsStateContainer unitsStateContainer, int boardSize)
-        {
-            _boardTilesContainer = boardTilesContainer;
-            _unitsStateContainer = unitsStateContainer;
+        _boardTilesContainer = ServiceLocator.Get<IBoardTilesContainer>();
+        _unitsStateContainer = ServiceLocator.Get<IUnitsStateContainer>();
+        _boardSize = currentModeData.BoardSize;
+    }
+    
+    public IUnitPath CalculatePaths(Vector2Int currentIndex)
+    {
+        UnitPath path = new UnitPath();
 
-            _boardSize = boardSize;
+        path.SetCurrentIndex(currentIndex);
+
+        //Down
+        for (int i = currentIndex.y - 1; i >= 0; i--)
+        {
+            Vector2Int index = new Vector2Int(currentIndex.x, i);
+
+            if (IsThereProblemWithIndex(index)) break;
+            else path.AddAvailableMove(index);
         }
 
-        public IUnitPath CalculatePaths(Vector2Int currentIndex)
+        //Up
+        for (int i = currentIndex.y + 1; i < _boardSize; i++)
         {
-            UnitPath path = new UnitPath();
-            
-            path.SetCurrentIndex(currentIndex);
-            
-            //Down
-            for (int i = currentIndex.y - 1; i >= 0; i--)
-            {
-                Vector2Int index = new Vector2Int(currentIndex.x, i);
-                
-                if (IsThereProblemWithIndex(index)) break;
-                else path.AddAvailableMove(index);
-            }
+            Vector2Int index = new Vector2Int(currentIndex.x, i);
 
-            //Up
-            for (int i = currentIndex.y + 1; i < _boardSize; i++)
-            {
-                Vector2Int index = new Vector2Int(currentIndex.x, i);
-
-                if (IsThereProblemWithIndex(index)) break;
-                else path.AddAvailableMove(index);
-            }
-
-            //Left
-            for (int i = currentIndex.x - 1; i >= 0; i--)
-            {
-                Vector2Int index = new Vector2Int(i, currentIndex.y);
-
-                if (IsThereProblemWithIndex(index)) break;
-                else path.AddAvailableMove(index);
-            }
-
-            //Right
-            for (int i = currentIndex.x + 1; i < _boardSize; i++)
-            {
-                Vector2Int index = new Vector2Int(i, currentIndex.y);
-
-                if (IsThereProblemWithIndex(index)) break;
-                else path.AddAvailableMove(index);
-            }
-
-            return path;
+            if (IsThereProblemWithIndex(index)) break;
+            else path.AddAvailableMove(index);
         }
-        
-        protected abstract bool IsThereProblemWithIndex(Vector2Int index);
 
-        public bool IsThereAvailableMoves(Vector2Int currentIndex)
+        //Left
+        for (int i = currentIndex.x - 1; i >= 0; i--)
         {
-            IUnitPath unitPath = CalculatePaths(currentIndex);
-            return unitPath.AvailableMoves.Count>0;
+            Vector2Int index = new Vector2Int(i, currentIndex.y);
+
+            if (IsThereProblemWithIndex(index)) break;
+            else path.AddAvailableMove(index);
         }
-        
+
+        //Right
+        for (int i = currentIndex.x + 1; i < _boardSize; i++)
+        {
+            Vector2Int index = new Vector2Int(i, currentIndex.y);
+
+            if (IsThereProblemWithIndex(index)) break;
+            else path.AddAvailableMove(index);
+        }
+
+        return path;
+    }
+
+    protected abstract bool IsThereProblemWithIndex(Vector2Int index);
+
+    public bool IsThereAvailableMoves(Vector2Int currentIndex)
+    {
+        IUnitPath unitPath = CalculatePaths(currentIndex);
+        return unitPath.AvailableMoves.Count > 0;
+    }
     }
 }

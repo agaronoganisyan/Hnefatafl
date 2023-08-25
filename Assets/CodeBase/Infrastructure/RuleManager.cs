@@ -1,4 +1,5 @@
 using System;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.Infrastructure
 {
@@ -8,10 +9,10 @@ namespace CodeBase.Infrastructure
         
         bool _isGameFinished;
         public bool IsGameFinished => _isGameFinished;
-
-        public RuleManager(IRuleManagerMediator managerMediator)
+        
+        public void Initialize()
         {
-            _managerMediator = managerMediator;
+            _managerMediator = ServiceLocator.Get<IRuleManagerMediator>();
         }
         
         public void StartGame()

@@ -1,5 +1,7 @@
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.Infrastructure;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.Infrastructure.Services.StaticData;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
@@ -10,10 +12,16 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
     private int _boardSize;
 
-    public UnitsStateContainer(IRuleManager ruleManager, int boardSize)
+    public void Initialize()
     {
-        _boardSize = boardSize;
+        GameModeStaticData currentModeData =
+            ServiceLocator.Get<IGameModeStaticDataService>().GetModeData(GameModeType.Classic);
 
+        _boardSize = currentModeData.BoardSize;
+    }
+
+    public void GenerateContainer()
+    {
         _units = new BattleUnit[_boardSize, _boardSize];
     }
 

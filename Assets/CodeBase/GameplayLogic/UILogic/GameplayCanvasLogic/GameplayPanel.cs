@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.TurnLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
 {
@@ -11,9 +12,9 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
     {
         [SerializeField] TextMeshProUGUI _currentTeamOfTurn;
 
-        public void Initialize(ITurnManagerMediator turnManagerMediator)
+        public void Initialize()
         {
-            turnManagerMediator.OnTeamOfTurnChanged += SetTeamOfTurn;
+            ServiceLocator.Get<ITurnManagerMediator>().OnTeamOfTurnChanged += SetTeamOfTurn;
         }
 
         void SetTeamOfTurn(TeamType teamType)

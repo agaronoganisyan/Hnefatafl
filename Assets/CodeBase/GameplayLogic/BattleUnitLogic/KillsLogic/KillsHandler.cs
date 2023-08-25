@@ -1,24 +1,28 @@
+using System.Collections.Generic;
+using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using UnityEngine;
 using CodeBase.Infrastructure;
 using CodeBase.GameplayLogic.BoardLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
 {
     public class KillsHandler : IKillsHandler
     {
-        IBoardTilesContainer _board;
+        IBoardTilesContainer _boardContainer;
         IUnitsStateContainer _unitsStateContainer;
+        
+        private readonly Dictionary<UnitType, WayToKill> _waysToKill = new Dictionary<UnitType, WayToKill>();
 
-        WayToKill _wayToKillKing;
-        WayToKill _wayToKillWarrior;
-
-        public KillsHandler(IBoardTilesContainer board,IUnitsStateContainer unitsStateContainer, WayToKill wayToKillKing, WayToKill wayToKillWarrior)
+        public void Initialize()
         {
-            _board = board;
+            _boardContainer = ServiceLocator.Get<IBoardTilesContainer>();
+            _unitsStateContainer = ServiceLocator.Get<IUnitsStateContainer>();
+        }
 
-            _wayToKillKing = wayToKillKing;
-            _wayToKillWarrior = wayToKillWarrior;
-            _unitsStateContainer = unitsStateContainer;
+        public void AddWayToKill(UnitType unitType, WayToKill wayToKill)
+        {
+            _waysToKill.Add(unitType, wayToKill);
         }
 
         public void FindTargetsToKill(BattleUnit unit)
@@ -42,7 +46,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
         void FindTargetToKill(TeamType currentTeam, Vector2Int currentIndex, Vector2Int direction)
         {
             Vector2Int neighboringIndex = currentIndex + direction;
-            if (_board.IsIndexOnBoard(neighboringIndex))
+            if (_boardContainer.IsIndexOnBoard(neighboringIndex))
             {
                 BattleUnit caughtUnit = _unitsStateContainer.GetUnitByIndex(neighboringIndex);
 
@@ -52,14 +56,19 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic
 
                     if (caughtUnitType == UnitType.King)
                     {
-                        _wayToKillKing.TryToKill(neighboringIndex, currentTeam, caughtUnitType, () => KillUnit(caughtUnit));
+                        GetWayToKill(caughtUnitType).TryToKill(neighboringIndex, currentTeam, caughtUnitType, () => KillUnit(caughtUnit));
                     }
                     else
                     {
-                        _wayToKillWarrior.TryToKill(neighboringIndex, currentTeam, caughtUnitType, () => KillUnit(caughtUnit), direction);
+                        GetWayToKill(caughtUnitType).TryToKill(neighboringIndex, currentTeam, caughtUnitType, () => KillUnit(caughtUnit), direction);
                     }
                 }
             }
+        }
+
+        WayToKill GetWayToKill(UnitType unitType)
+        {
+            return _waysToKill.TryGetValue(unitType, out var wayToKill) ? wayToKill : null;
         }
 
         void KillUnit(BattleUnit unit)

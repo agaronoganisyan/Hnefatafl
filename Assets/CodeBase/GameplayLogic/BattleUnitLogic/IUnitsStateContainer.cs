@@ -1,9 +1,11 @@
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
-    public interface IUnitsStateContainer
+    public interface IUnitsStateContainer : IService
     {
+        void GenerateContainer();
         void RemoveUnitFromTile(BattleUnit unit);
         bool IsThereUnit(Vector2Int index);
         BattleUnit GetUnitByIndex(Vector2Int neighboringIndex);

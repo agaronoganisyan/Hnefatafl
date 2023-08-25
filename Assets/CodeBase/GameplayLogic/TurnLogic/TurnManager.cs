@@ -2,6 +2,7 @@ using System;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using CodeBase.Infrastructure;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.TurnLogic
 {
@@ -16,15 +17,15 @@ namespace CodeBase.GameplayLogic.TurnLogic
         public IUnitPath SelectedUnitPath => _selectedUnitPath;
         private IUnitPath _selectedUnitPath;
 
-        private readonly ITurnManagerMediator _managerMediator;
-
-        public TurnManager(ITurnManagerMediator managerMediator, IRuleManagerMediator ruleManagerMediator)
+        private ITurnManagerMediator _managerMediator;
+        
+        public void Initialize()
         {
-            _managerMediator = managerMediator;
+            _managerMediator = ServiceLocator.Get<ITurnManagerMediator>();
             
-            ruleManagerMediator.OnGameStarted += Prepare;
+            ServiceLocator.Get<IRuleManagerMediator>().OnGameStarted += Prepare;
         }
-
+        
         public void SwitchTeamOfTurn()
         {
             if (_teamOfTurn == TeamType.Black)_teamOfTurn = TeamType.White;

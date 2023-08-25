@@ -1,10 +1,11 @@
 using System.Threading.Tasks;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
-    public interface IUnitsSpawner
+    public interface IUnitsSpawner : IService
     {
-        Task Initialize();
+        Task InitializeUnits();
         void PrepareUnits();
     }
 }

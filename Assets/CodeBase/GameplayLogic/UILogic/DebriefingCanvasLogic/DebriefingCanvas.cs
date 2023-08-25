@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CodeBase.Infrastructure;
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {
@@ -10,15 +11,15 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
     {
         [SerializeField] DebriefingPanel _debriefingPanel;
 
-        public void Initialize(IRuleManager ruleManager, IRuleManagerMediator ruleManagerMediator)
+        public void Initialize()
         {
             base.Close();
 
-            ruleManagerMediator.OnGameStarted += base.Close;
-            ruleManagerMediator.OnWhiteTeamWon += OpenWhiteScreen;
-            ruleManagerMediator.OnBlackTeamWon += OpenBlackScreen;
+            ServiceLocator.Get<IRuleManagerMediator>().OnGameStarted += base.Close;
+            ServiceLocator.Get<IRuleManagerMediator>().OnWhiteTeamWon += OpenWhiteScreen;
+            ServiceLocator.Get<IRuleManagerMediator>().OnBlackTeamWon += OpenBlackScreen;
             
-            _debriefingPanel.Initialize(ruleManager);
+            _debriefingPanel.Initialize();
         }
 
 

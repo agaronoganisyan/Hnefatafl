@@ -1,18 +1,19 @@
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic.MoveLogic
 {
     public class TeamMoveValidator :ITeamMoveValidator
     {
-        private readonly ITeamsUnitsContainer _teamsUnitsContainer;
-        private readonly IUnitsPathCalculatorsManager _unitsPathCalculatorsManager;
-
-        public TeamMoveValidator(ITeamsUnitsContainer teamsUnitsContainer,
-            IUnitsPathCalculatorsManager unitsPathCalculatorsManager)
+        private ITeamsUnitsContainer _teamsUnitsContainer;
+        private IUnitsPathCalculatorsManager _unitsPathCalculatorsManager;
+        
+        public void Initialize()
         {
-            _teamsUnitsContainer = teamsUnitsContainer;
-            _unitsPathCalculatorsManager = unitsPathCalculatorsManager;
+            _teamsUnitsContainer = ServiceLocator.Get<ITeamsUnitsContainer>();
+            _unitsPathCalculatorsManager = ServiceLocator.Get<IUnitsPathCalculatorsManager>();
         }
+        
         public bool IsThisTeamHaveAnyAvailableMoves(TeamType teamType)
         {
             bool status = false;

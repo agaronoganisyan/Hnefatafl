@@ -1,8 +1,9 @@
 using System;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.Infrastructure
 {
-    public interface IRuleManagerMediator
+    public interface IRuleManagerMediator : IService
     {
         event Action OnGameStarted;
         event Action OnGameRestarted;

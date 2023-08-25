@@ -3,28 +3,28 @@ using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.GameplayLogic.TurnLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using UnityEngine;
 
 namespace CodeBase.Infrastructure.Services.Input
 {
     public class InputHandler : IInputHandler
     {
-        private readonly IBoardTilesContainer _boardTilesContainer;
-        private readonly IUnitsComander _unitsComander;
-        private readonly ITurnManager _turnManager;
-        private readonly Camera _camera;
+        private IBoardTilesContainer _boardTilesContainer;
+        private IUnitsComander _unitsComander;
+        private ITurnManager _turnManager;
+        private Camera _camera;
 
-        public InputHandler(IInputServiceMediator inputServiceMediator,ITurnManager turnManager, IUnitsComander unitsComander,
-            IBoardTilesContainer boardTilesContainer)
+        public void Initialize()
         {
             _camera = Camera.main;
-            _unitsComander = unitsComander;
-            _boardTilesContainer = boardTilesContainer;
-            _turnManager = turnManager;
+            _unitsComander = ServiceLocator.Get<IUnitsComander>();
+            _boardTilesContainer = ServiceLocator.Get<IBoardTilesContainer>();
+            _turnManager = ServiceLocator.Get<ITurnManager>();
             
-            inputServiceMediator.OnClickedOnBoard += ProcessClickOnBoard;
+            ServiceLocator.Get<IInputServiceMediator>().OnClickedOnBoard += ProcessClickOnBoard;
         }
-
+        
         public void ProcessClickOnBoard(Vector2 mousePosition)
         {
             if (!_boardTilesContainer.IsWorldPosOnBoard(_camera.ScreenToWorldPoint(mousePosition))) return;

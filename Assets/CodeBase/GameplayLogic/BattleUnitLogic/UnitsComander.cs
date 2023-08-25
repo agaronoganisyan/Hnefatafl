@@ -3,43 +3,43 @@ using CodeBase.GameplayLogic.BattleUnitLogic.MoveLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic.TurnLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
     public class UnitsComander : IUnitsComander
     {
-        private readonly ITurnManager _turnManager;
-        private readonly IUnitsPathCalculatorsManager _unitsPathCalculatorsManager;
-        private readonly IUnitMoveValidator _unitMoveValidator;
-        private readonly IUnitSelectValidator _unitSelectValidator;
-        private readonly IUnitsStateContainer _unitsStateContainer;
-        private readonly IUnitsPlacementHandler _unitsPlacementHandler;
-        private readonly IBoardTilesContainer _boardTilesContainer;
+        private ITurnManager _turnManager;
+        private IUnitsPathCalculatorsManager _unitsPathCalculatorsManager;
+        private IUnitMoveValidator _unitMoveValidator;
+        private IUnitSelectValidator _unitSelectValidator;
+        private IUnitsStateContainer _unitsStateContainer;
+        private IUnitsPlacementHandler _unitsPlacementHandler;
+        private IBoardTilesContainer _boardTilesContainer;
         private IUnitsComanderMediator _comanderMediator;
         
-        public UnitsComander(IUnitsComanderMediator comanderMediator, ITurnManager turnManager,IUnitsStateContainer unitsStateContainer, IUnitsPathCalculatorsManager unitsPathCalculatorsManager,
-            IUnitMoveValidator unitMoveValidator,IUnitSelectValidator unitSelectValidator, IUnitsPlacementHandler unitsPlacementHandler, IBoardTilesContainer boardTilesContainer)
+        public void Initialize()
         {
-            _turnManager = turnManager;
-            _unitsStateContainer = unitsStateContainer;
-            _unitsPathCalculatorsManager = unitsPathCalculatorsManager;
-            _unitMoveValidator = unitMoveValidator;
-            _unitSelectValidator = unitSelectValidator;
-            _unitsPlacementHandler = unitsPlacementHandler;
-            _boardTilesContainer = boardTilesContainer;
-            _comanderMediator = comanderMediator;
+            _turnManager = ServiceLocator.Get<ITurnManager>();
+            _unitsStateContainer = ServiceLocator.Get<IUnitsStateContainer>();
+            _unitsPathCalculatorsManager = ServiceLocator.Get<IUnitsPathCalculatorsManager>();
+            _unitMoveValidator = ServiceLocator.Get<IUnitMoveValidator>();
+            _unitSelectValidator = ServiceLocator.Get<IUnitSelectValidator>();
+            _unitsPlacementHandler = ServiceLocator.Get<IUnitsPlacementHandler>();
+            _boardTilesContainer = ServiceLocator.Get<IBoardTilesContainer>();
+            _comanderMediator = ServiceLocator.Get<IUnitsComanderMediator>();
         }
-
+        
         public void SelectUnit(Vector2Int index)
         {
             BattleUnit selectedUnit = _unitSelectValidator.TryToSelectUnit(_turnManager,index);
-            
+
             if (selectedUnit == null) return;
             
             _turnManager.SelectUnit(selectedUnit,_unitsPathCalculatorsManager.CalculatePath(selectedUnit));
             
-            _comanderMediator.NotifyAboutSelectedUnit();
+            _comanderMediator.NotifyAboutSelectedUnit(); 
         }
 
         public void MoveUnit(Vector2Int newIndex)

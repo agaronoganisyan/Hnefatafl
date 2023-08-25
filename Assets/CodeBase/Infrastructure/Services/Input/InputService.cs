@@ -1,4 +1,5 @@
 using System;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,21 +7,19 @@ namespace CodeBase.Infrastructure.Services.Input
 {
     public class InputService :  IInputService, GameInput.IGameplayActions
     {
-        private readonly GameInput _gameInput;
-        private readonly IInputServiceMediator _serviceMediator;
-        
-        public InputService(IInputServiceMediator inputServiceMediator, IRuleManagerMediator ruleManagerMediator)
+        private  GameInput _gameInput;
+        private  IInputServiceMediator _serviceMediator;
+
+        public void Initialize()
         {
-            _serviceMediator = inputServiceMediator;
-            
+            _serviceMediator = ServiceLocator.Get<IInputServiceMediator>();
             _gameInput = new GameInput();
-                
             _gameInput.Gameplay.SetCallbacks(this);
             
-            ruleManagerMediator.OnGameStarted += SetGameplayMode;
-            ruleManagerMediator.OnGameFinished += SetUIMode;
+            ServiceLocator.Get<IRuleManagerMediator>().OnGameStarted += SetGameplayMode;
+            ServiceLocator.Get<IRuleManagerMediator>().OnGameFinished += SetUIMode;
         }
-
+        
         void SetGameplayMode()
         {
             _gameInput.Gameplay.Enable();

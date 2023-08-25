@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using CodeBase.Infrastructure;
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {
@@ -16,9 +17,9 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
         [SerializeField] Color _whitePanelColor;
         [SerializeField] Color _blackPanelColor;
 
-        public void Initialize(IRuleManager ruleManager)
+        public void Initialize()
         {
-            _ruleManager = ruleManager;
+            _ruleManager = ServiceLocator.Get<IRuleManager>();
         }
 
         public void Open(TeamType type)

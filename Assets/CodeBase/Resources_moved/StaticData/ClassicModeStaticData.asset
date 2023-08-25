@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e54a7dc4607d40b98f5c44b31d8cbbc, type: 3}
   m_Name: ClassicModeStaticData
   m_EditorClassIdentifier: 
+  _gameModeType: 1
   _boardSize: 11
   _whiteWarriorsAmount: 12
   _blackWarriorsAmount: 24

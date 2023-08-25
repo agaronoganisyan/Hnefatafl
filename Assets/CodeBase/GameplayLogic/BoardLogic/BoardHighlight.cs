@@ -5,6 +5,8 @@ using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.Infrastructure.Services.StaticData;
 
 namespace CodeBase.GameplayLogic.BoardLogic
 {
@@ -21,15 +23,18 @@ namespace CodeBase.GameplayLogic.BoardLogic
 
         private string _tileHighlightAddress = "TileHighlight"; 
         
-        public void Initialize(IRuleManagerMediator ruleManagerMediator,IAssetsProvider assetsProvider,
-            IUnitsPathCalculatorsManagerMediator unitsPathCalculatorsManagerMediator, IUnitsComanderMediator unitsComanderMediator)
+        public void Initialize()
         {
-            _assetsProvider = assetsProvider;
-            
-            unitsPathCalculatorsManagerMediator.OnPathCalculated += EnableHighlight;
-            unitsComanderMediator.OnUnitUnselected += DisableHighlight;
+            GameModeStaticData currentModeData =
+                ServiceLocator.Get<IGameModeStaticDataService>().GetModeData(GameModeType.Classic);
 
-            ruleManagerMediator.OnGameRestarted += Restart;
+            _boardSize = currentModeData.BoardSize;
+            
+            _assetsProvider = ServiceLocator.Get<IAssetsProvider>();
+            
+            ServiceLocator.Get<IUnitsPathCalculatorsManagerMediator>().OnPathCalculated += EnableHighlight;
+            ServiceLocator.Get<IUnitsComanderMediator>().OnUnitUnselected += DisableHighlight;
+            ServiceLocator.Get<IRuleManagerMediator>().OnGameRestarted += Restart;
         }
 
         void Restart()
@@ -37,9 +42,8 @@ namespace CodeBase.GameplayLogic.BoardLogic
             DisableHighlight();
         }
 
-        public async Task GenerateBoardHighlight(int boardSize)
+        public async Task GenerateBoardHighlight()
         {
-            _boardSize = boardSize;
             _highlights = new ITileHighlight[_boardSize, _boardSize];
 
             for (int x = 0; x < _boardSize; x++)

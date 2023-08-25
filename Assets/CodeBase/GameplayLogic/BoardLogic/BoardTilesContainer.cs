@@ -1,4 +1,6 @@
 using CodeBase.GameplayLogic.TileLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.Infrastructure.Services.StaticData;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.BoardLogic
@@ -12,11 +14,16 @@ namespace CodeBase.GameplayLogic.BoardLogic
     Vector2Int _lowerRightShelterIndex;
 
     int _boardSize;
-        
-    public void GenerateBoard(int boardSize)
+    
+    public void Initialize()
     {
-        _boardSize = boardSize;
-
+        GameModeStaticData currentModeData =
+            ServiceLocator.Get<IGameModeStaticDataService>().GetModeData(GameModeType.Classic);
+        
+        _boardSize = currentModeData.BoardSize;
+    }
+    public void GenerateBoard()
+    {
         int boardSizeHalf = (int)((float)_boardSize / 2 - 0.5f);
         _thronIndex = new Vector2Int(boardSizeHalf, boardSizeHalf);
         _upperLeftShelterIndex = new Vector2Int(0, 0);
@@ -35,11 +42,6 @@ namespace CodeBase.GameplayLogic.BoardLogic
         return TileType.Regular;
     }
 
-    public Tile GetTileByIndex(Vector2Int index)
-    {
-        throw new System.NotImplementedException();
-    }
-
     public bool IsIndexOnBoard(Vector2Int index)
     {
         return index.x >= 0 && index.y >= 0 && index.x < _boardSize && index.y < _boardSize;
@@ -54,6 +56,5 @@ namespace CodeBase.GameplayLogic.BoardLogic
     {
         return new Vector2Int(Mathf.RoundToInt(worldPos.x), Mathf.RoundToInt(worldPos.z));
     }
-    
     }
 }

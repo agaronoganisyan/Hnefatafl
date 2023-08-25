@@ -7,7 +7,10 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         public event Action OnUnitSelected;
         public event Action OnUnitUnselected;
         
-        
+        public void Initialize()
+        {
+            
+        }
         public void NotifyAboutSelectedUnit()
         {
             OnUnitSelected?.Invoke();

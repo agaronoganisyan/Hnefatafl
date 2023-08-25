@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
 {
@@ -7,21 +8,21 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
     {
         private IUnitsPathCalculatorsManagerMediator _unitsPathCalculatorsManagerMediator;
         
-        private static readonly Dictionary<UnitType, UnitPathCalculator> Calculators = new Dictionary<UnitType, UnitPathCalculator>();
-
-        public UnitsPathCalculatorsManager(IUnitsPathCalculatorsManagerMediator unitsPathCalculatorsManagerMediator)
+        private readonly Dictionary<UnitType, UnitPathCalculator> _calculators = new Dictionary<UnitType, UnitPathCalculator>();
+        
+        public void Initialize()
         {
-            _unitsPathCalculatorsManagerMediator = unitsPathCalculatorsManagerMediator;
+            _unitsPathCalculatorsManagerMediator = ServiceLocator.Get<IUnitsPathCalculatorsManagerMediator>();
         }
-
+        
         public void AddUnitPathCalculator(UnitType unitType, UnitPathCalculator calculator)
         {
-            Calculators.Add(unitType,calculator);
+            _calculators.Add(unitType,calculator);
         }
 
         public IUnitPath CalculatePath(BattleUnit battleUnit)
         {
-            if (Calculators.TryGetValue(battleUnit.UnitType, out var calculator))
+            if (_calculators.TryGetValue(battleUnit.UnitType, out var calculator))
             {
                 IUnitPath unitPath = calculator.CalculatePaths(battleUnit.Index);
                 
@@ -35,7 +36,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
         
         public bool IsUnitHasAvailableMoves(BattleUnit battleUnit)
         {
-            if (Calculators.TryGetValue(battleUnit.UnitType, out var calculator))
+            if (_calculators.TryGetValue(battleUnit.UnitType, out var calculator))
             {
                 return calculator.IsThereAvailableMoves(battleUnit.Index);
             }

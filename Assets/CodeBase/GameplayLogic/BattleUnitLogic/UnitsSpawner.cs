@@ -1,30 +1,34 @@
 using System.Threading.Tasks;
 using CodeBase.Infrastructure;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.Infrastructure.Services.StaticData;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
     public class UnitsSpawner : IUnitsSpawner
     {
+    private IUnitsFactory _unitsFactory;    
+    private IUnitsStateContainer _unitsStateContainer;
+    private ITeamsUnitsContainer _teamsUnitsContainer;
+    private int _boardSize;
         
-    private readonly IUnitsFactory _unitsFactory;    
-    private readonly IUnitsStateContainer _unitsStateContainer;
-    private readonly ITeamsUnitsContainer _teamsUnitsContainer;
-    private readonly int _boardSize;
-
-    public UnitsSpawner(IRuleManagerMediator ruleManagerMediator, IUnitsFactory unitsFactory, IUnitsStateContainer unitsStateContainer,ITeamsUnitsContainer teamsUnitsContainer, int boardSize)
+    public void Initialize()
     {
-        _unitsFactory = unitsFactory;
-        _unitsStateContainer = unitsStateContainer;
-        _teamsUnitsContainer = teamsUnitsContainer;
-        _boardSize = boardSize;
+        GameModeStaticData currentModeData =
+            ServiceLocator.Get<IGameModeStaticDataService>().GetModeData(GameModeType.Classic);
+        
+        _unitsFactory = ServiceLocator.Get<IUnitsFactory>();
+        _unitsStateContainer =  ServiceLocator.Get<IUnitsStateContainer>();
+        _teamsUnitsContainer =  ServiceLocator.Get<ITeamsUnitsContainer>();
+        _boardSize = currentModeData.BoardSize;
 
-        ruleManagerMediator.OnGameRestarted += Restart;
+        ServiceLocator.Get<IRuleManagerMediator>().OnGameRestarted += Restart;
     }
-
-    public async Task Initialize()
+    
+    public async Task InitializeUnits()
     {
-        await _unitsFactory.Initialize();
+        await _unitsFactory.InitializePool();
         DisableAllUnits();
     }
         
@@ -104,6 +108,5 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
         _unitsStateContainer.AddUnitToTile(intsUnit, index);
     }
-    
     }
 }

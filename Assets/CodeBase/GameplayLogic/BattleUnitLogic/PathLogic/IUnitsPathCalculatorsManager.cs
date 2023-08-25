@@ -1,8 +1,9 @@
 using System;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
 {
-    public interface IUnitsPathCalculatorsManager
+    public interface IUnitsPathCalculatorsManager : IService
     {
         public void AddUnitPathCalculator(UnitType unitType, UnitPathCalculator calculator);
 
