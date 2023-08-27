@@ -5,6 +5,7 @@ namespace CodeBase.Infrastructure
 {
     public class RuleManager : IRuleManager
     {
+        public IRuleManagerMediator RuleManagerMediator => _managerMediator;
         private IRuleManagerMediator _managerMediator;
         
         bool _isGameFinished;
@@ -12,7 +13,7 @@ namespace CodeBase.Infrastructure
         
         public void Initialize()
         {
-            _managerMediator = ServiceLocator.Get<IRuleManagerMediator>();
+            _managerMediator = new RuleManagerMediator();
         }
         
         public void StartGame()

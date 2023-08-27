@@ -7,11 +7,6 @@ namespace CodeBase.Infrastructure.Services.Input
     {
         public event Action<Vector2> OnClickedOnBoard;
         
-        public void Initialize()
-        {
-            
-        }
-        
         public void Notify(Vector2 pos)
         {
             OnClickedOnBoard?.Invoke(pos);

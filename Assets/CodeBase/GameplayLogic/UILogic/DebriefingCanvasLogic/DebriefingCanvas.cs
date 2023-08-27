@@ -15,9 +15,9 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
         {
             base.Close();
 
-            ServiceLocator.Get<IRuleManagerMediator>().OnGameStarted += base.Close;
-            ServiceLocator.Get<IRuleManagerMediator>().OnWhiteTeamWon += OpenWhiteScreen;
-            ServiceLocator.Get<IRuleManagerMediator>().OnBlackTeamWon += OpenBlackScreen;
+            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameStarted += base.Close;
+            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnWhiteTeamWon += OpenWhiteScreen;
+            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnBlackTeamWon += OpenBlackScreen;
             
             _debriefingPanel.Initialize();
         }

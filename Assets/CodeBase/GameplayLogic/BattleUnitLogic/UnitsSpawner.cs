@@ -23,7 +23,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         _teamsUnitsContainer =  ServiceLocator.Get<ITeamsUnitsContainer>();
         _boardSize = currentModeData.BoardSize;
 
-        ServiceLocator.Get<IRuleManagerMediator>().OnGameRestarted += Restart;
+        ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameRestarted += Restart;
     }
     
     public async Task InitializeUnits()

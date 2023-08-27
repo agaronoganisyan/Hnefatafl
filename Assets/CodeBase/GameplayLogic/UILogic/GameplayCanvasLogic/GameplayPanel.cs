@@ -14,7 +14,7 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
 
         public void Initialize()
         {
-            ServiceLocator.Get<ITurnManagerMediator>().OnTeamOfTurnChanged += SetTeamOfTurn;
+            ServiceLocator.Get<ITurnManager>().TurnManagerMediator.OnTeamOfTurnChanged += SetTeamOfTurn;
         }
 
         void SetTeamOfTurn(TeamType teamType)

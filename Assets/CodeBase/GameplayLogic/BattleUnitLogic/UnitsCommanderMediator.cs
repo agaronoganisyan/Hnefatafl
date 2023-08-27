@@ -2,15 +2,10 @@ using System;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
-    public class UnitsComanderMediator : IUnitsComanderMediator
+    public class UnitsCommanderMediator : IUnitsCommanderMediator
     {
         public event Action OnUnitSelected;
         public event Action OnUnitUnselected;
-        
-        public void Initialize()
-        {
-            
-        }
         public void NotifyAboutSelectedUnit()
         {
             OnUnitSelected?.Invoke();

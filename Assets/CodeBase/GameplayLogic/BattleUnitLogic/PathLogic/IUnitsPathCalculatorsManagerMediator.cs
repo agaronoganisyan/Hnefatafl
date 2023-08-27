@@ -3,7 +3,7 @@ using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
 {
-    public interface IUnitsPathCalculatorsManagerMediator : IService
+    public interface IUnitsPathCalculatorsManagerMediator
     {
         event Action<IUnitPath> OnPathCalculated;
 

@@ -8,6 +8,9 @@ namespace CodeBase.GameplayLogic.TurnLogic
 {
     public class TurnManager : ITurnManager
     {
+        public ITurnManagerMediator TurnManagerMediator => _managerMediator;
+        private ITurnManagerMediator _managerMediator;
+        
         public TeamType TeamOfTurn => _teamOfTurn;
         private TeamType _teamOfTurn;
 
@@ -16,14 +19,12 @@ namespace CodeBase.GameplayLogic.TurnLogic
 
         public IUnitPath SelectedUnitPath => _selectedUnitPath;
         private IUnitPath _selectedUnitPath;
-
-        private ITurnManagerMediator _managerMediator;
         
         public void Initialize()
         {
-            _managerMediator = ServiceLocator.Get<ITurnManagerMediator>();
+            _managerMediator = new TurnManagerMediator();
             
-            ServiceLocator.Get<IRuleManagerMediator>().OnGameStarted += Prepare;
+            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameStarted += Prepare;
         }
         
         public void SwitchTeamOfTurn()

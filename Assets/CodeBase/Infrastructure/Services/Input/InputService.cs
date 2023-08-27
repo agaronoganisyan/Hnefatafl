@@ -7,17 +7,19 @@ namespace CodeBase.Infrastructure.Services.Input
 {
     public class InputService :  IInputService, GameInput.IGameplayActions
     {
+        public IInputServiceMediator InputServiceMediator => _serviceMediator;
+        private IInputServiceMediator _serviceMediator;
+        
         private  GameInput _gameInput;
-        private  IInputServiceMediator _serviceMediator;
 
         public void Initialize()
         {
-            _serviceMediator = ServiceLocator.Get<IInputServiceMediator>();
+            _serviceMediator = new InputServiceMediator();
             _gameInput = new GameInput();
             _gameInput.Gameplay.SetCallbacks(this);
             
-            ServiceLocator.Get<IRuleManagerMediator>().OnGameStarted += SetGameplayMode;
-            ServiceLocator.Get<IRuleManagerMediator>().OnGameFinished += SetUIMode;
+            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameStarted += SetGameplayMode;
+            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameFinished += SetUIMode;
         }
         
         void SetGameplayMode()

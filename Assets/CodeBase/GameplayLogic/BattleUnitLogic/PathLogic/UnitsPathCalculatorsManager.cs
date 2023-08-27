@@ -6,13 +6,14 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
 {
     public class UnitsPathCalculatorsManager : IUnitsPathCalculatorsManager
     {
+        public IUnitsPathCalculatorsManagerMediator UnitsPathCalculatorsManagerMediator => _unitsPathCalculatorsManagerMediator;
         private IUnitsPathCalculatorsManagerMediator _unitsPathCalculatorsManagerMediator;
         
         private readonly Dictionary<UnitType, UnitPathCalculator> _calculators = new Dictionary<UnitType, UnitPathCalculator>();
         
         public void Initialize()
         {
-            _unitsPathCalculatorsManagerMediator = ServiceLocator.Get<IUnitsPathCalculatorsManagerMediator>();
+            _unitsPathCalculatorsManagerMediator = new UnitsPathCalculatorsManagerMediator();
         }
         
         public void AddUnitPathCalculator(UnitType unitType, UnitPathCalculator calculator)

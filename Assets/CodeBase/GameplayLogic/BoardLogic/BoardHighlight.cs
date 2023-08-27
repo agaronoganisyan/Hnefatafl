@@ -32,9 +32,9 @@ namespace CodeBase.GameplayLogic.BoardLogic
             
             _assetsProvider = ServiceLocator.Get<IAssetsProvider>();
             
-            ServiceLocator.Get<IUnitsPathCalculatorsManagerMediator>().OnPathCalculated += EnableHighlight;
-            ServiceLocator.Get<IUnitsComanderMediator>().OnUnitUnselected += DisableHighlight;
-            ServiceLocator.Get<IRuleManagerMediator>().OnGameRestarted += Restart;
+            ServiceLocator.Get<IUnitsPathCalculatorsManager>().UnitsPathCalculatorsManagerMediator.OnPathCalculated += EnableHighlight;
+            ServiceLocator.Get<IUnitsCommander>().CommanderMediatorMediator.OnUnitUnselected += DisableHighlight;
+            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameRestarted += Restart;
         }
 
         void Restart()

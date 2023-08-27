@@ -3,7 +3,7 @@ using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
-    public interface IUnitsComanderMediator : IService
+    public interface IUnitsCommanderMediator
     {
         event Action OnUnitSelected;
         event Action OnUnitUnselected;

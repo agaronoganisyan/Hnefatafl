@@ -11,18 +11,18 @@ namespace CodeBase.Infrastructure.Services.Input
     public class InputHandler : IInputHandler
     {
         private IBoardTilesContainer _boardTilesContainer;
-        private IUnitsComander _unitsComander;
+        private IUnitsCommander _unitsCommander;
         private ITurnManager _turnManager;
         private Camera _camera;
 
         public void Initialize()
         {
             _camera = Camera.main;
-            _unitsComander = ServiceLocator.Get<IUnitsComander>();
+            _unitsCommander = ServiceLocator.Get<IUnitsCommander>();
             _boardTilesContainer = ServiceLocator.Get<IBoardTilesContainer>();
             _turnManager = ServiceLocator.Get<ITurnManager>();
             
-            ServiceLocator.Get<IInputServiceMediator>().OnClickedOnBoard += ProcessClickOnBoard;
+            ServiceLocator.Get<IInputService>().InputServiceMediator.OnClickedOnBoard += ProcessClickOnBoard;
         }
         
         public void ProcessClickOnBoard(Vector2 mousePosition)
@@ -33,11 +33,11 @@ namespace CodeBase.Infrastructure.Services.Input
             
             if (_turnManager.SelectedUnit != null)
             {
-                _unitsComander.MoveUnit(index);
+                _unitsCommander.MoveUnit(index);
             }
             else
             {
-                _unitsComander.SelectUnit(index);
+                _unitsCommander.SelectUnit(index);
             }
         }
     }

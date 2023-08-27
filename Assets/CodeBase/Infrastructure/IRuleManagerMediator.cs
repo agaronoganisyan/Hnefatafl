@@ -3,7 +3,7 @@ using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.Infrastructure
 {
-    public interface IRuleManagerMediator : IService
+    public interface IRuleManagerMediator
     {
         event Action OnGameStarted;
         event Action OnGameRestarted;

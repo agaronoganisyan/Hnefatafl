@@ -15,7 +15,7 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
         {
             base.Close();
 
-            ServiceLocator.Get<IRuleManagerMediator>().OnGameStarted += base.Open;
+            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameStarted += base.Open;
             
             _gameplayPanel.Initialize();
         }

@@ -10,11 +10,6 @@ namespace CodeBase.Infrastructure
         public event Action OnWhiteTeamWon;
         public event Action OnBlackTeamWon;
         
-        public void Initialize()
-        {
-            
-        }
-        
         public void NotifyAboutStartedGame()
         {
             OnGameStarted?.Invoke();

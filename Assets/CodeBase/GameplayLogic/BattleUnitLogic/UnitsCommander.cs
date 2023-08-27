@@ -8,8 +8,11 @@ using UnityEngine;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
-    public class UnitsComander : IUnitsComander
+    public class UnitsCommander : IUnitsCommander
     {
+        public IUnitsCommanderMediator CommanderMediatorMediator => _commanderMediatorMediator;
+        private IUnitsCommanderMediator _commanderMediatorMediator;
+        
         private ITurnManager _turnManager;
         private IUnitsPathCalculatorsManager _unitsPathCalculatorsManager;
         private IUnitMoveValidator _unitMoveValidator;
@@ -17,7 +20,6 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         private IUnitsStateContainer _unitsStateContainer;
         private IUnitsPlacementHandler _unitsPlacementHandler;
         private IBoardTilesContainer _boardTilesContainer;
-        private IUnitsComanderMediator _comanderMediator;
         
         public void Initialize()
         {
@@ -28,7 +30,8 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             _unitSelectValidator = ServiceLocator.Get<IUnitSelectValidator>();
             _unitsPlacementHandler = ServiceLocator.Get<IUnitsPlacementHandler>();
             _boardTilesContainer = ServiceLocator.Get<IBoardTilesContainer>();
-            _comanderMediator = ServiceLocator.Get<IUnitsComanderMediator>();
+            
+            _commanderMediatorMediator = new UnitsCommanderMediator();
         }
         
         public void SelectUnit(Vector2Int index)
@@ -39,7 +42,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             
             _turnManager.SelectUnit(selectedUnit,_unitsPathCalculatorsManager.CalculatePath(selectedUnit));
             
-            _comanderMediator.NotifyAboutSelectedUnit(); 
+            _commanderMediatorMediator.NotifyAboutSelectedUnit(); 
         }
 
         public void MoveUnit(Vector2Int newIndex)
@@ -56,7 +59,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
                 _turnManager.UnselectUnit();
             }
             
-            _comanderMediator.NotifyAboutUnselectedUnit();
+            _commanderMediatorMediator.NotifyAboutUnselectedUnit();
         }
     }
 }
