@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using CodeBase.Infrastructure;
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic

@@ -1,6 +1,6 @@
 using System;
 
-namespace CodeBase.Infrastructure
+namespace CodeBase.Infrastructure.Services.RuleManagerLogic
 {
     public class RuleManagerMediator : IRuleManagerMediator
     {

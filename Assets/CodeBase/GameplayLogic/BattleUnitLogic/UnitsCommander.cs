@@ -1,6 +1,6 @@
-using System;
 using CodeBase.GameplayLogic.BattleUnitLogic.MoveLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
+using CodeBase.GameplayLogic.BattleUnitLogic.UnitSelectValidatorLogic;
 using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic.TurnLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
-    public class UnitsCommander : IUnitsCommander
+    public abstract class UnitsCommander : IUnitsCommander
     {
         public IUnitsCommanderMediator CommanderMediatorMediator => _commanderMediatorMediator;
         private IUnitsCommanderMediator _commanderMediatorMediator;
@@ -21,7 +21,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         private IUnitsPlacementHandler _unitsPlacementHandler;
         private IBoardTilesContainer _boardTilesContainer;
         
-        public void Initialize()
+        public virtual void Initialize()
         {
             _turnManager = ServiceLocator.Get<ITurnManager>();
             _unitsStateContainer = ServiceLocator.Get<IUnitsStateContainer>();
@@ -34,7 +34,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             _commanderMediatorMediator = new UnitsCommanderMediator();
         }
         
-        public void SelectUnit(Vector2Int index)
+        public virtual void SelectUnit(Vector2Int index)
         {
             BattleUnit selectedUnit = _unitSelectValidator.TryToSelectUnit(_turnManager,index);
 
@@ -45,7 +45,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             _commanderMediatorMediator.NotifyAboutSelectedUnit(); 
         }
 
-        public void MoveUnit(Vector2Int newIndex)
+        public virtual void MoveUnit(Vector2Int newIndex)
         {
             if (_unitMoveValidator.IsUnitCanMove(_turnManager.SelectedUnitPath, newIndex))
             {

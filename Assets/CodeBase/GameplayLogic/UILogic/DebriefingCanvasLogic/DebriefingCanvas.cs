@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CodeBase.Infrastructure;
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic

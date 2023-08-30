@@ -6,14 +6,18 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
     {
         None,
         PlaymodeSelection,
-        Connection
+        MultiplayerPlaymode,
+        TeamSelection
     }
 
     public abstract class LobbyPanel : MonoBehaviour
     {
-        [SerializeField] private CanvasGroup _canvasGroup;
+        public LobbyPanelType Type => _type;
+        protected LobbyPanelType _type;
 
-        private LobbyPanelsManager _lobbyPanelsManager;
+        protected LobbyPanelsManager _lobbyPanelsManager;
+
+        [SerializeField] private CanvasGroup _canvasGroup;
         
         public virtual void Initialize(LobbyPanelsManager lobbyPanelsManager)
         {
@@ -23,14 +27,16 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
         public virtual void Show()
         {
             _canvasGroup.alpha = 1;
+            _canvasGroup.interactable = true;
+            _canvasGroup.blocksRaycasts = true;
         }
-        
         public virtual void Hide()
         {
             _canvasGroup.alpha = 0;
+            _canvasGroup.interactable = false;
+            _canvasGroup.blocksRaycasts = false;
         }
-        
-        public virtual void JumpBack()
+        public void JumpBack()
         {
             _lobbyPanelsManager.JumpBack();
         }

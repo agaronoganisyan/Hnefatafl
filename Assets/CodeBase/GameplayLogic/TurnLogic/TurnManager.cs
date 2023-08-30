@@ -2,6 +2,7 @@ using System;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using CodeBase.Infrastructure;
+using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.TurnLogic

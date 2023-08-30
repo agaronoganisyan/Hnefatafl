@@ -1,7 +1,6 @@
-using System;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
-namespace CodeBase.Infrastructure
+namespace CodeBase.Infrastructure.Services.RuleManagerLogic
 {
     public interface IRuleManager : IService
     {

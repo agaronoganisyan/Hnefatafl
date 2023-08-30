@@ -1,9 +1,6 @@
-using System;
-using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-
-namespace CodeBase.Infrastructure
+namespace CodeBase.Infrastructure.Services.RuleManagerLogic
 {
-    public class RuleManager : IRuleManager
+    public abstract class RuleManager : IRuleManager
     {
         public IRuleManagerMediator RuleManagerMediator => _managerMediator;
         private IRuleManagerMediator _managerMediator;
@@ -11,13 +8,15 @@ namespace CodeBase.Infrastructure
         bool _isGameFinished;
         public bool IsGameFinished => _isGameFinished;
         
-        public void Initialize()
+        public virtual void Initialize()
         {
             _managerMediator = new RuleManagerMediator();
         }
         
         public void StartGame()
         {
+            if (!IsCanStartGame()) return;
+            
             _isGameFinished = false;
 
             _managerMediator.NotifyAboutStartedGame();
@@ -44,5 +43,7 @@ namespace CodeBase.Infrastructure
 
             _managerMediator.NotifyAboutWhiteTeamWon();
         }
+
+        protected abstract bool IsCanStartGame();
     }
 }

@@ -5,6 +5,7 @@ using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
+using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.Infrastructure.Services.StaticData;
 

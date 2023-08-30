@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using CodeBase.Infrastructure;
+using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.Infrastructure.Services.StaticData;
 using UnityEngine;
