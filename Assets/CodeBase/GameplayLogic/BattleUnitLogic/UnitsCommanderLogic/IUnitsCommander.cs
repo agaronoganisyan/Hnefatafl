@@ -1,7 +1,7 @@
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using UnityEngine;
 
-namespace CodeBase.GameplayLogic.BattleUnitLogic
+namespace CodeBase.GameplayLogic.BattleUnitLogic.UnitsCommanderLogic
 {
     public interface IUnitsCommander : IService
     {

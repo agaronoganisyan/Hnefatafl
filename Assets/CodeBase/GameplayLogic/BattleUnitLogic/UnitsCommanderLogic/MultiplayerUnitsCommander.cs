@@ -4,7 +4,7 @@ using ExitGames.Client.Photon;
 using Photon.Realtime;
 using UnityEngine;
 
-namespace CodeBase.GameplayLogic.BattleUnitLogic
+namespace CodeBase.GameplayLogic.BattleUnitLogic.UnitsCommanderLogic
 {
     public class MultiplayerUnitsCommander : UnitsCommander,IOnEventCallback
     {
@@ -37,8 +37,8 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         {
             NetworkEventType type = _networkManager.GetNetworkEventType(photonEvent);
 
-            if (type == NetworkEventType.SelectUnit) SelectUnit(_networkManager.GetSelectUnitEventValue(photonEvent));
-            else if (type == NetworkEventType.MoveUnit) MoveUnit(_networkManager.GetMoveUnitEventValue(photonEvent));
+            if (type == NetworkEventType.SelectUnit) base.SelectUnit(_networkManager.GetSelectUnitEventValue(photonEvent));
+            else if (type == NetworkEventType.MoveUnit) base.MoveUnit(_networkManager.GetMoveUnitEventValue(photonEvent));
         }
     }
 }

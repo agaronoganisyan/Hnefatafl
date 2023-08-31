@@ -5,9 +5,9 @@ using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.MoveLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
+using CodeBase.GameplayLogic.BattleUnitLogic.UnitsCommanderLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.UnitSelectValidatorLogic;
 using CodeBase.GameplayLogic.TurnLogic;
-using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.Infrastructure.Services.GameFactoryLogic;
 using CodeBase.Infrastructure.Services.Input;
@@ -15,6 +15,7 @@ using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.Infrastructure.Services.StaticData;
 using CodeBase.NetworkLogic;
+using CodeBase.NetworkLogic.RoomLogic;
 
 namespace CodeBase.Infrastructure
 {
@@ -54,11 +55,12 @@ namespace CodeBase.Infrastructure
                 await ServiceLocator.Get<IGameInfrastructureFactory>().CreateNetworkManager());
             
             ServiceLocator.Register<IGameModeStaticDataService>(new GameModeStaticDataService());
+            ServiceLocator.Register<IRuleManager>(new RuleManager());
             
             
             
-            //ServiceLocator.Register<IRuleManager>(new RuleManager());
-            ServiceLocator.Register<IRuleManager>(new MultiplayerRuleManager());
+            //LOOOOOOOK
+            ServiceLocator.Register<IGameRoomHandler>(new MultiplayerRoomHandler());
             //LOOOOOOOK
             
             
@@ -76,15 +78,7 @@ namespace CodeBase.Infrastructure
             ServiceLocator.Register<ITeamMoveValidator>(new TeamMoveValidator());
             ServiceLocator.Register<ITurnManager>(new TurnManager());
             ServiceLocator.Register<IUnitMoveValidator>(new UnitMoveValidator());
-            
-            
-            
-            //ServiceLocator.Register<IUnitSelectValidator>(new UnitSelectValidator());
-            ServiceLocator.Register<IUnitSelectValidator>(new MultiplayerUnitSelectValidator());
-            //LOOOOOOOK
-            
-            
-            
+            ServiceLocator.Register<IUnitSelectValidator>(new UnitSelectValidator());
             ServiceLocator.Register<IUnitsPlacementHandler>(new UnitsPlacementHandler());
             
             
@@ -97,7 +91,12 @@ namespace CodeBase.Infrastructure
             
             ServiceLocator.Register<IUnitsFactory>(new UnitsFactory());
             ServiceLocator.Register<IUnitsSpawner>(new UnitsSpawner());
-            ServiceLocator.Register<IInputHandler>( new InputHandler());
+            
+            
+            
+            //ServiceLocator.Register<IInputHandler>( new InputHandler());
+            ServiceLocator.Register<IInputHandler>( new MultiplayerInputHandler());
+            //LOOOOOOOK
         }
         
         private async Task InitializeServices()
@@ -110,6 +109,7 @@ namespace CodeBase.Infrastructure
             await ServiceLocator.Get<IGameModeStaticDataService>().LoadModeData(GameModeType.Classic);
 
             ServiceLocator.Get<IRuleManager>().Initialize();
+            ServiceLocator.Get<IGameRoomHandler>().Initialize();
             ServiceLocator.Get<IInputService>().Initialize();
             
             ServiceLocator.Get<IBoardTilesContainer>().Initialize();

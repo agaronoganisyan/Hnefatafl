@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
 {
     public class LobbyPanelsManager  : MonoBehaviour
     {
+        private ILobbyCanvas _lobbyCanvas;
+        
         private LobbyPanel _activePanel;
         
         [SerializeField] private LobbyPanel[] _allPanels;
@@ -12,8 +15,10 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
         private Dictionary<LobbyPanelType, LobbyPanel> _lobbyDictionary = new Dictionary<LobbyPanelType, LobbyPanel>();
         private List<LobbyPanelType> _panelsHistory = new List<LobbyPanelType>();
         
-        public void Initialize()
+        public void Initialize(ILobbyCanvas lobbyCanvas)
         {
+            _lobbyCanvas = lobbyCanvas;
+            
             foreach (LobbyPanel panel in _allPanels)
             {
                 if (_allPanels == null) continue;
@@ -57,6 +62,11 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
 
                 SetActivePanel(_panelsHistory[^1],true);
             }
+        }
+
+        public void HideCanvas()
+        {
+            _lobbyCanvas.ClosePanel();
         }
     }
 }

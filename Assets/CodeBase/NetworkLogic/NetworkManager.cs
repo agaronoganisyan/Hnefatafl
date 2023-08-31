@@ -1,4 +1,5 @@
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.Helpers;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
@@ -14,20 +15,23 @@ namespace CodeBase.NetworkLogic
         
         private const byte SELECT_UNIT_EVENT_CODE  = 1;
         private const byte MOVE_UNIT_EVENT_CODE  = 2;
-
+        private const byte TRY_TO_START_GAME_EVENT_CODE  = 3;
+        
         private INetworkManagerMediator _networkManagerMediator;
         public INetworkManagerMediator NetworkManagerMediator => _networkManagerMediator;
         
         public void Initialize()
         {
             _networkManagerMediator = new NetworkManagerMediator();
+            PhotonPeer.RegisterType(typeof(Vector2Int), 242, SerializableVector2Int.SerializeVector2Int, SerializableVector2Int.DeserializeVector2Int);
         }
         
         public void ConnectToServer()
         {
             PhotonNetwork.AutomaticallySyncScene = true;
-            
             PhotonNetwork.ConnectUsingSettings();
+            
+            _networkManagerMediator.NotifyAboutChangingConnectionStatus("ConnectToServer");
         }
 
         public void SelectPlayerTeam(TeamType teamType)
@@ -49,7 +53,12 @@ namespace CodeBase.NetworkLogic
 
             return selectedTeam;
         }
-        
+
+        public bool IsConnected()
+        {
+            return PhotonNetwork.IsConnected;
+        }
+
         public TeamType IsInCurrentRoomTeamWasSelected()
         {
             TeamType selectedTeam = TeamType.None;
@@ -78,16 +87,22 @@ namespace CodeBase.NetworkLogic
 
         public void RaiseSelectUnitEvent(Vector2Int index)
         {
-            object[] content = new object[] {index };
+            object[] content = new object[] { new Vector2Int(index.x, index.y) };
             RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; 
             PhotonNetwork.RaiseEvent(SELECT_UNIT_EVENT_CODE, content, raiseEventOptions, SendOptions.SendReliable);
         }
 
         public void RaiseMoveUnitEvent(Vector2Int index)
         {
-            object[] content = new object[] { index};
+            object[] content = new object[] { new Vector2Int(index.x, index.y) };
             RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; 
             PhotonNetwork.RaiseEvent(MOVE_UNIT_EVENT_CODE, content, raiseEventOptions, SendOptions.SendReliable);
+        }
+
+        public void RaiseTryToStartGameEvent()
+        {
+            RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; 
+            PhotonNetwork.RaiseEvent(TRY_TO_START_GAME_EVENT_CODE,null, raiseEventOptions, SendOptions.SendReliable);
         }
 
         public NetworkEventType GetNetworkEventType(EventData photonEvent)
@@ -96,21 +111,20 @@ namespace CodeBase.NetworkLogic
 
             if (eventCode == SELECT_UNIT_EVENT_CODE) return NetworkEventType.SelectUnit;
             else if (eventCode == MOVE_UNIT_EVENT_CODE) return NetworkEventType.MoveUnit;
-            
+            else if (eventCode == TRY_TO_START_GAME_EVENT_CODE) return NetworkEventType.TryToStartGame;
+
             return NetworkEventType.None;
         }
 
         public Vector2Int GetSelectUnitEventValue(EventData photonEvent)
         {
             object[] data = (object[])photonEvent.CustomData;
-
             return (Vector2Int)data[0];
         }
 
         public Vector2Int GetMoveUnitEventValue(EventData photonEvent)
         {
             object[] data = (object[])photonEvent.CustomData;
-
             return (Vector2Int)data[0];
         }
         
@@ -119,18 +133,18 @@ namespace CodeBase.NetworkLogic
             PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = MAX_PLAYERS_AMOUNT });
         }
 
-        public void JoinRoom()
+        public void JoinRandomRoom()
         {
             PhotonNetwork.JoinRandomRoom();
         }
-
 
         #region MonoBehaviourPunCallbacks Callbacks
 
         public override void OnConnectedToMaster()
         {
             string message = "OnConnectedToMaster()";
-            _networkManagerMediator.NotifyAboutSelectedUnit(message);
+            _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
+            _networkManagerMediator.NotifyAboutConnecting();
             
             Debug.Log("OnConnectedToMaster() was called by PUN");
         }
@@ -138,7 +152,7 @@ namespace CodeBase.NetworkLogic
         public override void OnDisconnected(DisconnectCause cause)
         {
             string message = "OnDisconnected()";
-            _networkManagerMediator.NotifyAboutSelectedUnit(message);
+            _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
 
             Debug.LogWarningFormat("OnDisconnected() was called by PUN with reason {0}", cause);
         }
@@ -146,16 +160,26 @@ namespace CodeBase.NetworkLogic
         public override void OnJoinedRoom()
         {
             string message = "OnJoinedRoom()";
-            _networkManagerMediator.NotifyAboutSelectedUnit(message);
+            _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
             _networkManagerMediator.NotifyAboutJoiningRoom();
  
             Debug.Log(message);
         }
-        
+
+        public override void OnJoinRoomFailed(short returnCode, string message)
+        {
+            string messsage = "OnJoinRoomFailed()";
+            _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
+            _networkManagerMediator.NotifyAboutFailedJoiningRoom();
+            
+            Debug.Log(messsage);
+        }
+
         public override void OnJoinRandomFailed(short returnCode, string message)
         {
             string messsage = "OnJoinRandomFailed()";
-            _networkManagerMediator.NotifyAboutSelectedUnit(message);
+            _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
+            _networkManagerMediator.NotifyAboutFailedJoiningRoom();
 
             Debug.Log("PUN Basics Tutorial/Launcher:OnJoinRandomFailed() was called by PUN. No random room available, so we create one." +
                       "\nCalling: PhotonNetwork.CreateRoom");
@@ -167,7 +191,7 @@ namespace CodeBase.NetworkLogic
         public override void OnPlayerEnteredRoom(Player newPlayer)
         {
             string message = $"Player {newPlayer.ActorNumber} entered the room";
-            _networkManagerMediator.NotifyAboutSelectedUnit(message);
+            _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
 
             Debug.Log(message);
         }

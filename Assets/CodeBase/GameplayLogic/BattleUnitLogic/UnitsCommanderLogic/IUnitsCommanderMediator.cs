@@ -1,7 +1,6 @@
 using System;
-using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
-namespace CodeBase.GameplayLogic.BattleUnitLogic
+namespace CodeBase.GameplayLogic.BattleUnitLogic.UnitsCommanderLogic
 {
     public interface IUnitsCommanderMediator
     {

@@ -1,6 +1,6 @@
 namespace CodeBase.Infrastructure.Services.RuleManagerLogic
 {
-    public abstract class RuleManager : IRuleManager
+    public class RuleManager : IRuleManager
     {
         public IRuleManagerMediator RuleManagerMediator => _managerMediator;
         private IRuleManagerMediator _managerMediator;
@@ -15,8 +15,6 @@ namespace CodeBase.Infrastructure.Services.RuleManagerLogic
         
         public void StartGame()
         {
-            if (!IsCanStartGame()) return;
-            
             _isGameFinished = false;
 
             _managerMediator.NotifyAboutStartedGame();
@@ -43,7 +41,5 @@ namespace CodeBase.Infrastructure.Services.RuleManagerLogic
 
             _managerMediator.NotifyAboutWhiteTeamWon();
         }
-
-        protected abstract bool IsCanStartGame();
     }
 }

@@ -9,20 +9,25 @@ namespace CodeBase.NetworkLogic
     {
         None,
         SelectUnit,
-        MoveUnit
+        MoveUnit,
+        TryToStartGame
     }
 
     public interface INetworkManager : IService
     {
         INetworkManagerMediator NetworkManagerMediator { get; }
         void ConnectToServer();
+        void CreateRoom();
+        void JoinRandomRoom();
         void SelectPlayerTeam(TeamType teamType);
         TeamType IsInCurrentRoomTeamWasSelected();
         TeamType GetPlayerTeam();
+        bool IsConnected();
         bool IsCurrentRoomFull();
         void AddCallbackTarget(object target);
         void RaiseSelectUnitEvent(Vector2Int index);
         void RaiseMoveUnitEvent(Vector2Int index);
+        void RaiseTryToStartGameEvent();
         NetworkEventType GetNetworkEventType(EventData photonEvent);
         Vector2Int GetSelectUnitEventValue(EventData photonEvent);
         Vector2Int GetMoveUnitEventValue(EventData photonEvent);

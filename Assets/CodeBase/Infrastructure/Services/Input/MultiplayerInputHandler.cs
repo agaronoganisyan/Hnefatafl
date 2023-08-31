@@ -1,9 +1,9 @@
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.NetworkLogic;
 
-namespace CodeBase.Infrastructure.Services.RuleManagerLogic
+namespace CodeBase.Infrastructure.Services.Input
 {
-    public class MultiplayerRuleManager : RuleManager
+    public class MultiplayerInputHandler : InputHandler
     {
         private INetworkManager _networkManager;
         
@@ -13,10 +13,10 @@ namespace CodeBase.Infrastructure.Services.RuleManagerLogic
 
             _networkManager = ServiceLocator.Get<INetworkManager>();
         }
-
-        protected override bool IsCanStartGame()
+        
+        protected override bool IsCanProcessClick()
         {
-            return _networkManager.IsCurrentRoomFull();
+            return _turnManager.TeamOfTurn == _networkManager.GetPlayerTeam();
         }
     }
 }

@@ -9,7 +9,12 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
         
         public void Initialize()
         {
-            _lobbyPanelsManager.Initialize();
+            _lobbyPanelsManager.Initialize(this);
+        }
+
+        public void ClosePanel()
+        {
+            base.Close();
         }
     }
 }

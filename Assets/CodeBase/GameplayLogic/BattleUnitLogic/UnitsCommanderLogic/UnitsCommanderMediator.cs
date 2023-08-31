@@ -1,6 +1,6 @@
 using System;
 
-namespace CodeBase.GameplayLogic.BattleUnitLogic
+namespace CodeBase.GameplayLogic.BattleUnitLogic.UnitsCommanderLogic
 {
     public class UnitsCommanderMediator : IUnitsCommanderMediator
     {
