@@ -1,15 +1,16 @@
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.NetworkLogic;
-using CodeBase.NetworkLogic.RoomLogic;
 using TMPro;
 using UnityEngine;
 
-namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
+namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerPanelLogic
 {
     public class MultiplayerPanel : LobbyPanel
     {
         private INetworkManager _networkManager;
 
+        [SerializeField] private CreateNewRoomPanel _createNewRoomPanel;
+        
         [SerializeField] private RectTransform _notConnectedNetworkOptions;
         [SerializeField] private RectTransform _connectedNetworkOptions;
 
@@ -26,6 +27,8 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
             ServiceLocator.Get<INetworkManager>().NetworkManagerMediator.OnConnected += PrepareNetworkOptions;
             ServiceLocator.Get<INetworkManager>().NetworkManagerMediator.OnJoinedRoom += SuccessfullyRoomJoining;
             ServiceLocator.Get<INetworkManager>().NetworkManagerMediator.OnJoinRoomFailed += FailedRoomJoining;
+            
+            _createNewRoomPanel.Initialize(this);
         }
         
         public override void Show()
@@ -41,9 +44,9 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
             _notConnectedNetworkOptions.gameObject.SetActive(false);
         }
         
-        public void CreateRoomButton()
+        public void CreateRoom(string roomName)
         {
-            _networkManager.CreateRoom();
+            _networkManager.CreateRoom(roomName);
             
             _connectedNetworkOptions.gameObject.SetActive(false);
         }

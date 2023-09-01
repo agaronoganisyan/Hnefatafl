@@ -17,8 +17,9 @@ namespace CodeBase.NetworkLogic
     {
         INetworkManagerMediator NetworkManagerMediator { get; }
         void ConnectToServer();
-        void CreateRoom();
+        void CreateRoom(string roomName);
         void JoinRandomRoom();
+        void JoinPrescribedRoom(string roomName);
         void SelectPlayerTeam(TeamType teamType);
         TeamType IsInCurrentRoomTeamWasSelected();
         TeamType GetPlayerTeam();

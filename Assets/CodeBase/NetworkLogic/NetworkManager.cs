@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.Helpers;
 using ExitGames.Client.Photon;
@@ -10,12 +11,16 @@ namespace CodeBase.NetworkLogic
 {
     public class NetworkManager : MonoBehaviourPunCallbacks , INetworkManager
     {
+        private const string TEST_ROOM_NAME = "TestRoom";
+        
         private const string KEY_TEAM = "Team";
         private const int MAX_PLAYERS_AMOUNT = 2;
         
         private const byte SELECT_UNIT_EVENT_CODE  = 1;
         private const byte MOVE_UNIT_EVENT_CODE  = 2;
         private const byte TRY_TO_START_GAME_EVENT_CODE  = 3;
+        
+        //private const byte SERIALIZE_VECTOR2INT_CODE  = unchecked((byte)301);//242
         
         private INetworkManagerMediator _networkManagerMediator;
         public INetworkManagerMediator NetworkManagerMediator => _networkManagerMediator;
@@ -84,7 +89,7 @@ namespace CodeBase.NetworkLogic
         {
             PhotonNetwork.AddCallbackTarget(target);
         }
-
+        
         public void RaiseSelectUnitEvent(Vector2Int index)
         {
             object[] content = new object[] { new Vector2Int(index.x, index.y) };
@@ -128,9 +133,14 @@ namespace CodeBase.NetworkLogic
             return (Vector2Int)data[0];
         }
         
-        public void CreateRoom()
+        public void CreateRoom(string roomName)
         {
-            PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = MAX_PLAYERS_AMOUNT });
+            PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = MAX_PLAYERS_AMOUNT });
+        }
+
+        public void JoinPrescribedRoom(string roomName)
+        {
+            PhotonNetwork.JoinRoom(roomName);
         }
 
         public void JoinRandomRoom()
@@ -194,6 +204,13 @@ namespace CodeBase.NetworkLogic
             _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
 
             Debug.Log(message);
+        }
+        
+        public override void OnRoomListUpdate(List<RoomInfo> roomList)
+        {
+            Debug.Log("OnRoomListUpdate");
+            
+            _networkManagerMediator.NotifyAboutRoomListUpdating(roomList);
         }
         
         #endregion

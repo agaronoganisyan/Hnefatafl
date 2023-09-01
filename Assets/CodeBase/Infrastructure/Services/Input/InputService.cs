@@ -45,7 +45,10 @@ namespace CodeBase.Infrastructure.Services.Input
                 _serviceMediator.Notify(Mouse.current.position.ReadValue());
 #elif UNITY_ANDROID || UNITY_IOS
                 _serviceMediator.Notify(Touchscreen.current.primaryTouch.position.ReadValue());
+#else
+                _serviceMediator.Notify(Mouse.current.position.ReadValue());
 #endif
+
             }
         }
     }

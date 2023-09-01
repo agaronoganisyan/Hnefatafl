@@ -73,6 +73,10 @@ MonoBehaviour:
     m_Address: LobbyCanvas
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: b4ff2bed2627647a8ae246d201f9302f
+    m_Address: StandardRoomListEntry
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: a63ba498d74ee4f299b053bb79c19898, type: 2}
   m_SchemaSet:

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Photon.Realtime;
 
 namespace CodeBase.NetworkLogic
 {
@@ -8,6 +10,7 @@ namespace CodeBase.NetworkLogic
         public event Action OnConnected;
         public event Action OnJoinedRoom;
         public event Action OnJoinRoomFailed;
+        public event Action<List<RoomInfo>> OnRoomListUpdated;
 
         public void NotifyAboutChangingConnectionStatus(string status)
         {
@@ -26,6 +29,11 @@ namespace CodeBase.NetworkLogic
         public void NotifyAboutConnecting()
         {
             OnConnected?.Invoke();
+        }
+
+        public void NotifyAboutRoomListUpdating(List<RoomInfo> roomInfos)
+        {
+            OnRoomListUpdated?.Invoke(roomInfos);
         }
     }
 }
