@@ -92,9 +92,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38e666bc599643d99ef9ed9f1b3bb3e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _rectTransform: {fileID: 2471116136132178967}
   _roomNameText: {fileID: 3786693729557108164}
   _roomPlayersText: {fileID: 42341129505833695}
-  _joinButton: {fileID: 3909462710630946808}
+  _button: {fileID: 3909462710630946808}
 --- !u!1 &6020187809438559332
 GameObject:
   m_ObjectHideFlags: 0

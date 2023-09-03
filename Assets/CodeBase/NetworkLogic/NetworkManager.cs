@@ -11,14 +11,18 @@ namespace CodeBase.NetworkLogic
 {
     public class NetworkManager : MonoBehaviourPunCallbacks , INetworkManager
     {
-        private const string TEST_ROOM_NAME = "TestRoom";
-        
         private const string KEY_TEAM = "Team";
+        
         private const int MAX_PLAYERS_AMOUNT = 2;
         
         private const byte SELECT_UNIT_EVENT_CODE  = 1;
         private const byte MOVE_UNIT_EVENT_CODE  = 2;
         private const byte TRY_TO_START_GAME_EVENT_CODE  = 3;
+        private const byte SELECT_TEAM_EVENT_CODE  = 4;
+
+        private TeamType _localPlayerTeamType;
+        
+        private TypedLobby _defaultLobby = new TypedLobby("defaultLobby", LobbyType.Default);
         
         //private const byte SERIALIZE_VECTOR2INT_CODE  = unchecked((byte)301);//242
         
@@ -33,25 +37,77 @@ namespace CodeBase.NetworkLogic
         
         public void ConnectToServer()
         {
-            PhotonNetwork.AutomaticallySyncScene = true;
-            PhotonNetwork.ConnectUsingSettings();
+            if (IsConnected())
+            {
+                JoinDefaultLobby();
+            }
+            else
+            {
+                PhotonNetwork.AutomaticallySyncScene = true;
+                PhotonNetwork.ConnectUsingSettings();
             
-            _networkManagerMediator.NotifyAboutChangingConnectionStatus("ConnectToServer");
+                _networkManagerMediator.NotifyAboutChangingConnectionStatus("ConnectToServer");   
+                
+                Debug.Log("ConnectToServer");
+            }
         }
 
-        public void SelectPlayerTeam(TeamType teamType)
+        void JoinDefaultLobby()
+        {
+            if (!IsInLobby())
+            {
+                PhotonNetwork.JoinLobby(_defaultLobby);
+            
+                _networkManagerMediator.NotifyAboutChangingConnectionStatus("JoinDefaultLobby");
+                
+                Debug.Log("JoinDefaultLobby");
+            }
+        }
+
+        public void SelectTeamInCurrentRoom(TeamType teamType)
+        {
+            if (!IsInRoom()) return;
+            
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
+            {
+                {KEY_TEAM,teamType}
+            });
+
+            SetPlayerTeam(teamType);
+        }
+
+        public TeamType GetSelectedTeamInCurrentRoom()
+        {
+            TeamType selectedTeam = TeamType.None;
+
+            if (!IsInRoom()) return selectedTeam;
+            
+            Hashtable customRoomProperties = PhotonNetwork.CurrentRoom.CustomProperties;
+            
+            if (customRoomProperties.TryGetValue(KEY_TEAM, out var property))
+            {
+                selectedTeam = (TeamType)property;
+            }
+
+            return selectedTeam;
+        }
+        void SetPlayerTeam(TeamType teamType)
         {
             PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
             {
                 {KEY_TEAM,teamType}
             });
+
+            _localPlayerTeamType = teamType;
         }
 
-        public TeamType GetPlayerTeam()
+        public TeamType GetLocalPlayerTeam()
         {
             TeamType selectedTeam = TeamType.None;
+
+            Hashtable customPlayerProperties = PhotonNetwork.LocalPlayer.CustomProperties;
             
-            if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(KEY_TEAM, out var property))
+            if (customPlayerProperties.TryGetValue(KEY_TEAM, out var property))
             {
                 selectedTeam = (TeamType)property;
             }
@@ -59,27 +115,65 @@ namespace CodeBase.NetworkLogic
             return selectedTeam;
         }
 
+        public bool IsAllPlayersInRoomSelectTeam()
+        {
+            if (PhotonNetwork.CurrentRoom.PlayerCount > 1)
+            {
+                for (int i = 1; i <= 2; i++)
+                {
+                    Player player = PhotonNetwork.CurrentRoom.GetPlayer(i);
+                    if (TryToGetPlayerTeamType(player) != TeamType.None)
+                    {
+                        if (i == 2) return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+
+        TeamType TryToGetPlayerTeamType(Player player)
+        {
+            if (IsThisPlayerIsLocalPlayer(player))
+            {
+                return _localPlayerTeamType;
+            }
+            else
+            {
+                if (player.CustomProperties.TryGetValue(KEY_TEAM, out var property))
+                {
+                    return (TeamType)property;
+                }
+                else
+                {
+                    return TeamType.None;
+                }
+            }
+        }
+
+        bool IsThisPlayerIsLocalPlayer(Player player)
+        {
+            return player.ActorNumber == PhotonNetwork.LocalPlayer.ActorNumber;
+        }
+
         public bool IsConnected()
         {
             return PhotonNetwork.IsConnected;
         }
 
-        public TeamType IsInCurrentRoomTeamWasSelected()
+        public bool IsInLobby()
         {
-            TeamType selectedTeam = TeamType.None;
-
-            if (PhotonNetwork.CurrentRoom.PlayerCount > 1)
-            {
-                var firstPlayer = PhotonNetwork.CurrentRoom.GetPlayer(1);
-                if (firstPlayer.CustomProperties.TryGetValue(KEY_TEAM, out var property))
-                {
-                    selectedTeam = (TeamType)property;
-                }
-            }
-
-            return selectedTeam;
+            return PhotonNetwork.InLobby;
         }
 
+        bool IsInRoom()
+        {
+            return PhotonNetwork.InRoom;
+        }
+        
         public bool IsCurrentRoomFull()
         {
             return PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers;
@@ -92,14 +186,14 @@ namespace CodeBase.NetworkLogic
         
         public void RaiseSelectUnitEvent(Vector2Int index)
         {
-            object[] content = new object[] { new Vector2Int(index.x, index.y) };
+            object[] content = new object[] { index };
             RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; 
             PhotonNetwork.RaiseEvent(SELECT_UNIT_EVENT_CODE, content, raiseEventOptions, SendOptions.SendReliable);
         }
 
         public void RaiseMoveUnitEvent(Vector2Int index)
         {
-            object[] content = new object[] { new Vector2Int(index.x, index.y) };
+            object[] content = new object[] { index };
             RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; 
             PhotonNetwork.RaiseEvent(MOVE_UNIT_EVENT_CODE, content, raiseEventOptions, SendOptions.SendReliable);
         }
@@ -110,6 +204,13 @@ namespace CodeBase.NetworkLogic
             PhotonNetwork.RaiseEvent(TRY_TO_START_GAME_EVENT_CODE,null, raiseEventOptions, SendOptions.SendReliable);
         }
 
+        public void RaiseSelectTeamEvent(TeamType teamType)
+        {
+            object[] content = new object[] {  teamType};
+            RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; 
+            PhotonNetwork.RaiseEvent(SELECT_TEAM_EVENT_CODE,content, raiseEventOptions, SendOptions.SendReliable);
+        }
+        
         public NetworkEventType GetNetworkEventType(EventData photonEvent)
         {
             byte eventCode = photonEvent.Code;
@@ -117,6 +218,7 @@ namespace CodeBase.NetworkLogic
             if (eventCode == SELECT_UNIT_EVENT_CODE) return NetworkEventType.SelectUnit;
             else if (eventCode == MOVE_UNIT_EVENT_CODE) return NetworkEventType.MoveUnit;
             else if (eventCode == TRY_TO_START_GAME_EVENT_CODE) return NetworkEventType.TryToStartGame;
+            else if (eventCode == SELECT_TEAM_EVENT_CODE) return NetworkEventType.SelectTeam;
 
             return NetworkEventType.None;
         }
@@ -133,21 +235,36 @@ namespace CodeBase.NetworkLogic
             return (Vector2Int)data[0];
         }
         
+        public TeamType GetSelectTeamEventValue(EventData photonEvent)
+        {
+            object[] data = (object[])photonEvent.CustomData;
+            return (TeamType)data[0];
+        }
+        
         public void CreateRoom(string roomName)
         {
-            PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = MAX_PLAYERS_AMOUNT });
+            PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = MAX_PLAYERS_AMOUNT },_defaultLobby);
         }
 
         public void JoinPrescribedRoom(string roomName)
         {
             PhotonNetwork.JoinRoom(roomName);
+            
+            _networkManagerMediator.NotifyAboutJoiningRoom();
         }
 
         public void JoinRandomRoom()
         {
             PhotonNetwork.JoinRandomRoom();
+            
+            _networkManagerMediator.NotifyAboutJoiningRoom();
         }
 
+        public void LeaveRoom()
+        {
+            if (IsInRoom()) PhotonNetwork.LeaveRoom();
+        }
+        
         #region MonoBehaviourPunCallbacks Callbacks
 
         public override void OnConnectedToMaster()
@@ -156,7 +273,9 @@ namespace CodeBase.NetworkLogic
             _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
             _networkManagerMediator.NotifyAboutConnecting();
             
-            Debug.Log("OnConnectedToMaster() was called by PUN");
+            Debug.Log("OnConnectedToMaster");
+
+            JoinDefaultLobby();
         }
 
         public override void OnDisconnected(DisconnectCause cause)
@@ -171,8 +290,10 @@ namespace CodeBase.NetworkLogic
         {
             string message = "OnJoinedRoom()";
             _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
-            _networkManagerMediator.NotifyAboutJoiningRoom();
- 
+            _networkManagerMediator.NotifyAboutSuccessfulJoiningRoom();
+
+            SetPlayerTeam(TeamType.None);
+            
             Debug.Log(message);
         }
 
@@ -205,7 +326,14 @@ namespace CodeBase.NetworkLogic
 
             Debug.Log(message);
         }
-        
+
+        public override void OnJoinedLobby()
+        {
+            Debug.Log("OnJoinedLobby");
+            
+            _networkManagerMediator.NotifyAboutJoiningLobby();
+        }
+
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
         {
             Debug.Log("OnRoomListUpdate");

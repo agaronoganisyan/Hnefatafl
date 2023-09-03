@@ -18,7 +18,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
 
         public void JumpToMultiplayerPanel()
         {
-            _lobbyPanelsManager.SetActivePanel(LobbyPanelType.MultiplayerPlaymode);
+            _lobbyPanelsManager.SetActivePanel(LobbyPanelType.MultiplayerLobby);
         }
         
         public void SingleplayerButton()

@@ -5,5 +5,7 @@ namespace CodeBase.NetworkLogic.RoomLogic
     public interface IGameRoomHandler : IService
     {
         void TryToStartGame();
+
+        void Quit();
     }
 }

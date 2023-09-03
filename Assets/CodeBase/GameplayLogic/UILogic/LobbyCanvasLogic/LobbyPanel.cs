@@ -6,7 +6,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
     {
         None,
         PlaymodeSelection,
-        MultiplayerPlaymode,
+        MultiplayerLobby,
         TeamSelection
     }
 

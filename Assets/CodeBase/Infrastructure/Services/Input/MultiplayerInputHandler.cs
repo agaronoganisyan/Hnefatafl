@@ -17,9 +17,7 @@ namespace CodeBase.Infrastructure.Services.Input
         
         protected override bool IsCanProcessClick()
         {
-            Debug.Log($"IsCanProcessClick _turnManager.TeamOfTurn {_turnManager.TeamOfTurn} _networkManager.GetPlayerTeam() {_networkManager.GetPlayerTeam()}");
-            
-            return _turnManager.TeamOfTurn == _networkManager.GetPlayerTeam();
+            return _turnManager.TeamOfTurn == _networkManager.GetLocalPlayerTeam();
         }
     }
 }

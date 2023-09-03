@@ -17,6 +17,11 @@ namespace CodeBase.NetworkLogic.RoomLogic
             if (IsGameCanBeStarted())_ruleManager.StartGame();
         }
 
+        public virtual void Quit()
+        {
+            
+        }
+
         protected abstract bool IsGameCanBeStarted();
     }
 }

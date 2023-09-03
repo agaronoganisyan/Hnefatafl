@@ -8,6 +8,8 @@ namespace CodeBase.NetworkLogic
     {
         public event Action<string> OnConnectionStatusChanged;
         public event Action OnConnected;
+        public event Action OnJoinedLobby;
+        public event Action OnJoiningRoom;
         public event Action OnJoinedRoom;
         public event Action OnJoinRoomFailed;
         public event Action<List<RoomInfo>> OnRoomListUpdated;
@@ -16,7 +18,23 @@ namespace CodeBase.NetworkLogic
         {
             OnConnectionStatusChanged?.Invoke(status);
         }
+        
+        public void NotifyAboutConnecting()
+        {
+            OnConnected?.Invoke();
+        }
+        
+        public void NotifyAboutJoiningLobby()
+        {
+            OnJoinedLobby?.Invoke();
+        }
+
         public void NotifyAboutJoiningRoom()
+        {
+            OnJoiningRoom?.Invoke();
+        }
+        
+        public void NotifyAboutSuccessfulJoiningRoom()
         {
             OnJoinedRoom?.Invoke();
         }
@@ -24,11 +42,6 @@ namespace CodeBase.NetworkLogic
         public void NotifyAboutFailedJoiningRoom()
         {
             OnJoinRoomFailed?.Invoke();
-        }
-
-        public void NotifyAboutConnecting()
-        {
-            OnConnected?.Invoke();
         }
 
         public void NotifyAboutRoomListUpdating(List<RoomInfo> roomInfos)

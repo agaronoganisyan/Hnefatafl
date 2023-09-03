@@ -8,13 +8,17 @@ namespace CodeBase.NetworkLogic
     {
         event Action<string> OnConnectionStatusChanged;
         event Action OnConnected;
+        event Action OnJoinedLobby;
+        event Action OnJoiningRoom;
         event Action OnJoinedRoom;
         event Action OnJoinRoomFailed;
         event Action<List<RoomInfo>> OnRoomListUpdated;
         void NotifyAboutChangingConnectionStatus(string status);
-        void NotifyAboutJoiningRoom();
-        void NotifyAboutFailedJoiningRoom();
         void NotifyAboutConnecting();
+        void NotifyAboutJoiningLobby();
+        void NotifyAboutJoiningRoom();
+        void NotifyAboutSuccessfulJoiningRoom();
+        void NotifyAboutFailedJoiningRoom();
         void NotifyAboutRoomListUpdating(List<RoomInfo> roomInfos);
 
     }

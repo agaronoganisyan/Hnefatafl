@@ -1,6 +1,7 @@
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using ExitGames.Client.Photon;
 using Photon.Realtime;
+using UnityEngine;
 
 namespace CodeBase.NetworkLogic.RoomLogic
 {
@@ -22,9 +23,18 @@ namespace CodeBase.NetworkLogic.RoomLogic
             _networkManager.RaiseTryToStartGameEvent();
         }
 
+        public override void Quit()
+        {
+            base.Quit();
+            
+            _networkManager.LeaveRoom();
+        }
+
         protected override bool IsGameCanBeStarted()
         {
-            return _networkManager.IsCurrentRoomFull();
+            Debug.LogError($"_networkManager.IsCurrentRoomFull() {_networkManager.IsCurrentRoomFull()} " +
+                      $"_networkManager.IsAllPlayersInRoomSelectTeam() {_networkManager.IsAllPlayersInRoomSelectTeam()}");
+            return _networkManager.IsCurrentRoomFull() && _networkManager.IsAllPlayersInRoomSelectTeam();
         }
 
         public void OnEvent(EventData photonEvent)

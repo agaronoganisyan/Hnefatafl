@@ -42,6 +42,11 @@ namespace CodeBase.Infrastructure.Services.CustomPoolLogic
             }
         }
 
+        public void DisableAllObjects()
+        {
+            for (int i=0;i<_objects.Count;i++) _objects[i].gameObject.SetActive(false);
+        }
+
         private T Create()
         {
             var obj = Object.Instantiate(_prefab);

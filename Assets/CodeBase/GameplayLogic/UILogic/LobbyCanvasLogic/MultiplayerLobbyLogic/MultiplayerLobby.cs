@@ -3,14 +3,14 @@ using CodeBase.NetworkLogic;
 using TMPro;
 using UnityEngine;
 
-namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerPanelLogic
+namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
 {
-    public class MultiplayerPanel : LobbyPanel
+    public class MultiplayerLobby : LobbyPanel
     {
         private INetworkManager _networkManager;
 
         [SerializeField] private CreateNewRoomPanel _createNewRoomPanel;
-        
+        [SerializeField] private MultiplayerRoomListManager _multiplayerRoomListManager;
         [SerializeField] private RectTransform _notConnectedNetworkOptions;
         [SerializeField] private RectTransform _connectedNetworkOptions;
 
@@ -20,15 +20,17 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerPanelLogic
         {
             base.Initialize(lobbyPanelsManager);
 
-            _type = LobbyPanelType.MultiplayerPlaymode;
+            _type = LobbyPanelType.MultiplayerLobby;
             
             _networkManager = ServiceLocator.Get<INetworkManager>();
             ServiceLocator.Get<INetworkManager>().NetworkManagerMediator.OnConnectionStatusChanged += SetConnectionStatus;
-            ServiceLocator.Get<INetworkManager>().NetworkManagerMediator.OnConnected += PrepareNetworkOptions;
+            ServiceLocator.Get<INetworkManager>().NetworkManagerMediator.OnJoinedLobby += PrepareNetworkOptions;
+            ServiceLocator.Get<INetworkManager>().NetworkManagerMediator.OnJoiningRoom += HideConnectedNetworkOptions;
             ServiceLocator.Get<INetworkManager>().NetworkManagerMediator.OnJoinedRoom += SuccessfullyRoomJoining;
-            ServiceLocator.Get<INetworkManager>().NetworkManagerMediator.OnJoinRoomFailed += FailedRoomJoining;
+            ServiceLocator.Get<INetworkManager>().NetworkManagerMediator.OnJoinRoomFailed += ShowConnectedNetworkOptions;
             
             _createNewRoomPanel.Initialize(this);
+            _multiplayerRoomListManager.Initialize();
         }
         
         public override void Show()
@@ -50,22 +52,10 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerPanelLogic
             
             _connectedNetworkOptions.gameObject.SetActive(false);
         }
-
-        public void JoinRandomRoomButton()
-        {
-            _networkManager.JoinRandomRoom();
-            
-            _connectedNetworkOptions.gameObject.SetActive(false);
-        }
         
         void SuccessfullyRoomJoining()
         {
             _lobbyPanelsManager.SetActivePanel(LobbyPanelType.TeamSelection);
-        }
-
-        void FailedRoomJoining()
-        {
-            _connectedNetworkOptions.gameObject.SetActive(true);
         }
         
         void SetConnectionStatus(string status)
@@ -75,7 +65,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerPanelLogic
         
         void PrepareNetworkOptions()
         {
-            if (_networkManager.IsConnected())
+            if (_networkManager.IsConnected() && _networkManager.IsInLobby())
             {
                 _notConnectedNetworkOptions.gameObject.SetActive(false);
                 _connectedNetworkOptions.gameObject.SetActive(true);
@@ -85,6 +75,16 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerPanelLogic
                 _notConnectedNetworkOptions.gameObject.SetActive(true);
                 _connectedNetworkOptions.gameObject.SetActive(false);
             }
+        }
+
+        void HideConnectedNetworkOptions()
+        {
+            _connectedNetworkOptions.gameObject.SetActive(false);
+        }
+        
+        void ShowConnectedNetworkOptions()
+        {
+            _connectedNetworkOptions.gameObject.SetActive(true);
         }
     }
 }
