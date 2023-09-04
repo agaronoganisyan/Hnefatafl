@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using CodeBase.GameplayLogic.TurnLogic;
 using UnityEngine;
-using CodeBase.Infrastructure;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.NetworkLogic.RoomLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
 {
@@ -16,6 +13,7 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
         {
             base.Close();
 
+            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += base.Close;
             ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameStarted += base.Open;
             
             _gameplayPanel.Initialize();

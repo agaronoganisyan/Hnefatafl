@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.NetworkLogic.RoomLogic;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
@@ -19,6 +20,15 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
         {
             _lobbyCanvas = lobbyCanvas;
             
+            InitializePanels();
+
+            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += OpenStartPanel;
+
+            //подписаться на колбек выхода из комнаты чтобы подготвить окно с самого начала 
+        }
+
+        private void InitializePanels()
+        {
             foreach (LobbyPanel panel in _allPanels)
             {
                 if (_allPanels == null) continue;
@@ -34,10 +44,10 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
             {
                 _lobbyDictionary[panelKey].Hide();
             }
-
+            
             SetActivePanel(LobbyPanelType.PlaymodeSelection);
         }
-
+        
         public void SetActivePanel(LobbyPanelType newPanelType, bool isJumpingBack = false)
         {
             if (!_lobbyDictionary.ContainsKey(newPanelType)) return;
@@ -63,10 +73,22 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
                 SetActivePanel(_panelsHistory[^1],true);
             }
         }
-
+        
         public void HideCanvas()
         {
             _lobbyCanvas.ClosePanel();
+        }
+
+        void OpenStartPanel()
+        {
+            foreach (LobbyPanelType panelKey in _panelsHistory)
+            {
+                _lobbyDictionary[panelKey].Hide();
+            }
+            
+            _panelsHistory.Clear();
+            
+            SetActivePanel(LobbyPanelType.PlaymodeSelection);
         }
     }
 }

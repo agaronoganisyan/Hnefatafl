@@ -1,18 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using CodeBase.Infrastructure;
 using CodeBase.GameplayLogic.BattleUnitLogic;
-using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.NetworkLogic.RoomLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {
     public class DebriefingPanel : MonoBehaviour
     {
-        IRuleManager _ruleManager;
-
+        private IGameRoomHandler _gameRoomHandler;
+        
         [SerializeField] Image _panel;
 
         [SerializeField] Color _whitePanelColor;
@@ -20,7 +17,7 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 
         public void Initialize()
         {
-            _ruleManager = ServiceLocator.Get<IRuleManager>();
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
         }
 
         public void Open(TeamType type)
@@ -34,9 +31,9 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
             else if (type == TeamType.Black) _panel.color = _blackPanelColor;
         }
 
-        public void RestartButtonVoid()
+        public void LobbyButton()
         {
-            _ruleManager.RestartGame();
+            _gameRoomHandler.Quit();
         }
     }
 }

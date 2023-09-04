@@ -43,7 +43,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
 
         void PrepareTeamSelectionOptions()
         {
-            TeamType selectedTeam = _networkManager.GetSelectedTeamInCurrentRoom();
+            TeamType selectedTeam = _networkManager.GetSelectedTeamInRoom(_networkManager.GetCurrentRoom());
             
             if (selectedTeam == TeamType.None) return;
 
@@ -61,7 +61,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
 
         void SelectTeamButton(TeamType selectedTeamType)
         {
-            _networkManager.SelectTeamInCurrentRoom(selectedTeamType);
+            _networkManager.SelectTeamInRoom(selectedTeamType,_networkManager.GetCurrentRoom());
 
             _lobbyPanelsManager.HideCanvas();
             _gameRoomHandler.TryToStartGame();

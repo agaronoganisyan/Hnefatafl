@@ -5,10 +5,11 @@ using CodeBase.Infrastructure;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.NetworkLogic.RoomLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {
-    public class DebriefingCanvas : UICanvas,IDebriefingCanvas
+    public class DebriefingCanvas : UICanvas, IDebriefingCanvas
     {
         [SerializeField] DebriefingPanel _debriefingPanel;
 
@@ -16,7 +17,7 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
         {
             base.Close();
 
-            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameStarted += base.Close;
+            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += base.Close;
             ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnWhiteTeamWon += OpenWhiteScreen;
             ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnBlackTeamWon += OpenBlackScreen;
             

@@ -1,6 +1,7 @@
 using System;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.NetworkLogic.RoomLogic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,6 +24,7 @@ namespace CodeBase.Infrastructure.Services.Input
             
             ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameStarted += SetGameplayMode;
             ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameFinished += SetUIMode;
+            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += SetUIMode;
         }
         
         void SetGameplayMode()

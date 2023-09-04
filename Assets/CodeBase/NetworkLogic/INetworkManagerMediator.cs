@@ -12,6 +12,7 @@ namespace CodeBase.NetworkLogic
         event Action OnJoiningRoom;
         event Action OnJoinedRoom;
         event Action OnJoinRoomFailed;
+        event Action OnLeftRoom;
         event Action<List<RoomInfo>> OnRoomListUpdated;
         void NotifyAboutChangingConnectionStatus(string status);
         void NotifyAboutConnecting();
@@ -20,6 +21,6 @@ namespace CodeBase.NetworkLogic
         void NotifyAboutSuccessfulJoiningRoom();
         void NotifyAboutFailedJoiningRoom();
         void NotifyAboutRoomListUpdating(List<RoomInfo> roomInfos);
-
+        void NotifyAboutLeavingRoom();
     }
 }

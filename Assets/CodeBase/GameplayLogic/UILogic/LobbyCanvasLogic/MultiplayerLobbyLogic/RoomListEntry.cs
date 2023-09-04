@@ -36,7 +36,9 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
             _roomNameText.text = _roomName;
             _roomPlayersText.text = $"{currentPlayers}/{maxPlayers}";
 
-            _button.interactable = currentPlayers < maxPlayers;
+            _button.gameObject.SetActive(!(currentPlayers >= maxPlayers));
+            
+            gameObject.SetActive(true);
         }
         
         public void JoinButton()

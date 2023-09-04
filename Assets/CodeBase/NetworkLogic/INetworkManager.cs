@@ -1,6 +1,7 @@
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using ExitGames.Client.Photon;
+using Photon.Realtime;
 using UnityEngine;
 
 namespace CodeBase.NetworkLogic
@@ -22,18 +23,20 @@ namespace CodeBase.NetworkLogic
         void JoinRandomRoom();
         void JoinPrescribedRoom(string roomName);
         void LeaveRoom();
-        void SelectTeamInCurrentRoom(TeamType teamType);
-        TeamType GetSelectedTeamInCurrentRoom();
+        void SelectTeamInRoom(TeamType teamType,Room room);
+        void MarkRoomAsGameStarted(Room room);
+        TeamType GetSelectedTeamInRoom(Room room);
         TeamType GetLocalPlayerTeam();
         bool IsConnected();
         bool IsInLobby();
-        bool IsCurrentRoomFull();
-        bool IsAllPlayersInRoomSelectTeam();
+        bool IsRoomFull(Room room);
+        bool IsAllPlayersInRoomSelectTeam(Room room);
         void AddCallbackTarget(object target);
         void RaiseSelectUnitEvent(Vector2Int index);
         void RaiseMoveUnitEvent(Vector2Int index);
         void RaiseTryToStartGameEvent();
         void RaiseSelectTeamEvent(TeamType teamType);
+        Room GetCurrentRoom();
         NetworkEventType GetNetworkEventType(EventData photonEvent);
         Vector2Int GetSelectUnitEventValue(EventData photonEvent);
         Vector2Int GetMoveUnitEventValue(EventData photonEvent);

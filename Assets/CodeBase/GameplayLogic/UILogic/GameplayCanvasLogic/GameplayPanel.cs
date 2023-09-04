@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using CodeBase.GameplayLogic.BattleUnitLogic;
@@ -17,6 +15,8 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
 
         public void Initialize()
         {
+            _roomHandler = ServiceLocator.Get<IGameRoomHandler>();
+
             ServiceLocator.Get<ITurnManager>().TurnManagerMediator.OnTeamOfTurnChanged += SetTeamOfTurn;
         }
 

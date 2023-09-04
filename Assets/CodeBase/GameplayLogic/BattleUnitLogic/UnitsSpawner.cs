@@ -3,6 +3,7 @@ using CodeBase.Infrastructure;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.Infrastructure.Services.StaticData;
+using CodeBase.NetworkLogic.RoomLogic;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
@@ -24,7 +25,8 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         _teamsUnitsContainer =  ServiceLocator.Get<ITeamsUnitsContainer>();
         _boardSize = currentModeData.BoardSize;
 
-        ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameRestarted += Restart;
+        //ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameRestarted += Restart;
+        ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += Restart;
     }
     
     public async Task InitializeUnits()

@@ -1855,6 +1855,7 @@ MonoBehaviour:
   _multiplayerRoomListManager: {fileID: 5797748671756686020}
   _notConnectedNetworkOptions: {fileID: 6679699828425144129}
   _connectedNetworkOptions: {fileID: 1846490039167842538}
+  _backButton: {fileID: 2296302875427071505}
   _connectionStatusText: {fileID: 594949036164847159}
 --- !u!1 &2738264034391475871
 GameObject:
@@ -3407,7 +3408,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5616589772226827874
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4006,7 +4007,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Multiplayer Panel
+  m_text: Multiplayer lobby
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8ad9a821f5bcc7f4db5abc80c82a3aa6, type: 2}
   m_sharedMaterial: {fileID: -5957253427097455058, guid: 8ad9a821f5bcc7f4db5abc80c82a3aa6, type: 2}

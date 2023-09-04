@@ -9,6 +9,7 @@ using CodeBase.GameplayLogic.BattleUnitLogic.UnitsCommanderLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.Infrastructure.Services.StaticData;
+using CodeBase.NetworkLogic.RoomLogic;
 
 namespace CodeBase.GameplayLogic.BoardLogic
 {
@@ -36,7 +37,8 @@ namespace CodeBase.GameplayLogic.BoardLogic
             
             ServiceLocator.Get<IUnitsPathCalculatorsManager>().UnitsPathCalculatorsManagerMediator.OnPathCalculated += EnableHighlight;
             ServiceLocator.Get<IUnitsCommander>().CommanderMediatorMediator.OnUnitUnselected += DisableHighlight;
-            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameRestarted += Restart;
+            //ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameRestarted += Restart;
+            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += Restart;
         }
 
         void Restart()

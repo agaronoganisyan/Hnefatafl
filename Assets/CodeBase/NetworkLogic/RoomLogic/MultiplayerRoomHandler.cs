@@ -14,27 +14,30 @@ namespace CodeBase.NetworkLogic.RoomLogic
             
             _networkManager = ServiceLocator.Get<INetworkManager>();
             _networkManager.AddCallbackTarget(this);
+
+            _networkManager.NetworkManagerMediator.OnLeftRoom += base.Quit;
         }
 
         public override void TryToStartGame()
         {
             base.TryToStartGame();
 
+            if (IsGameCanBeStarted())
+            {
+                _networkManager.MarkRoomAsGameStarted(_networkManager.GetCurrentRoom());
+            }
+
             _networkManager.RaiseTryToStartGameEvent();
         }
 
         public override void Quit()
         {
-            base.Quit();
-            
             _networkManager.LeaveRoom();
         }
 
         protected override bool IsGameCanBeStarted()
         {
-            Debug.LogError($"_networkManager.IsCurrentRoomFull() {_networkManager.IsCurrentRoomFull()} " +
-                      $"_networkManager.IsAllPlayersInRoomSelectTeam() {_networkManager.IsAllPlayersInRoomSelectTeam()}");
-            return _networkManager.IsCurrentRoomFull() && _networkManager.IsAllPlayersInRoomSelectTeam();
+            return _networkManager.IsRoomFull(_networkManager.GetCurrentRoom()) && _networkManager.IsAllPlayersInRoomSelectTeam(_networkManager.GetCurrentRoom());
         }
 
         public void OnEvent(EventData photonEvent)

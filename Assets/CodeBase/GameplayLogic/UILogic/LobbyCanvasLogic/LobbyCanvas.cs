@@ -1,4 +1,5 @@
-using CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic;
+using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.NetworkLogic.RoomLogic;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
@@ -9,6 +10,8 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
         
         public void Initialize()
         {
+            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += base.Open;
+            
             _lobbyPanelsManager.Initialize(this);
         }
 

@@ -12,6 +12,7 @@ namespace CodeBase.NetworkLogic
     public class NetworkManager : MonoBehaviourPunCallbacks , INetworkManager
     {
         private const string KEY_TEAM = "Team";
+        private const string KEY_ROOM_GAME_IS_STARTED = "RoomGameIsStarted";
         
         private const int MAX_PLAYERS_AMOUNT = 2;
         
@@ -25,9 +26,11 @@ namespace CodeBase.NetworkLogic
         private TypedLobby _defaultLobby = new TypedLobby("defaultLobby", LobbyType.Default);
         
         //private const byte SERIALIZE_VECTOR2INT_CODE  = unchecked((byte)301);//242
+
+        private List<RoomInfo> _cachedRoomList = new List<RoomInfo>();
         
-        private INetworkManagerMediator _networkManagerMediator;
         public INetworkManagerMediator NetworkManagerMediator => _networkManagerMediator;
+        private INetworkManagerMediator _networkManagerMediator;
         
         public void Initialize()
         {
@@ -64,25 +67,40 @@ namespace CodeBase.NetworkLogic
             }
         }
 
-        public void SelectTeamInCurrentRoom(TeamType teamType)
+        void DeleteRoom(Room room)
         {
-            if (!IsInRoom()) return;
-            
-            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
+            room.IsOpen = false;
+            room.IsVisible = false;
+            room.RemovedFromList = true;
+        }
+
+        public void MarkRoomAsGameStarted(Room room)
+        {
+            // room.SetCustomProperties(new Hashtable
+            // {
+            //     {KEY_ROOM_GAME_IS_STARTED,true}
+            // });
+
+            DeleteRoom(room);
+        }
+
+        public void SelectTeamInRoom(TeamType teamType,Room room)
+        {
+            room.SetCustomProperties(new Hashtable
             {
                 {KEY_TEAM,teamType}
             });
 
-            SetPlayerTeam(teamType);
+            SetLocalPlayerTeam(teamType);
         }
 
-        public TeamType GetSelectedTeamInCurrentRoom()
+        public TeamType GetSelectedTeamInRoom(Room room)
         {
             TeamType selectedTeam = TeamType.None;
 
             if (!IsInRoom()) return selectedTeam;
             
-            Hashtable customRoomProperties = PhotonNetwork.CurrentRoom.CustomProperties;
+            Hashtable customRoomProperties = room.CustomProperties;
             
             if (customRoomProperties.TryGetValue(KEY_TEAM, out var property))
             {
@@ -91,7 +109,7 @@ namespace CodeBase.NetworkLogic
 
             return selectedTeam;
         }
-        void SetPlayerTeam(TeamType teamType)
+        void SetLocalPlayerTeam(TeamType teamType)
         {
             PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
             {
@@ -115,13 +133,13 @@ namespace CodeBase.NetworkLogic
             return selectedTeam;
         }
 
-        public bool IsAllPlayersInRoomSelectTeam()
+        public bool IsAllPlayersInRoomSelectTeam(Room room)
         {
-            if (PhotonNetwork.CurrentRoom.PlayerCount > 1)
+            if (room.PlayerCount > 1)
             {
                 for (int i = 1; i <= 2; i++)
                 {
-                    Player player = PhotonNetwork.CurrentRoom.GetPlayer(i);
+                    Player player = room.GetPlayer(i);
                     if (TryToGetPlayerTeamType(player) != TeamType.None)
                     {
                         if (i == 2) return true;
@@ -173,10 +191,15 @@ namespace CodeBase.NetworkLogic
         {
             return PhotonNetwork.InRoom;
         }
-        
-        public bool IsCurrentRoomFull()
+
+        public Room GetCurrentRoom()
         {
-            return PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers;
+            return PhotonNetwork.CurrentRoom;
+        }
+
+        public bool IsRoomFull(Room room)
+        {
+            return room.PlayerCount == room.MaxPlayers;
         }
 
         public void AddCallbackTarget(object target)
@@ -265,6 +288,22 @@ namespace CodeBase.NetworkLogic
             if (IsInRoom()) PhotonNetwork.LeaveRoom();
         }
         
+        private void UpdateCachedRoomList(List<RoomInfo> roomList)
+        {
+            for (int i = 0; i < roomList.Count; i++)
+            {
+                RoomInfo roomInfo = roomList[i];
+                if (!roomInfo.IsOpen || !roomInfo.IsVisible || roomInfo.RemovedFromList)
+                {
+                    if (_cachedRoomList.Contains(roomInfo)) _cachedRoomList.Remove(roomInfo);
+
+                    continue;
+                }
+
+                if (!_cachedRoomList.Contains(roomInfo)) _cachedRoomList.Add(roomInfo);
+            }
+        }
+        
         #region MonoBehaviourPunCallbacks Callbacks
 
         public override void OnConnectedToMaster()
@@ -292,7 +331,7 @@ namespace CodeBase.NetworkLogic
             _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
             _networkManagerMediator.NotifyAboutSuccessfulJoiningRoom();
 
-            SetPlayerTeam(TeamType.None);
+            SetLocalPlayerTeam(TeamType.None);
             
             Debug.Log(message);
         }
@@ -309,7 +348,7 @@ namespace CodeBase.NetworkLogic
         public override void OnJoinRandomFailed(short returnCode, string message)
         {
             string messsage = "OnJoinRandomFailed()";
-            _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
+            _networkManagerMediator.NotifyAboutChangingConnectionStatus(messsage);
             _networkManagerMediator.NotifyAboutFailedJoiningRoom();
 
             Debug.Log("PUN Basics Tutorial/Launcher:OnJoinRandomFailed() was called by PUN. No random room available, so we create one." +
@@ -337,10 +376,17 @@ namespace CodeBase.NetworkLogic
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
         {
             Debug.Log("OnRoomListUpdate");
+
+            UpdateCachedRoomList(roomList);
             
-            _networkManagerMediator.NotifyAboutRoomListUpdating(roomList);
+            _networkManagerMediator.NotifyAboutRoomListUpdating(_cachedRoomList);
         }
-        
+
+        public override void OnLeftRoom()
+        {
+            _networkManagerMediator.NotifyAboutLeavingRoom();
+        }
+
         #endregion
     }
 }

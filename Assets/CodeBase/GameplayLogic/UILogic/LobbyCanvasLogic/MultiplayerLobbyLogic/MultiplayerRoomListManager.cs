@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.Infrastructure.Services.CustomPoolLogic;
@@ -31,7 +32,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
         {
             HideRoomList();
             
-            for(int i=0; i<roomList.Count; i++)
+            for (int i=0; i<roomList.Count; i++)
             {
                 RoomInfo info = roomList[i];
                 
