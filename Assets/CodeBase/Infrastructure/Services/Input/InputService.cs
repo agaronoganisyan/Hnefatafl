@@ -1,5 +1,7 @@
 using System;
+using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.NetworkLogic.RoomLogic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,9 +19,12 @@ namespace CodeBase.Infrastructure.Services.Input
             _serviceMediator = new InputServiceMediator();
             _gameInput = new GameInput();
             _gameInput.Gameplay.SetCallbacks(this);
+
+            SetUIMode();
             
             ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameStarted += SetGameplayMode;
             ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameFinished += SetUIMode;
+            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += SetUIMode;
         }
         
         void SetGameplayMode()
@@ -27,7 +32,7 @@ namespace CodeBase.Infrastructure.Services.Input
             _gameInput.Gameplay.Enable();
             _gameInput.UI.Disable();
         }
-
+        
         void SetUIMode()
         {
             _gameInput.Gameplay.Disable();
@@ -42,7 +47,10 @@ namespace CodeBase.Infrastructure.Services.Input
                 _serviceMediator.Notify(Mouse.current.position.ReadValue());
 #elif UNITY_ANDROID || UNITY_IOS
                 _serviceMediator.Notify(Touchscreen.current.primaryTouch.position.ReadValue());
+#else
+                _serviceMediator.Notify(Mouse.current.position.ReadValue());
 #endif
+
             }
         }
     }

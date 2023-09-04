@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7442583439807744878}
   - component: {fileID: 7442583439807744877}
   m_Layer: 5
-  m_Name: RestartButton
+  m_Name: LobbyButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -123,9 +123,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7442583440390840062}
-        m_TargetAssemblyTypeName: CodeBase.GameplayLogic.UILogic.DebriefingLogic.DebriefingPanel,
+        m_TargetAssemblyTypeName: CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic.DebriefingPanel,
           Assembly-CSharp
-        m_MethodName: RestartButtonVoid
+        m_MethodName: LobbyButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -288,13 +288,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: RESTART
+  m_text: LOBBY
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8ad9a821f5bcc7f4db5abc80c82a3aa6, type: 2}
   m_sharedMaterial: {fileID: -5957253427097455058, guid: 8ad9a821f5bcc7f4db5abc80c82a3aa6, type: 2}
@@ -411,7 +411,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7442583440846855920}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
