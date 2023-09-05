@@ -20,6 +20,7 @@ namespace CodeBase.NetworkLogic
         private const byte MOVE_UNIT_EVENT_CODE  = 2;
         private const byte TRY_TO_START_GAME_EVENT_CODE  = 3;
         private const byte SELECT_TEAM_EVENT_CODE  = 4;
+        private const byte FINISH_GAME_EVENT_CODE  = 5;
 
         private TeamType _localPlayerTeamType;
         
@@ -91,7 +92,7 @@ namespace CodeBase.NetworkLogic
                 {KEY_TEAM,teamType}
             });
 
-            SetLocalPlayerTeam(teamType);
+            SetPlayerTeam(GetLocalPlayer(),teamType);
         }
 
         public TeamType GetSelectedTeamInRoom(Room room)
@@ -109,30 +110,17 @@ namespace CodeBase.NetworkLogic
 
             return selectedTeam;
         }
-        void SetLocalPlayerTeam(TeamType teamType)
+
+        void SetPlayerTeam(Player player,TeamType teamType)
         {
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
+            player.SetCustomProperties(new Hashtable
             {
                 {KEY_TEAM,teamType}
             });
-
-            _localPlayerTeamType = teamType;
-        }
-
-        public TeamType GetLocalPlayerTeam()
-        {
-            TeamType selectedTeam = TeamType.None;
-
-            Hashtable customPlayerProperties = PhotonNetwork.LocalPlayer.CustomProperties;
             
-            if (customPlayerProperties.TryGetValue(KEY_TEAM, out var property))
-            {
-                selectedTeam = (TeamType)property;
-            }
-
-            return selectedTeam;
+            if (IsThisPlayerIsLocalPlayer(player)) _localPlayerTeamType = teamType;
         }
-
+        
         public bool IsAllPlayersInRoomSelectTeam(Room room)
         {
             if (room.PlayerCount > 1)
@@ -140,7 +128,7 @@ namespace CodeBase.NetworkLogic
                 for (int i = 1; i <= 2; i++)
                 {
                     Player player = room.GetPlayer(i);
-                    if (TryToGetPlayerTeamType(player) != TeamType.None)
+                    if (GetPlayerTeam(player) != TeamType.None)
                     {
                         if (i == 2) return true;
                     }
@@ -153,7 +141,7 @@ namespace CodeBase.NetworkLogic
             return false;
         }
 
-        TeamType TryToGetPlayerTeamType(Player player)
+        public TeamType GetPlayerTeam(Player player)
         {
             if (IsThisPlayerIsLocalPlayer(player))
             {
@@ -190,6 +178,11 @@ namespace CodeBase.NetworkLogic
         bool IsInRoom()
         {
             return PhotonNetwork.InRoom;
+        }
+
+        public Player GetLocalPlayer()
+        {
+            return PhotonNetwork.LocalPlayer;
         }
 
         public Room GetCurrentRoom()
@@ -229,9 +222,16 @@ namespace CodeBase.NetworkLogic
 
         public void RaiseSelectTeamEvent(TeamType teamType)
         {
-            object[] content = new object[] {  teamType};
+            object[] content = new object[] { teamType };
             RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; 
             PhotonNetwork.RaiseEvent(SELECT_TEAM_EVENT_CODE,content, raiseEventOptions, SendOptions.SendReliable);
+        }
+        
+        public void RaiseFinishGameEvent(TeamType winningTeam)
+        {
+            object[] content = new object[] { winningTeam };
+            RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; 
+            PhotonNetwork.RaiseEvent(FINISH_GAME_EVENT_CODE,content, raiseEventOptions, SendOptions.SendReliable);
         }
         
         public NetworkEventType GetNetworkEventType(EventData photonEvent)
@@ -242,6 +242,7 @@ namespace CodeBase.NetworkLogic
             else if (eventCode == MOVE_UNIT_EVENT_CODE) return NetworkEventType.MoveUnit;
             else if (eventCode == TRY_TO_START_GAME_EVENT_CODE) return NetworkEventType.TryToStartGame;
             else if (eventCode == SELECT_TEAM_EVENT_CODE) return NetworkEventType.SelectTeam;
+            else if (eventCode == FINISH_GAME_EVENT_CODE) return NetworkEventType.FinishGame;
 
             return NetworkEventType.None;
         }
@@ -259,6 +260,12 @@ namespace CodeBase.NetworkLogic
         }
         
         public TeamType GetSelectTeamEventValue(EventData photonEvent)
+        {
+            object[] data = (object[])photonEvent.CustomData;
+            return (TeamType)data[0];
+        }
+        
+        public TeamType GetFinishGameEventValue(EventData photonEvent)
         {
             object[] data = (object[])photonEvent.CustomData;
             return (TeamType)data[0];
@@ -331,7 +338,7 @@ namespace CodeBase.NetworkLogic
             _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
             _networkManagerMediator.NotifyAboutSuccessfulJoiningRoom();
 
-            SetLocalPlayerTeam(TeamType.None);
+            SetPlayerTeam(GetLocalPlayer(),TeamType.None);
             
             Debug.Log(message);
         }

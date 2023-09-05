@@ -2,8 +2,8 @@ using UnityEngine;
 using TMPro;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.TurnLogic;
+using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.NetworkLogic.RoomLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
 {

@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.NetworkLogic.RoomLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {

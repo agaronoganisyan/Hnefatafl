@@ -1,7 +1,7 @@
+using CodeBase.Infrastructure.Services.RoomLogic;
 using UnityEngine;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.NetworkLogic.RoomLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
 {

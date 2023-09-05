@@ -1,6 +1,6 @@
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
-namespace CodeBase.NetworkLogic.RoomLogic
+namespace CodeBase.Infrastructure.Services.RoomLogic
 {
     public interface IGameRoomHandler : IService
     {

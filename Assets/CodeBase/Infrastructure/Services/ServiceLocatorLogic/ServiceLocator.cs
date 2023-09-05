@@ -32,6 +32,19 @@ namespace CodeBase.Infrastructure.Services.ServiceLocatorLogic
             _services.Remove(key);
         }
 
+        public static void ReRegister<T>(T serviceNewSignature) where T : IService
+        {
+            string key = typeof(T).Name;
+            if (_services.ContainsKey(key))
+            {
+                _services[key] = serviceNewSignature;
+            }
+            else
+            {
+                Debug.LogWarning($"No service of type registered.");
+            }
+        }
+        
         public static T Get<T>() where T : IService
         {
             string key = typeof(T).Name;

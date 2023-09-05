@@ -12,7 +12,8 @@ namespace CodeBase.NetworkLogic
         SelectUnit,
         MoveUnit,
         TryToStartGame,
-        SelectTeam
+        SelectTeam,
+        FinishGame
     }
 
     public interface INetworkManager : IService
@@ -26,7 +27,8 @@ namespace CodeBase.NetworkLogic
         void SelectTeamInRoom(TeamType teamType,Room room);
         void MarkRoomAsGameStarted(Room room);
         TeamType GetSelectedTeamInRoom(Room room);
-        TeamType GetLocalPlayerTeam();
+        TeamType GetPlayerTeam(Player player);
+        Player GetLocalPlayer();
         bool IsConnected();
         bool IsInLobby();
         bool IsRoomFull(Room room);
@@ -36,10 +38,12 @@ namespace CodeBase.NetworkLogic
         void RaiseMoveUnitEvent(Vector2Int index);
         void RaiseTryToStartGameEvent();
         void RaiseSelectTeamEvent(TeamType teamType);
+        void RaiseFinishGameEvent(TeamType teamType);
         Room GetCurrentRoom();
         NetworkEventType GetNetworkEventType(EventData photonEvent);
         Vector2Int GetSelectUnitEventValue(EventData photonEvent);
         Vector2Int GetMoveUnitEventValue(EventData photonEvent);
         TeamType GetSelectTeamEventValue(EventData photonEvent);
+        TeamType GetFinishGameEventValue(EventData photonEvent);
     }
 }

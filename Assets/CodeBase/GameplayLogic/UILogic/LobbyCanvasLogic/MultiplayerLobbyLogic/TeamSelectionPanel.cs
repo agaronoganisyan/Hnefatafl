@@ -1,7 +1,7 @@
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.NetworkLogic;
-using CodeBase.NetworkLogic.RoomLogic;
 using ExitGames.Client.Photon;
 using Photon.Realtime;
 using UnityEngine;
@@ -43,18 +43,21 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
 
         void PrepareTeamSelectionOptions()
         {
+            _whiteTeamButton.interactable = true;
+            _blackTeamButton.interactable = true;
+            
             TeamType selectedTeam = _networkManager.GetSelectedTeamInRoom(_networkManager.GetCurrentRoom());
             
             if (selectedTeam == TeamType.None) return;
 
             if (selectedTeam == TeamType.White)
             {
-                _whiteTeamButton.interactable=false;
+                _whiteTeamButton.interactable = false;
                 _blackTeamButton.interactable = true;
             }
             else if (selectedTeam == TeamType.Black)
             {
-                _whiteTeamButton.interactable=true;
+                _whiteTeamButton.interactable = true;
                 _blackTeamButton.interactable = false;
             }
         }

@@ -1,6 +1,6 @@
 using System;
 
-namespace CodeBase.NetworkLogic.RoomLogic
+namespace CodeBase.Infrastructure.Services.RoomLogic
 {
     public interface IGameRoomHandlerMediator
     {

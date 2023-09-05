@@ -1,9 +1,11 @@
+using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.NetworkLogic;
 using ExitGames.Client.Photon;
 using Photon.Realtime;
 using UnityEngine;
 
-namespace CodeBase.NetworkLogic.RoomLogic
+namespace CodeBase.Infrastructure.Services.RoomLogic
 {
     public class MultiplayerRoomHandler : GameRoomHandler , IOnEventCallback
     {
@@ -15,7 +17,7 @@ namespace CodeBase.NetworkLogic.RoomLogic
             _networkManager = ServiceLocator.Get<INetworkManager>();
             _networkManager.AddCallbackTarget(this);
 
-            _networkManager.NetworkManagerMediator.OnLeftRoom += base.Quit;
+            _networkManager.NetworkManagerMediator.OnLeftRoom += QuitFromMultiplayerRoom;
         }
 
         public override void TryToStartGame()
@@ -32,12 +34,31 @@ namespace CodeBase.NetworkLogic.RoomLogic
 
         public override void Quit()
         {
+            TryToFinishGameIfItNotOver();
+            
             _networkManager.LeaveRoom();
         }
 
         protected override bool IsGameCanBeStarted()
         {
             return _networkManager.IsRoomFull(_networkManager.GetCurrentRoom()) && _networkManager.IsAllPlayersInRoomSelectTeam(_networkManager.GetCurrentRoom());
+        }
+
+        private void QuitFromMultiplayerRoom()
+        {
+            base.Quit();
+        }
+
+        private void TryToFinishGameIfItNotOver()
+        {
+            if (_ruleManager.IsGameFinished) return;
+            
+            _ruleManager.SetWinningTeam(GetOppositeTeamType(_networkManager.GetPlayerTeam(_networkManager.GetLocalPlayer())));
+        }
+
+        private TeamType GetOppositeTeamType(TeamType localPlayerTeamType)
+        {
+            return localPlayerTeamType == TeamType.White ? TeamType.Black : TeamType.White;
         }
 
         public void OnEvent(EventData photonEvent)

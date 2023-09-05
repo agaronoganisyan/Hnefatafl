@@ -28,23 +28,23 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
 
             if (!_teamsUnitsContainer.IsThisUnitTypeIsAlive(TeamType.White, UnitType.King))
             {
-                _ruleManager.BlackTeamWin();
+                _ruleManager.SetWinningTeam(TeamType.Black);
                 return;
             }
 
             if (_ruleManager.IsGameFinished) return;
 
-            if (placedUnit.UnitType == UnitType.King && finalTileType == TileType.Shelter) _ruleManager.WhiteTeamWin();
+            if (placedUnit.UnitType == UnitType.King && finalTileType == TileType.Shelter) _ruleManager.SetWinningTeam(TeamType.White);
 
             if (_ruleManager.IsGameFinished) return;
 
             if (placedUnit.TeamType == TeamType.White)
             {
-                if (!_teamMoveValidator.IsThisTeamHaveAnyAvailableMoves(TeamType.Black)) _ruleManager.WhiteTeamWin();
+                if (!_teamMoveValidator.IsThisTeamHaveAnyAvailableMoves(TeamType.Black)) _ruleManager.SetWinningTeam(TeamType.White);
             }
             else
             {
-                if (!_teamMoveValidator.IsThisTeamHaveAnyAvailableMoves(TeamType.White)) _ruleManager.BlackTeamWin();
+                if (!_teamMoveValidator.IsThisTeamHaveAnyAvailableMoves(TeamType.White)) _ruleManager.SetWinningTeam(TeamType.Black);
             }
         }
     }

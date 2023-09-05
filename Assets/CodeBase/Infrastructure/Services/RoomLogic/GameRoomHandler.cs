@@ -1,11 +1,11 @@
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
-namespace CodeBase.NetworkLogic.RoomLogic
+namespace CodeBase.Infrastructure.Services.RoomLogic
 {
     public abstract class GameRoomHandler : IGameRoomHandler
     {
-        private IRuleManager _ruleManager;
+        protected IRuleManager _ruleManager;
 
         public IGameRoomHandlerMediator GameRoomHandlerMediator => _gameRoomHandlerMediator;
         private IGameRoomHandlerMediator _gameRoomHandlerMediator;

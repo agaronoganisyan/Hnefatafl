@@ -1,4 +1,4 @@
-namespace CodeBase.NetworkLogic.RoomLogic
+namespace CodeBase.Infrastructure.Services.RoomLogic
 {
     public class SingleplayerRoomHandler : GameRoomHandler
     {

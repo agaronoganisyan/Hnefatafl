@@ -8,14 +8,15 @@ using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.UnitsCommanderLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.UnitSelectValidatorLogic;
 using CodeBase.GameplayLogic.TurnLogic;
+using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.Infrastructure.Services.GameFactoryLogic;
 using CodeBase.Infrastructure.Services.Input;
+using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.Infrastructure.Services.StaticData;
 using CodeBase.NetworkLogic;
-using CodeBase.NetworkLogic.RoomLogic;
 
 namespace CodeBase.Infrastructure
 {
@@ -55,8 +56,13 @@ namespace CodeBase.Infrastructure
                 await ServiceLocator.Get<IGameInfrastructureFactory>().CreateNetworkManager());
             
             ServiceLocator.Register<IGameModeStaticDataService>(new GameModeStaticDataService());
-            ServiceLocator.Register<IRuleManager>(new RuleManager());
             
+            ServiceLocator.Register<IPlaymodeManager>(new PlaymodeManager());
+            
+            //ServiceLocator.Register<IRuleManager>(new RuleManager());
+            ServiceLocator.Register<IRuleManager>(new MultiplayerRuleManager());
+            //LOOOOOOOK
+
             
             
             //LOOOOOOOK
@@ -157,6 +163,8 @@ namespace CodeBase.Infrastructure
             await ServiceLocator.Get<IGameInfrastructureFactory>().CreateDebriefingCanvas();
             await ServiceLocator.Get<IGameInfrastructureFactory>().CreateLobbyCanvas();
 
+            ServiceLocator.Get<IPlaymodeManager>().Initialize();
+            ServiceLocator.Get<IPlaymodeManager>().SetPlaymodeType(PlaymodeType.Singleplayer);
         }
         
         void StartGame()
