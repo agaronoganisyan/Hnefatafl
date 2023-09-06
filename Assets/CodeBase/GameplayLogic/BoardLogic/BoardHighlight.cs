@@ -37,7 +37,6 @@ namespace CodeBase.GameplayLogic.BoardLogic
             
             ServiceLocator.Get<IUnitsPathCalculatorsManager>().UnitsPathCalculatorsManagerMediator.OnPathCalculated += EnableHighlight;
             ServiceLocator.Get<IUnitsCommander>().CommanderMediatorMediator.OnUnitUnselected += DisableHighlight;
-            //ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameRestarted += Restart;
             ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += Restart;
         }
 

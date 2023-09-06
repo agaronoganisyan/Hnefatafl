@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace CodeBase.Infrastructure.Services.RoomLogic
 {
     public class SingleplayerRoomHandler : GameRoomHandler
@@ -5,6 +7,6 @@ namespace CodeBase.Infrastructure.Services.RoomLogic
         protected override bool IsGameCanBeStarted()
         {
             return true;
-        }
+        } 
     }
 }

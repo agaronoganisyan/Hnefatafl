@@ -3,11 +3,15 @@ using CodeBase.Infrastructure.Services.Input;
 using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using UnityEngine;
 
-namespace CodeBase.Infrastructure.Services
+namespace CodeBase.Infrastructure.Services.GameplayModeLogic
 {
-    public class PlaymodeManager : IPlaymodeManager
+    public class GameplayModeManager : IGameplayModeManager
     {
+        public GameplayModeManagerMediator Mediator => _mediator;
+        private GameplayModeManagerMediator _mediator;
+        
         //SingleplayerServices
         private IRuleManager _singleplayerRuleManager;
         private IGameRoomHandler _singleplayerGameRoomHandler;
@@ -19,33 +23,30 @@ namespace CodeBase.Infrastructure.Services
         private IGameRoomHandler _multiplayerGameRoomHandler;
         private IUnitsCommander _multiplayerUnitsCommander;
         private IInputHandler _multiplayerInputHandler;
-        
+
+        private PlaymodeType _currentPlaymodeType;
+
+        private bool _isSingleplayerServicesInitialized;
+        private bool _isMultiplayerServicesInitialized;
+
         public void Initialize()
         {
+            _mediator = new GameplayModeManagerMediator();
+            
             _singleplayerRuleManager = new SingleplayerRuleManager();
             _singleplayerGameRoomHandler = new SingleplayerRoomHandler();
             _singleplayerUnitsCommander = new SingleplayerUnitsCommander();
             _singleplayerInputHandler = new SingleplayerInputHandler();
             
-            _singleplayerRuleManager.Initialize();
-            _singleplayerGameRoomHandler.Initialize();
-            _singleplayerUnitsCommander.Initialize();
-            _singleplayerInputHandler.Initialize();
-            
             _multiplayerRuleManager = new MultiplayerRuleManager();
             _multiplayerGameRoomHandler = new MultiplayerRoomHandler();
             _multiplayerUnitsCommander = new MultiplayerUnitsCommander();
             _multiplayerInputHandler = new MultiplayerInputHandler();
-            
-            _multiplayerRuleManager.Initialize();
-            _multiplayerGameRoomHandler.Initialize();
-            _multiplayerUnitsCommander.Initialize();
-            _multiplayerInputHandler.Initialize();
         }
 
         public void SetPlaymodeType(PlaymodeType playmodeType)
         {
-            return;
+            if (_currentPlaymodeType == playmodeType) return;
             
             if (playmodeType == PlaymodeType.Singleplayer) SetSingleplayerMode();
             else if (playmodeType == PlaymodeType.Multiplayer) SetMultiplayerMode();
@@ -53,18 +54,43 @@ namespace CodeBase.Infrastructure.Services
 
         private void SetSingleplayerMode()
         {
+            _currentPlaymodeType = PlaymodeType.Singleplayer;
+            
             ServiceLocator.ReRegister<IRuleManager>(_singleplayerRuleManager);
             ServiceLocator.ReRegister<IGameRoomHandler>(_singleplayerGameRoomHandler);
             ServiceLocator.ReRegister<IUnitsCommander>(_singleplayerUnitsCommander);
             ServiceLocator.ReRegister<IInputHandler>(_singleplayerInputHandler);
+            
+            InitializeReRegisteredServices(ref _isSingleplayerServicesInitialized);
+            
+            _mediator.NotifyAboutGameplayModeChanging();
         }
 
         private void SetMultiplayerMode()
         {
+            _currentPlaymodeType = PlaymodeType.Multiplayer;
+            
             ServiceLocator.ReRegister<IRuleManager>(_multiplayerRuleManager);
             ServiceLocator.ReRegister<IGameRoomHandler>(_multiplayerGameRoomHandler);
             ServiceLocator.ReRegister<IUnitsCommander>(_multiplayerUnitsCommander);
             ServiceLocator.ReRegister<IInputHandler>(_multiplayerInputHandler);
+            
+            InitializeReRegisteredServices(ref _isMultiplayerServicesInitialized);
+            
+            _mediator.NotifyAboutGameplayModeChanging();
+        }
+
+        private void InitializeReRegisteredServices(ref bool isInitialized)
+        {
+            if (isInitialized) return;
+            isInitialized = true;
+            
+            Debug.Log("InitializeReRegisteredServices");
+            
+            ServiceLocator.Get<IRuleManager>().Initialize();
+            ServiceLocator.Get<IGameRoomHandler>().Initialize();
+            ServiceLocator.Get<IUnitsCommander>().Initialize();
+            ServiceLocator.Get<IInputHandler>().Initialize();
         }
     }
 }

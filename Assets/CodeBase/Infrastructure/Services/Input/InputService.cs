@@ -7,13 +7,13 @@ using UnityEngine.InputSystem;
 
 namespace CodeBase.Infrastructure.Services.Input
 {
-    public class InputService :  IInputService, GameInput.IGameplayActions
+    public class InputService : IInputService, GameInput.IGameplayActions
     {
         public IInputServiceMediator InputServiceMediator => _serviceMediator;
         private IInputServiceMediator _serviceMediator;
         
-        private  GameInput _gameInput;
-
+        private GameInput _gameInput;
+        
         public void Initialize()
         {
             _serviceMediator = new InputServiceMediator();
@@ -43,7 +43,7 @@ namespace CodeBase.Infrastructure.Services.Input
         {
             if (context.phase == InputActionPhase.Performed)
             {
-#if UNITY_EDITOR 
+#if UNITY_EDITOR
                 _serviceMediator.Notify(Mouse.current.position.ReadValue());
 #elif UNITY_ANDROID || UNITY_IOS
                 _serviceMediator.Notify(Touchscreen.current.primaryTouch.position.ReadValue());

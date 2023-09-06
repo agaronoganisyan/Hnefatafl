@@ -1,6 +1,6 @@
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
-namespace CodeBase.Infrastructure.Services
+namespace CodeBase.Infrastructure.Services.GameplayModeLogic
 {
     public enum PlaymodeType
     {
@@ -9,8 +9,9 @@ namespace CodeBase.Infrastructure.Services
         Multiplayer
     }
     
-    public interface IPlaymodeManager : IService
+    public interface IGameplayModeManager : IService
     {
+        GameplayModeManagerMediator Mediator { get; }
         void SetPlaymodeType(PlaymodeType playmodeType);
     }
 }
