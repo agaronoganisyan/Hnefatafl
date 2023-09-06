@@ -1,4 +1,5 @@
 using System;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
@@ -7,12 +8,14 @@ using UnityEngine.InputSystem;
 
 namespace CodeBase.Infrastructure.Services.Input
 {
-    public class InputService : IInputService, GameInput.IGameplayActions
+    public class InputService : IInputService, GameInput.IGameplayActions, IGameplayModeChangingObserver
     {
         public IInputServiceMediator InputServiceMediator => _serviceMediator;
         private IInputServiceMediator _serviceMediator;
         
         private GameInput _gameInput;
+        private IRuleManager _ruleManager;
+        private IGameRoomHandler _gameRoomHandler;
         
         public void Initialize()
         {
@@ -21,10 +24,29 @@ namespace CodeBase.Infrastructure.Services.Input
             _gameInput.Gameplay.SetCallbacks(this);
 
             SetUIMode();
+
+            _ruleManager = ServiceLocator.Get<IRuleManager>();
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             
-            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameStarted += SetGameplayMode;
-            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameFinished += SetUIMode;
-            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += SetUIMode;
+            _ruleManager.RuleManagerMediator.OnGameStarted += SetGameplayMode;
+            _ruleManager.RuleManagerMediator.OnGameFinished += SetUIMode;
+            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += SetUIMode;
+            
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
+        }
+        
+        public void UpdateChangedProperties()
+        {
+            _ruleManager.RuleManagerMediator.OnGameStarted -= SetGameplayMode;
+            _ruleManager.RuleManagerMediator.OnGameFinished -= SetUIMode;
+            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom -= SetUIMode;
+            
+            _ruleManager = ServiceLocator.Get<IRuleManager>();
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+            
+            _ruleManager.RuleManagerMediator.OnGameStarted += SetGameplayMode;
+            _ruleManager.RuleManagerMediator.OnGameFinished += SetUIMode;
+            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += SetUIMode;
         }
         
         void SetGameplayMode()

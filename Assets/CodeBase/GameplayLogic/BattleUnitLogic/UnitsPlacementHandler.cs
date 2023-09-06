@@ -2,12 +2,13 @@ using CodeBase.Infrastructure;
 using CodeBase.GameplayLogic.TileLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.KillsLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.MoveLogic;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
-    public class UnitsPlacementHandler : IUnitsPlacementHandler
+    public class UnitsPlacementHandler : IUnitsPlacementHandler, IGameplayModeChangingObserver
     {
         private IRuleManager _ruleManager;
         private IKillsHandler _killsHandler;
@@ -20,6 +21,13 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             _killsHandler  = ServiceLocator.Get<IKillsHandler>();
             _teamMoveValidator = ServiceLocator.Get<ITeamMoveValidator>();
             _teamsUnitsContainer  = ServiceLocator.Get<ITeamsUnitsContainer>();
+            
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
+        }
+        
+        public void UpdateChangedProperties()
+        {
+            _ruleManager = ServiceLocator.Get<IRuleManager>();
         }
         
         public void ProcessPlacement(BattleUnit placedUnit, TileType finalTileType)

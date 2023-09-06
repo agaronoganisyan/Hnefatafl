@@ -1,29 +1,48 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using CodeBase.Infrastructure;
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {
-    public class DebriefingCanvas : UICanvas, IDebriefingCanvas
+    public class DebriefingCanvas : UICanvas, IDebriefingCanvas, IGameplayModeChangingObserver
     {
+        private IGameRoomHandler _gameRoomHandler;
+        private IRuleManager _ruleManager;
+        
         [SerializeField] DebriefingPanel _debriefingPanel;
 
         public void Initialize()
         {
             base.Close();
 
-            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += base.Close;
-            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnWhiteTeamWon += OpenWhiteScreen;
-            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnBlackTeamWon += OpenBlackScreen;
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+            _ruleManager= ServiceLocator.Get<IRuleManager>();
+            
+            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += base.Close;
+            _ruleManager.RuleManagerMediator.OnWhiteTeamWon += OpenWhiteScreen;
+            _ruleManager.RuleManagerMediator.OnBlackTeamWon += OpenBlackScreen;
             
             _debriefingPanel.Initialize();
+            
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
         }
 
+        public void UpdateChangedProperties()
+        {
+            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom -= base.Close;
+            _ruleManager.RuleManagerMediator.OnWhiteTeamWon -= OpenWhiteScreen;
+            _ruleManager.RuleManagerMediator.OnBlackTeamWon -= OpenBlackScreen;
+            
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+            _ruleManager= ServiceLocator.Get<IRuleManager>();
+            
+            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += base.Close;
+            _ruleManager.RuleManagerMediator.OnWhiteTeamWon += OpenWhiteScreen;
+            _ruleManager.RuleManagerMediator.OnBlackTeamWon += OpenBlackScreen;
+        }
 
         void OpenWhiteScreen()
         {

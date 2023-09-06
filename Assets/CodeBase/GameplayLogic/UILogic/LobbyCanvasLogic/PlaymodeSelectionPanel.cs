@@ -5,7 +5,7 @@ using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
 {
-    public class PlaymodeSelectionPanel : LobbyPanel
+    public class PlaymodeSelectionPanel : LobbyPanel, IGameplayModeChangingObserver
     {
         private IGameplayModeManager _gameplayModeManager;
         private IGameRoomHandler _gameRoomHandler;
@@ -18,8 +18,15 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
 
             _gameplayModeManager = ServiceLocator.Get<IGameplayModeManager>();
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+            
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
         }
 
+        public void UpdateChangedProperties()
+        {
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+        }
+        
         public void MultiplayerButton()
         {
             _gameplayModeManager.SetPlaymodeType(PlaymodeType.Multiplayer);

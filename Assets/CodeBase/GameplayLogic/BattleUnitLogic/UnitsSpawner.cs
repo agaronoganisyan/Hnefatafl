@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using CodeBase.Infrastructure;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
@@ -8,13 +9,14 @@ using UnityEngine;
 
 namespace CodeBase.GameplayLogic.BattleUnitLogic
 {
-    public class UnitsSpawner : IUnitsSpawner
+    public class UnitsSpawner : IUnitsSpawner, IGameplayModeChangingObserver
     {
     private IUnitsFactory _unitsFactory;    
     private IUnitsStateContainer _unitsStateContainer;
     private ITeamsUnitsContainer _teamsUnitsContainer;
+    private IGameRoomHandler _gameRoomHandler;
     private int _boardSize;
-        
+
     public void Initialize()
     {
         GameModeStaticData currentModeData =
@@ -23,10 +25,21 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         _unitsFactory = ServiceLocator.Get<IUnitsFactory>();
         _unitsStateContainer =  ServiceLocator.Get<IUnitsStateContainer>();
         _teamsUnitsContainer =  ServiceLocator.Get<ITeamsUnitsContainer>();
+        _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
         _boardSize = currentModeData.BoardSize;
-
-        //ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameRestarted += Restart;
-        ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += Restart;
+    
+        _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += Restart;
+        
+        ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
+    }
+    
+    public void UpdateChangedProperties()
+    {
+        _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom -= Restart;
+        
+        _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+        
+        _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += Restart;
     }
     
     public async Task InitializeUnits()

@@ -1,15 +1,15 @@
-using System;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
-using CodeBase.Infrastructure;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using UnityEngine;
 
 namespace CodeBase.GameplayLogic.TurnLogic
 {
-    public class TurnManager : ITurnManager
+    public class TurnManager : ITurnManager, IGameplayModeChangingObserver
     {
+        private IRuleManager _ruleManager;
+        
         public ITurnManagerMediator TurnManagerMediator => _managerMediator;
         private ITurnManagerMediator _managerMediator;
         
@@ -25,8 +25,18 @@ namespace CodeBase.GameplayLogic.TurnLogic
         public void Initialize()
         {
             _managerMediator = new TurnManagerMediator();
+
+            _ruleManager = ServiceLocator.Get<IRuleManager>();
+            _ruleManager.RuleManagerMediator.OnGameStarted += Prepare;
+        }
+        
+        public void UpdateChangedProperties()
+        {
+            _ruleManager.RuleManagerMediator.OnGameStarted -= Prepare;
             
-            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameStarted += Prepare;
+            _ruleManager = ServiceLocator.Get<IRuleManager>();
+            
+            _ruleManager.RuleManagerMediator.OnGameStarted += Prepare;
         }
         
         public void SwitchTeamOfTurn()

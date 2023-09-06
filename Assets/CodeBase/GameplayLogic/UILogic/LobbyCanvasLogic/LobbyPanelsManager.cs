@@ -1,14 +1,15 @@
 using System.Collections.Generic;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
 {
-    public class LobbyPanelsManager  : MonoBehaviour
+    public class LobbyPanelsManager  : MonoBehaviour, IGameplayModeChangingObserver
     {
+        private IGameRoomHandler _gameRoomHandler;
         private ILobbyCanvas _lobbyCanvas;
-        
         private LobbyPanel _activePanel;
         
         [SerializeField] private LobbyPanel[] _allPanels;
@@ -22,11 +23,22 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
             
             InitializePanels();
 
-            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += OpenStartPanel;
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += OpenStartPanel;
+            
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
 
-            //подписаться на колбек выхода из комнаты чтобы подготвить окно с самого начала 
         }
-
+        
+        public void UpdateChangedProperties()
+        {
+            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom -= OpenStartPanel;
+            
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+            
+            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += OpenStartPanel;
+        }        
+        
         private void InitializePanels()
         {
             foreach (LobbyPanel panel in _allPanels)

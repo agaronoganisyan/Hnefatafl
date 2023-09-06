@@ -3,6 +3,7 @@ using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.UnitSelectValidatorLogic;
 using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic.TurnLogic;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using UnityEngine;
 

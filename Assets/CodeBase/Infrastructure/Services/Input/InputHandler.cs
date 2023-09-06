@@ -2,12 +2,13 @@ using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.UnitsCommanderLogic;
 using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic.TurnLogic;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using UnityEngine;
 
 namespace CodeBase.Infrastructure.Services.Input
 {
-    public abstract class InputHandler : IInputHandler
+    public abstract class InputHandler : IInputHandler, IGameplayModeChangingObserver
     {
         private IBoardTilesContainer _boardTilesContainer;
         private IUnitsCommander _unitsCommander;
@@ -22,6 +23,13 @@ namespace CodeBase.Infrastructure.Services.Input
             _turnManager = ServiceLocator.Get<ITurnManager>();
             
             ServiceLocator.Get<IInputService>().InputServiceMediator.OnClickedOnBoard += ProcessClickOnBoard;
+
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
+        }
+        
+        public void UpdateChangedProperties()
+        {
+            _unitsCommander = ServiceLocator.Get<IUnitsCommander>();
         }
         
         public void ProcessClickOnBoard(Vector2 mousePosition)

@@ -1,4 +1,5 @@
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.NetworkLogic;
@@ -9,7 +10,7 @@ using UnityEngine.UI;
 
 namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
 {
-    public class TeamSelectionPanel : LobbyPanel , IOnEventCallback
+    public class TeamSelectionPanel : LobbyPanel , IOnEventCallback, IGameplayModeChangingObserver
     {
         private INetworkManager _networkManager;
         private IGameRoomHandler _gameRoomHandler;
@@ -33,8 +34,15 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
             
             _whiteTeamButton.onClick.AddListener(() => SelectTeamButton(TeamType.White));
             _blackTeamButton.onClick.AddListener(() => SelectTeamButton(TeamType.Black));
+            
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
         }
 
+        public void UpdateChangedProperties()
+        {
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+        }
+        
         public override void Show()
         {
             base.Show();
