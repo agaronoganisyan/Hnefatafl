@@ -3,7 +3,6 @@ using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.NetworkLogic;
 using ExitGames.Client.Photon;
 using Photon.Realtime;
-using UnityEngine;
 
 namespace CodeBase.Infrastructure.Services.RoomLogic
 {
@@ -17,15 +16,15 @@ namespace CodeBase.Infrastructure.Services.RoomLogic
             _networkManager = ServiceLocator.Get<INetworkManager>();
             _networkManager.AddCallbackTarget(this);
 
-            _networkManager.NetworkManagerMediator.OnLeftRoom += QuitFromMultiplayerRoom;
+            _networkManager.Mediator.OnLeftRoom += QuitFromMultiplayerRoom;
         }
 
         public override void TryToStartGame()
         {
-            base.TryToStartGame();
-
             if (IsGameCanBeStarted())
             {
+                _ruleManager.StartGame();
+                
                 _networkManager.MarkRoomAsGameStarted(_networkManager.GetCurrentRoom());
             }
 

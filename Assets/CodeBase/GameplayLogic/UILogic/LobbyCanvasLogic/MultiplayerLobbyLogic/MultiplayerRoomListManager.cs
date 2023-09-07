@@ -23,7 +23,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
         {
             _assetsProvider = ServiceLocator.Get<IAssetsProvider>();
             
-            ServiceLocator.Get<INetworkManager>().NetworkManagerMediator.OnRoomListUpdated += UpdateRoomList;
+            ServiceLocator.Get<INetworkManager>().Mediator.OnRoomListUpdated += UpdateRoomList;
 
             await InitializePool();
         }

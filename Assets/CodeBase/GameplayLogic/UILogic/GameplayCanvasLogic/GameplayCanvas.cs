@@ -20,7 +20,7 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             _ruleManager = ServiceLocator.Get<IRuleManager>();
             
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += base.Close;
+            _gameRoomHandler.Mediator.OnQuitRoom += base.Close;
             _ruleManager.RuleManagerMediator.OnGameStarted += base.Open;
             
             _gameplayPanel.Initialize();
@@ -30,13 +30,13 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
         
         public void UpdateChangedProperties()
         {
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom -= base.Close;
+            _gameRoomHandler.Mediator.OnQuitRoom -= base.Close;
             _ruleManager.RuleManagerMediator.OnGameStarted -= base.Open;
             
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             _ruleManager = ServiceLocator.Get<IRuleManager>();
             
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += base.Close;
+            _gameRoomHandler.Mediator.OnQuitRoom += base.Close;
             _ruleManager.RuleManagerMediator.OnGameStarted += base.Open;
         }
     }

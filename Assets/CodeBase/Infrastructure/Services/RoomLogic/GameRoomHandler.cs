@@ -8,7 +8,7 @@ namespace CodeBase.Infrastructure.Services.RoomLogic
     {
         protected IRuleManager _ruleManager;
 
-        public IGameRoomHandlerMediator GameRoomHandlerMediator => _gameRoomHandlerMediator;
+        public IGameRoomHandlerMediator Mediator => _gameRoomHandlerMediator;
         private IGameRoomHandlerMediator _gameRoomHandlerMediator;
         
         public virtual void Initialize()

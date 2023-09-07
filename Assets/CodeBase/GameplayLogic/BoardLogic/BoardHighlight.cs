@@ -40,26 +40,26 @@ namespace CodeBase.GameplayLogic.BoardLogic
             _unitsCommander= ServiceLocator.Get<IUnitsCommander>();
             _gameRoomHandler= ServiceLocator.Get<IGameRoomHandler>();
 
-            _calculatorsManager.UnitsPathCalculatorsManagerMediator.OnPathCalculated += EnableHighlight;
-            _unitsCommander.CommanderMediatorMediator.OnUnitUnselected += DisableHighlight;
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += Restart;
+            _calculatorsManager.Mediator.OnPathCalculated += EnableHighlight;
+            _unitsCommander.Mediator.OnUnitUnselected += DisableHighlight;
+            _gameRoomHandler.Mediator.OnQuitRoom += Restart;
 
             ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
         }
 
         public void UpdateChangedProperties()
         {
-            _calculatorsManager.UnitsPathCalculatorsManagerMediator.OnPathCalculated -= EnableHighlight;
-            _unitsCommander.CommanderMediatorMediator.OnUnitUnselected -= DisableHighlight;
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom -= Restart;
+            _calculatorsManager.Mediator.OnPathCalculated -= EnableHighlight;
+            _unitsCommander.Mediator.OnUnitUnselected -= DisableHighlight;
+            _gameRoomHandler.Mediator.OnQuitRoom -= Restart;
             
             _calculatorsManager = ServiceLocator.Get<IUnitsPathCalculatorsManager>();
             _unitsCommander= ServiceLocator.Get<IUnitsCommander>();
             _gameRoomHandler= ServiceLocator.Get<IGameRoomHandler>();
 
-            _calculatorsManager.UnitsPathCalculatorsManagerMediator.OnPathCalculated += EnableHighlight;
-            _unitsCommander.CommanderMediatorMediator.OnUnitUnselected += DisableHighlight;
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += Restart;
+            _calculatorsManager.Mediator.OnPathCalculated += EnableHighlight;
+            _unitsCommander.Mediator.OnUnitUnselected += DisableHighlight;
+            _gameRoomHandler.Mediator.OnQuitRoom += Restart;
         }
         
         void Restart()

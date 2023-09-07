@@ -4,7 +4,7 @@ namespace CodeBase.Infrastructure.Services.RoomLogic
 {
     public interface IGameRoomHandler : IService
     {
-        IGameRoomHandlerMediator GameRoomHandlerMediator { get; }
+        IGameRoomHandlerMediator Mediator { get; }
         void TryToStartGame();
         void Quit();
     }

@@ -6,7 +6,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
 {
     public class UnitsPathCalculatorsManager : IUnitsPathCalculatorsManager
     {
-        public IUnitsPathCalculatorsManagerMediator UnitsPathCalculatorsManagerMediator => _unitsPathCalculatorsManagerMediator;
+        public IUnitsPathCalculatorsManagerMediator Mediator => _unitsPathCalculatorsManagerMediator;
         private IUnitsPathCalculatorsManagerMediator _unitsPathCalculatorsManagerMediator;
         
         private readonly Dictionary<UnitType, UnitPathCalculator> _calculators = new Dictionary<UnitType, UnitPathCalculator>();

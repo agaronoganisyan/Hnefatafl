@@ -14,7 +14,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
         public void Initialize()
         {
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += base.Open;
+            _gameRoomHandler.Mediator.OnQuitRoom += base.Open;
             
             _lobbyPanelsManager.Initialize(this);
             
@@ -23,11 +23,11 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
 
         public void UpdateChangedProperties()
         {
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom -= base.Open;
+            _gameRoomHandler.Mediator.OnQuitRoom -= base.Open;
             
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += base.Open;
+            _gameRoomHandler.Mediator.OnQuitRoom += base.Open;
         }
         
         public void ClosePanel()

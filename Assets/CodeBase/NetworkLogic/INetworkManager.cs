@@ -18,7 +18,7 @@ namespace CodeBase.NetworkLogic
 
     public interface INetworkManager : IService
     {
-        INetworkManagerMediator NetworkManagerMediator { get; }
+        INetworkManagerMediator Mediator { get; }
         void ConnectToServer();
         void CreateRoom(string roomName);
         void JoinRandomRoom();

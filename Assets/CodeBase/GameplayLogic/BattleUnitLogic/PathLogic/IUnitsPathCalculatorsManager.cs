@@ -5,7 +5,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.PathLogic
 {
     public interface IUnitsPathCalculatorsManager : IService
     {
-        IUnitsPathCalculatorsManagerMediator UnitsPathCalculatorsManagerMediator { get; }
+        IUnitsPathCalculatorsManagerMediator Mediator { get; }
         void AddUnitPathCalculator(UnitType unitType, UnitPathCalculator calculator);
         IUnitPath CalculatePath(BattleUnit battleUnit);
         bool IsUnitHasAvailableMoves(BattleUnit battleUnit);

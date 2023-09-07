@@ -30,7 +30,7 @@ namespace CodeBase.NetworkLogic
 
         private List<RoomInfo> _cachedRoomList = new List<RoomInfo>();
         
-        public INetworkManagerMediator NetworkManagerMediator => _networkManagerMediator;
+        public INetworkManagerMediator Mediator => _networkManagerMediator;
         private INetworkManagerMediator _networkManagerMediator;
         
         public void Initialize()

@@ -28,18 +28,18 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
         _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
         _boardSize = currentModeData.BoardSize;
     
-        _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += Restart;
+        _gameRoomHandler.Mediator.OnQuitRoom += Restart;
         
         ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
     }
     
     public void UpdateChangedProperties()
     {
-        _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom -= Restart;
+        _gameRoomHandler.Mediator.OnQuitRoom -= Restart;
         
         _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
         
-        _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += Restart;
+        _gameRoomHandler.Mediator.OnQuitRoom += Restart;
     }
     
     public async Task InitializeUnits()

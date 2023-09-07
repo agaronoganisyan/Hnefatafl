@@ -11,7 +11,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.UnitsCommanderLogic
 {
     public abstract class UnitsCommander : IUnitsCommander
     {
-        public IUnitsCommanderMediator CommanderMediatorMediator => _commanderMediatorMediator;
+        public IUnitsCommanderMediator Mediator => _commanderMediatorMediator;
         private IUnitsCommanderMediator _commanderMediatorMediator;
         
         private ITurnManager _turnManager;

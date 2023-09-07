@@ -24,7 +24,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
             InitializePanels();
 
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += OpenStartPanel;
+            _gameRoomHandler.Mediator.OnQuitRoom += OpenStartPanel;
             
             ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
 
@@ -32,11 +32,11 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
         
         public void UpdateChangedProperties()
         {
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom -= OpenStartPanel;
+            _gameRoomHandler.Mediator.OnQuitRoom -= OpenStartPanel;
             
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += OpenStartPanel;
+            _gameRoomHandler.Mediator.OnQuitRoom += OpenStartPanel;
         }        
         
         private void InitializePanels()

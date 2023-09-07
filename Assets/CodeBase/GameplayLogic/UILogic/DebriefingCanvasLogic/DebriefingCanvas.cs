@@ -21,7 +21,7 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             _ruleManager= ServiceLocator.Get<IRuleManager>();
             
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += base.Close;
+            _gameRoomHandler.Mediator.OnQuitRoom += base.Close;
             _ruleManager.RuleManagerMediator.OnWhiteTeamWon += OpenWhiteScreen;
             _ruleManager.RuleManagerMediator.OnBlackTeamWon += OpenBlackScreen;
             
@@ -32,14 +32,14 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 
         public void UpdateChangedProperties()
         {
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom -= base.Close;
+            _gameRoomHandler.Mediator.OnQuitRoom -= base.Close;
             _ruleManager.RuleManagerMediator.OnWhiteTeamWon -= OpenWhiteScreen;
             _ruleManager.RuleManagerMediator.OnBlackTeamWon -= OpenBlackScreen;
             
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             _ruleManager= ServiceLocator.Get<IRuleManager>();
             
-            _gameRoomHandler.GameRoomHandlerMediator.OnQuitRoom += base.Close;
+            _gameRoomHandler.Mediator.OnQuitRoom += base.Close;
             _ruleManager.RuleManagerMediator.OnWhiteTeamWon += OpenWhiteScreen;
             _ruleManager.RuleManagerMediator.OnBlackTeamWon += OpenBlackScreen;
         }

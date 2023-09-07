@@ -24,11 +24,11 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
             _type = LobbyPanelType.MultiplayerLobby;
             
             _networkManager = ServiceLocator.Get<INetworkManager>();
-            _networkManager.NetworkManagerMediator.OnConnectionStatusChanged += SetConnectionStatus;
-            _networkManager.NetworkManagerMediator.OnJoinedLobby += PrepareNetworkOptions;
-            _networkManager.NetworkManagerMediator.OnJoiningRoom +=  TryJoinRoom;
-            _networkManager.NetworkManagerMediator.OnJoinedRoom += SuccessfullyRoomJoining;
-            _networkManager.NetworkManagerMediator.OnJoinRoomFailed += JoiningRoomFailed;
+            _networkManager.Mediator.OnConnectionStatusChanged += SetConnectionStatus;
+            _networkManager.Mediator.OnJoinedLobby += PrepareNetworkOptions;
+            _networkManager.Mediator.OnJoiningRoom +=  TryJoinRoom;
+            _networkManager.Mediator.OnJoinedRoom += SuccessfullyRoomJoining;
+            _networkManager.Mediator.OnJoinRoomFailed += JoiningRoomFailed;
             
             _createNewRoomPanel.Initialize(this);
             _multiplayerRoomListManager.Initialize();
