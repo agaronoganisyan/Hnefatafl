@@ -18,7 +18,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
             
             _lobbyPanelsManager.Initialize(this);
             
-            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }
 
         public void UpdateChangedProperties()

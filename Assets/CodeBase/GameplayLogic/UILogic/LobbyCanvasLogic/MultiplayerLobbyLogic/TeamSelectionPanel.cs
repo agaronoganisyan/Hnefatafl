@@ -35,7 +35,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
             _whiteTeamButton.onClick.AddListener(() => SelectTeamButton(TeamType.White));
             _blackTeamButton.onClick.AddListener(() => SelectTeamButton(TeamType.Black));
             
-            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }
 
         public void UpdateChangedProperties()

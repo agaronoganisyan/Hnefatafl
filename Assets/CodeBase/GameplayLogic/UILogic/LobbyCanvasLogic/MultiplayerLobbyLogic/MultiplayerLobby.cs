@@ -1,6 +1,5 @@
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.NetworkLogic;
-using TMPro;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
@@ -13,9 +12,6 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
         [SerializeField] private MultiplayerRoomListManager _multiplayerRoomListManager;
         [SerializeField] private RectTransform _notConnectedNetworkOptions;
         [SerializeField] private RectTransform _connectedNetworkOptions;
-        [SerializeField] private RectTransform _backButton;
-
-        [SerializeField] private TextMeshProUGUI _connectionStatusText;
         
         public override void Initialize(LobbyPanelsManager lobbyPanelsManager)
         {
@@ -24,11 +20,8 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
             _type = LobbyPanelType.MultiplayerLobby;
             
             _networkManager = ServiceLocator.Get<INetworkManager>();
-            _networkManager.Mediator.OnConnectionStatusChanged += SetConnectionStatus;
             _networkManager.Mediator.OnJoinedLobby += PrepareNetworkOptions;
-            _networkManager.Mediator.OnJoiningRoom +=  TryJoinRoom;
             _networkManager.Mediator.OnJoinedRoom += SuccessfullyRoomJoining;
-            _networkManager.Mediator.OnJoinRoomFailed += JoiningRoomFailed;
             
             _createNewRoomPanel.Initialize(this);
             _multiplayerRoomListManager.Initialize();
@@ -45,7 +38,6 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
             _networkManager.ConnectToServer();
             
             SetNotConnectedNetworkOptionsStatus(false);
-            SetBackButtonStatus(false);
         }
         
         public void CreateRoom(string roomName)
@@ -53,17 +45,11 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
             _networkManager.CreateRoom(roomName);
             
             SetConnectedNetworkOptionsStatus(false);
-            SetBackButtonStatus(false);
         }
         
         void SuccessfullyRoomJoining()
         {
             _lobbyPanelsManager.SetActivePanel(LobbyPanelType.TeamSelection);
-        }
-        
-        void SetConnectionStatus(string status)
-        {
-            _connectionStatusText.text = status;
         }
         
         void PrepareNetworkOptions()
@@ -78,23 +64,8 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
                 SetNotConnectedNetworkOptionsStatus(true);
                 SetConnectedNetworkOptionsStatus(false);
             }
-
-            SetBackButtonStatus(true);
         }
 
-        void TryJoinRoom()
-        {
-            SetConnectedNetworkOptionsStatus(false);
-            SetBackButtonStatus(false);
-        }
-
-        void JoiningRoomFailed()
-        {
-             SetConnectedNetworkOptionsStatus(true);
-             SetBackButtonStatus(true);
-        }
-
-        private void SetBackButtonStatus(bool status) => _backButton.gameObject.SetActive(status);
         private void SetConnectedNetworkOptionsStatus(bool status) => _connectedNetworkOptions.gameObject.SetActive(status);
         private void SetNotConnectedNetworkOptionsStatus(bool status) => _notConnectedNetworkOptions.gameObject.SetActive(status);
     }

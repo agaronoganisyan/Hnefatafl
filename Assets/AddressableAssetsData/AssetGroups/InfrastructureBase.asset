@@ -65,16 +65,16 @@ MonoBehaviour:
     m_Address: ClassicModeStaticData
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 0c2f0891800544626bc18a29e70a5820
-    m_Address: NetworkManager
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 015f70309c922407ca834da31465b5ea
     m_Address: LobbyCanvas
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b4ff2bed2627647a8ae246d201f9302f
     m_Address: StandardRoomListEntry
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4c1b6d69cacf04319aaf91f328b5ee5d
+    m_Address: NetworkLoadingCanvas
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

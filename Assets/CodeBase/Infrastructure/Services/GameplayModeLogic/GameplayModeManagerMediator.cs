@@ -8,11 +8,11 @@ namespace CodeBase.Infrastructure.Services.GameplayModeLogic
 {
     public class GameplayModeManagerMediator : IGameplayModeManagerMediator
     {
-        public event Action OnGameplayNodeChanged;
+        public event Action OnGameplayModeChanged;
         
         public void NotifyAboutGameplayModeChanging()
         {
-            OnGameplayNodeChanged?.Invoke();
+            OnGameplayModeChanged?.Invoke();
         }
     }
 }

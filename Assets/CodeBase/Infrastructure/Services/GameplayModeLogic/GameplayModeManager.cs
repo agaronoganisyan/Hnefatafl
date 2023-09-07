@@ -9,8 +9,8 @@ namespace CodeBase.Infrastructure.Services.GameplayModeLogic
 {
     public class GameplayModeManager : IGameplayModeManager
     {
-        public GameplayModeManagerMediator Mediator => _mediator;
-        private GameplayModeManagerMediator _mediator;
+        public IGameplayModeManagerMediator Mediator => _mediator;
+        private IGameplayModeManagerMediator _mediator;
         
         //SingleplayerServices
         private IRuleManager _singleplayerRuleManager;

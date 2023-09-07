@@ -16,7 +16,8 @@ namespace CodeBase.Infrastructure.Services.RoomLogic
             _networkManager = ServiceLocator.Get<INetworkManager>();
             _networkManager.AddCallbackTarget(this);
 
-            _networkManager.Mediator.OnLeftRoom += QuitFromMultiplayerRoom;
+            _networkManager.Mediator.OnRoomLeaved += QuitFromMultiplayerRoom;
+            _networkManager.Mediator.OnOpponentLeavedRoom += OpponentLeaveRoom;
         }
 
         public override void TryToStartGame()
@@ -33,7 +34,7 @@ namespace CodeBase.Infrastructure.Services.RoomLogic
 
         public override void Quit()
         {
-            TryToFinishGameIfItNotOver();
+            LocalPlayerLeaveRoom();
             
             _networkManager.LeaveRoom();
         }
@@ -48,13 +49,18 @@ namespace CodeBase.Infrastructure.Services.RoomLogic
             base.Quit();
         }
 
-        private void TryToFinishGameIfItNotOver()
+        void LocalPlayerLeaveRoom()
         {
             if (_ruleManager.IsGameFinished) return;
-            
             _ruleManager.SetWinningTeam(GetOppositeTeamType(_networkManager.GetPlayerTeam(_networkManager.GetLocalPlayer())));
         }
-
+        
+        void OpponentLeaveRoom()
+        {
+            if (_ruleManager.IsGameFinished) return;
+            _ruleManager.SetWinningTeam(_networkManager.GetPlayerTeam(_networkManager.GetLocalPlayer()));
+        }
+        
         private TeamType GetOppositeTeamType(TeamType localPlayerTeamType)
         {
             return localPlayerTeamType == TeamType.White ? TeamType.Black : TeamType.White;

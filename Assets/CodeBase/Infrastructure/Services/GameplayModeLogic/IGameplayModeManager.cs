@@ -11,7 +11,7 @@ namespace CodeBase.Infrastructure.Services.GameplayModeLogic
     
     public interface IGameplayModeManager : IService
     {
-        GameplayModeManagerMediator Mediator { get; }
+        IGameplayModeManagerMediator Mediator { get; }
         void SetPlaymodeType(PlaymodeType playmodeType);
     }
 }

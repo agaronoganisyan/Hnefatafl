@@ -8,7 +8,7 @@ namespace CodeBase.Infrastructure.Services.GameplayModeLogic
 {
     public interface IGameplayModeManagerMediator
     {
-        event Action OnGameplayNodeChanged;
+        event Action OnGameplayModeChanged;
         void NotifyAboutGameplayModeChanging();
     }
 }

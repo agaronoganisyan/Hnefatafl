@@ -22,7 +22,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic
             _teamMoveValidator = ServiceLocator.Get<ITeamMoveValidator>();
             _teamsUnitsContainer  = ServiceLocator.Get<ITeamsUnitsContainer>();
             
-            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }
         
         public void UpdateChangedProperties()

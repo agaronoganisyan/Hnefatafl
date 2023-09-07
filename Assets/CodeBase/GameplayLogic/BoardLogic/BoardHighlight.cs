@@ -44,7 +44,7 @@ namespace CodeBase.GameplayLogic.BoardLogic
             _unitsCommander.Mediator.OnUnitUnselected += DisableHighlight;
             _gameRoomHandler.Mediator.OnQuitRoom += Restart;
 
-            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }
 
         public void UpdateChangedProperties()

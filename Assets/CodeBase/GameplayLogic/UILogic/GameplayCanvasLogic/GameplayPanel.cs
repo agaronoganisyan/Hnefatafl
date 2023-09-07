@@ -20,7 +20,7 @@ namespace CodeBase.GameplayLogic.UILogic.GameplayCanvasLogic
 
             ServiceLocator.Get<ITurnManager>().TurnManagerMediator.OnTeamOfTurnChanged += SetTeamOfTurn;
             
-            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }
 
         public void UpdateChangedProperties()

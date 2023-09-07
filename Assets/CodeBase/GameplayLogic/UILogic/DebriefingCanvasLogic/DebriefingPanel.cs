@@ -19,6 +19,8 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
         public void Initialize()
         {
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }
 
         public void UpdateChangedProperties()

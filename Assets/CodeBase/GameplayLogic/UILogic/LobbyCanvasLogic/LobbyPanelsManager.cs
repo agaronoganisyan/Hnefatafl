@@ -26,7 +26,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             _gameRoomHandler.Mediator.OnQuitRoom += OpenStartPanel;
             
-            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
 
         }
         

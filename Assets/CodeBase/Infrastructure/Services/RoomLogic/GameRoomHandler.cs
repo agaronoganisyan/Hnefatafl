@@ -13,13 +13,11 @@ namespace CodeBase.Infrastructure.Services.RoomLogic
         
         public virtual void Initialize()
         {
-            _ruleManager = ServiceLocator.Get<IRuleManager>();
-            
-            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
-            
             _gameRoomHandlerMediator = new GameRoomHandlerMediator();
             
-            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
+            _ruleManager = ServiceLocator.Get<IRuleManager>();
+            
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }
         
         public void UpdateChangedProperties()

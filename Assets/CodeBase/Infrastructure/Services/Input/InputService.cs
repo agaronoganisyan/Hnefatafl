@@ -32,7 +32,7 @@ namespace CodeBase.Infrastructure.Services.Input
             _ruleManager.RuleManagerMediator.OnGameFinished += SetUIMode;
             _gameRoomHandler.Mediator.OnQuitRoom += SetUIMode;
             
-            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayNodeChanged += UpdateChangedProperties;
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }
         
         public void UpdateChangedProperties()

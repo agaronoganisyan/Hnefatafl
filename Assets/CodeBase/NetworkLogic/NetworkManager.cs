@@ -9,10 +9,9 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 namespace CodeBase.NetworkLogic
 {
-    public class NetworkManager : MonoBehaviourPunCallbacks , INetworkManager
+    public class NetworkManager : NetworkCallbacks , INetworkManager
     {
         private const string KEY_TEAM = "Team";
-        private const string KEY_ROOM_GAME_IS_STARTED = "RoomGameIsStarted";
         
         private const int MAX_PLAYERS_AMOUNT = 2;
         
@@ -22,50 +21,22 @@ namespace CodeBase.NetworkLogic
         private const byte SELECT_TEAM_EVENT_CODE  = 4;
         private const byte FINISH_GAME_EVENT_CODE  = 5;
 
+        private const byte SERIALIZE_VECTOR2INT_CODE  = 50;
+        
         private TeamType _localPlayerTeamType;
         
         private TypedLobby _defaultLobby = new TypedLobby("defaultLobby", LobbyType.Default);
         
-        //private const byte SERIALIZE_VECTOR2INT_CODE  = unchecked((byte)301);//242
-
         private List<RoomInfo> _cachedRoomList = new List<RoomInfo>();
         
-        public INetworkManagerMediator Mediator => _networkManagerMediator;
-        private INetworkManagerMediator _networkManagerMediator;
+        public INetworkManagerMediator Mediator => _mediator;
+        private INetworkManagerMediator _mediator;
         
         public void Initialize()
         {
-            _networkManagerMediator = new NetworkManagerMediator();
-            PhotonPeer.RegisterType(typeof(Vector2Int), 242, SerializableVector2Int.SerializeVector2Int, SerializableVector2Int.DeserializeVector2Int);
-        }
-        
-        public void ConnectToServer()
-        {
-            if (IsConnected())
-            {
-                JoinDefaultLobby();
-            }
-            else
-            {
-                PhotonNetwork.AutomaticallySyncScene = true;
-                PhotonNetwork.ConnectUsingSettings();
-            
-                _networkManagerMediator.NotifyAboutChangingConnectionStatus("ConnectToServer");   
-                
-                Debug.Log("ConnectToServer");
-            }
-        }
-
-        void JoinDefaultLobby()
-        {
-            if (!IsInLobby())
-            {
-                PhotonNetwork.JoinLobby(_defaultLobby);
-            
-                _networkManagerMediator.NotifyAboutChangingConnectionStatus("JoinDefaultLobby");
-                
-                Debug.Log("JoinDefaultLobby");
-            }
+            _mediator = new NetworkManagerMediator();
+            PhotonPeer.RegisterType(typeof(Vector2Int), SERIALIZE_VECTOR2INT_CODE, SerializableVector2Int.SerializeVector2Int, SerializableVector2Int.DeserializeVector2Int);
+            AddCallbackTarget(this);
         }
 
         void DeleteRoom(Room room)
@@ -271,28 +242,65 @@ namespace CodeBase.NetworkLogic
             return (TeamType)data[0];
         }
         
+        public void ConnectToServer()
+        {
+            if (IsConnected())
+            {
+                JoinDefaultLobby();
+            }
+            else
+            {
+                PhotonNetwork.AutomaticallySyncScene = true;
+                PhotonNetwork.ConnectUsingSettings();
+            
+                _mediator.NotifyAboutConnecting();
+                _mediator.NotifyAboutChangingConnectionStatus("Connect To Server");   
+            }
+        }
+
+        void JoinDefaultLobby()
+        {
+            if (!IsInLobby())
+            {
+                PhotonNetwork.JoinLobby(_defaultLobby);
+            
+                _mediator.NotifyAboutJoiningLobby();
+                _mediator.NotifyAboutChangingConnectionStatus("Join Default Lobby");
+            }
+        }
+        
         public void CreateRoom(string roomName)
         {
             PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = MAX_PLAYERS_AMOUNT },_defaultLobby);
+            
+            _mediator.NotifyAboutJoiningRoom();
+            _mediator.NotifyAboutChangingConnectionStatus("Join Room");
         }
 
         public void JoinPrescribedRoom(string roomName)
         {
             PhotonNetwork.JoinRoom(roomName);
             
-            _networkManagerMediator.NotifyAboutJoiningRoom();
+            _mediator.NotifyAboutJoiningRoom();
+            _mediator.NotifyAboutChangingConnectionStatus("Join Room");
         }
 
         public void JoinRandomRoom()
         {
             PhotonNetwork.JoinRandomRoom();
             
-            _networkManagerMediator.NotifyAboutJoiningRoom();
+            _mediator.NotifyAboutJoiningRoom();
+            _mediator.NotifyAboutChangingConnectionStatus("Join Room");
         }
 
         public void LeaveRoom()
         {
-            if (IsInRoom()) PhotonNetwork.LeaveRoom();
+            if (!IsInRoom()) return;
+            
+            PhotonNetwork.LeaveRoom();
+            
+            _mediator.NotifyAboutLeavingRoom();
+            _mediator.NotifyAboutChangingConnectionStatus("Leave Room");
         }
         
         private void UpdateCachedRoomList(List<RoomInfo> roomList)
@@ -315,69 +323,50 @@ namespace CodeBase.NetworkLogic
 
         public override void OnConnectedToMaster()
         {
-            string message = "OnConnectedToMaster()";
-            _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
-            _networkManagerMediator.NotifyAboutConnecting();
+            _mediator.NotifyAboutSuccessfulConnecting();
+            _mediator.NotifyAboutChangingConnectionStatus("Connected To Master");
             
-            Debug.Log("OnConnectedToMaster");
-
             JoinDefaultLobby();
         }
 
         public override void OnDisconnected(DisconnectCause cause)
         {
-            string message = "OnDisconnected()";
-            _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
+            _mediator.NotifyAboutChangingConnectionStatus("Disconnected");
 
             Debug.LogWarningFormat("OnDisconnected() was called by PUN with reason {0}", cause);
         }
 
         public override void OnJoinedRoom()
         {
-            string message = "OnJoinedRoom()";
-            _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
-            _networkManagerMediator.NotifyAboutSuccessfulJoiningRoom();
+            _mediator.NotifyAboutSuccessfulJoiningRoom();
+            _mediator.NotifyAboutChangingConnectionStatus("Joined Room");
 
             SetPlayerTeam(GetLocalPlayer(),TeamType.None);
-            
-            Debug.Log(message);
         }
 
         public override void OnJoinRoomFailed(short returnCode, string message)
         {
-            string messsage = "OnJoinRoomFailed()";
-            _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
-            _networkManagerMediator.NotifyAboutFailedJoiningRoom();
+            _mediator.NotifyAboutFailedJoiningRoom();
+            _mediator.NotifyAboutChangingConnectionStatus("Join Room Failed");
             
-            Debug.Log(messsage);
+            Debug.Log("Join Room Failed");
         }
 
         public override void OnJoinRandomFailed(short returnCode, string message)
         {
-            string messsage = "OnJoinRandomFailed()";
-            _networkManagerMediator.NotifyAboutChangingConnectionStatus(messsage);
-            _networkManagerMediator.NotifyAboutFailedJoiningRoom();
+            _mediator.NotifyAboutFailedJoiningRoom();
+            _mediator.NotifyAboutChangingConnectionStatus("Join Random Failed");
 
             Debug.Log("PUN Basics Tutorial/Launcher:OnJoinRandomFailed() was called by PUN. No random room available, so we create one." +
                       "\nCalling: PhotonNetwork.CreateRoom");
 
-            // #Critical: we failed to join a random room, maybe none exists or they are all full. No worries, we create a new room.
-            PhotonNetwork.CreateRoom(null, new RoomOptions());
-        }
-
-        public override void OnPlayerEnteredRoom(Player newPlayer)
-        {
-            string message = $"Player {newPlayer.ActorNumber} entered the room";
-            _networkManagerMediator.NotifyAboutChangingConnectionStatus(message);
-
-            Debug.Log(message);
+            //CreateRoom("JoinRandomFailed" + Random.Range(0,100));
         }
 
         public override void OnJoinedLobby()
         {
-            Debug.Log("OnJoinedLobby");
-            
-            _networkManagerMediator.NotifyAboutJoiningLobby();
+            _mediator.NotifyAboutSuccessfulJoiningLobby();
+            _mediator.NotifyAboutChangingConnectionStatus("Joined Lobby");
         }
 
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -386,12 +375,18 @@ namespace CodeBase.NetworkLogic
 
             UpdateCachedRoomList(roomList);
             
-            _networkManagerMediator.NotifyAboutRoomListUpdating(_cachedRoomList);
+            _mediator.NotifyAboutRoomListUpdating(_cachedRoomList);
         }
 
         public override void OnLeftRoom()
         {
-            _networkManagerMediator.NotifyAboutLeavingRoom();
+            _mediator.NotifyAboutSuccessfulLeavingRoom();
+            _mediator.NotifyAboutChangingConnectionStatus("Left Room");
+        }
+
+        public override void OnPlayerLeftRoom(Player otherPlayer)
+        {
+            _mediator.NotifyAboutOpponentLeaving();
         }
 
         #endregion
