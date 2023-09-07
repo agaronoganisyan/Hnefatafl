@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Threading.Tasks;
 
 namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
 {
@@ -19,9 +20,10 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
 
         [SerializeField] private CanvasGroup _canvasGroup;
         
-        public virtual void Initialize(LobbyPanelsManager lobbyPanelsManager)
+        public virtual Task Initialize(LobbyPanelsManager lobbyPanelsManager)
         {
             _lobbyPanelsManager = lobbyPanelsManager;
+            return Task.CompletedTask;
         }
 
         public virtual void Show()

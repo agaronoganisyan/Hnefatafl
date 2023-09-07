@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using CodeBase.GameplayLogic.BattleUnitLogic;
@@ -31,8 +33,6 @@ namespace CodeBase.Infrastructure
         {
             RegisterServices();
             await InitializeServices();
-            
-            //ServiceLocator.Get<IAssetsProvider>().CleanUp();
         }
 
         private void RegisterServices()

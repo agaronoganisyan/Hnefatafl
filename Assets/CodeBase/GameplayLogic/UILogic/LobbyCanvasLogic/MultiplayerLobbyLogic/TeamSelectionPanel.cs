@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RoomLogic;
@@ -18,9 +19,9 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
         [SerializeField] private Button _whiteTeamButton;
         [SerializeField] private Button _blackTeamButton;
 
-        public override void Initialize(LobbyPanelsManager lobbyPanelsManager)
+        public override async Task Initialize(LobbyPanelsManager lobbyPanelsManager)
         {
-            base.Initialize(lobbyPanelsManager);
+            await base.Initialize(lobbyPanelsManager);
             
             _type = LobbyPanelType.TeamSelection;
 

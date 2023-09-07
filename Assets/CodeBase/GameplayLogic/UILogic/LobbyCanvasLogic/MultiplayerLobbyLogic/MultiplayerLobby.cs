@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.NetworkLogic;
 using UnityEngine;
@@ -13,9 +14,9 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
         [SerializeField] private RectTransform _notConnectedNetworkOptions;
         [SerializeField] private RectTransform _connectedNetworkOptions;
         
-        public override void Initialize(LobbyPanelsManager lobbyPanelsManager)
+        public override async Task Initialize(LobbyPanelsManager lobbyPanelsManager)
         {
-            base.Initialize(lobbyPanelsManager);
+            await base.Initialize(lobbyPanelsManager);
 
             _type = LobbyPanelType.MultiplayerLobby;
             
@@ -24,7 +25,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
             _networkManager.Mediator.OnJoinedRoom += SuccessfullyRoomJoining;
             
             _createNewRoomPanel.Initialize(this);
-            _multiplayerRoomListManager.Initialize();
+            await _multiplayerRoomListManager.Initialize();
         }
         
         public override void Show()

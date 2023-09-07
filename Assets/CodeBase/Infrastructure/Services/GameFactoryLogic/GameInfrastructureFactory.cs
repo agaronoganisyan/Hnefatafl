@@ -61,7 +61,7 @@ namespace CodeBase.Infrastructure.Services.GameFactoryLogic
         {
             GameObject lobbyPanelPrefab = await _assetsProvider.Load<GameObject>(_lobbyCanvasAddress);
             ILobbyCanvas lobbyCanvas = Object.Instantiate(lobbyPanelPrefab).GetComponent<LobbyCanvas>();
-            lobbyCanvas.Initialize();
+            await lobbyCanvas.Initialize();
         }
 
         public async Task CreateNetworkLoadingCanvas()

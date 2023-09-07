@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RoomLogic;
@@ -10,9 +11,9 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
         private IGameplayModeManager _gameplayModeManager;
         private IGameRoomHandler _gameRoomHandler;
         
-        public override void Initialize(LobbyPanelsManager lobbyPanelsManager)
+        public override async Task Initialize(LobbyPanelsManager lobbyPanelsManager)
         {
-            base.Initialize(lobbyPanelsManager);
+            await base.Initialize(lobbyPanelsManager);
             
             _type = LobbyPanelType.PlaymodeSelection;
 

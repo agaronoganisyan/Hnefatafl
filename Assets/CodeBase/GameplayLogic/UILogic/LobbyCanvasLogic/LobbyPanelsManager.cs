@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
@@ -17,11 +18,11 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
         private Dictionary<LobbyPanelType, LobbyPanel> _lobbyDictionary = new Dictionary<LobbyPanelType, LobbyPanel>();
         private List<LobbyPanelType> _panelsHistory = new List<LobbyPanelType>();
         
-        public void Initialize(ILobbyCanvas lobbyCanvas)
+        public async Task Initialize(ILobbyCanvas lobbyCanvas)
         {
             _lobbyCanvas = lobbyCanvas;
             
-            InitializePanels();
+            await InitializePanels();
 
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             _gameRoomHandler.Mediator.OnQuitRoom += OpenStartPanel;
@@ -39,13 +40,13 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
             _gameRoomHandler.Mediator.OnQuitRoom += OpenStartPanel;
         }        
         
-        private void InitializePanels()
+        private async Task InitializePanels()
         {
             foreach (LobbyPanel panel in _allPanels)
             {
                 if (_allPanels == null) continue;
                 
-                panel.Initialize(this);
+                await panel.Initialize(this);
                 
                 if (_lobbyDictionary.ContainsKey(panel.Type)) continue;
                 
