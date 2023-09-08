@@ -1,6 +1,7 @@
 using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using UnityEngine;
 
 namespace CodeBase.Infrastructure.Services.RoomLogic
 {

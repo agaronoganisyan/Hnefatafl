@@ -1,23 +1,22 @@
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.NetworkLogic;
-using UnityEngine;
+using CodeBase.NetworkLogic.PlayerLogic;
 
 namespace CodeBase.Infrastructure.Services.Input
 {
     public class MultiplayerInputHandler : InputHandler
     {
-        private INetworkManager _networkManager;
+        private INetworkPlayerManager _networkPlayerManager;
         
         public override void Initialize()
         {
             base.Initialize();
 
-            _networkManager = ServiceLocator.Get<INetworkManager>();
+            _networkPlayerManager = ServiceLocator.Get<INetworkPlayerManager>();
         }
         
         protected override bool IsCanProcessClick()
         {
-            return _turnManager.TeamOfTurn == _networkManager.GetPlayerTeam(_networkManager.GetLocalPlayer());
+            return _turnManager.TeamOfTurn == _networkPlayerManager.GetPlayerTeam(_networkPlayerManager.GetLocalPlayer());
         }
     }
 }

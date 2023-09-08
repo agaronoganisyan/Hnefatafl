@@ -22,7 +22,7 @@ namespace CodeBase.Infrastructure.Services.Input
             _boardTilesContainer = ServiceLocator.Get<IBoardTilesContainer>();
             _turnManager = ServiceLocator.Get<ITurnManager>();
             
-            ServiceLocator.Get<IInputService>().InputServiceMediator.OnClickedOnBoard += ProcessClickOnBoard;
+            //ServiceLocator.Get<IInputService>().InputServiceMediator.OnClickedOnBoard += ProcessClickOnBoard;
 
             ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }

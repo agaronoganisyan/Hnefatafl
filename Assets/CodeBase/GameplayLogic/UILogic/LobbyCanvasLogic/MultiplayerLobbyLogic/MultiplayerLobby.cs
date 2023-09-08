@@ -1,6 +1,9 @@
 using System.Threading.Tasks;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.NetworkLogic;
+using CodeBase.NetworkLogic.LobbyLogic;
+using CodeBase.NetworkLogic.ManagerLogic;
+using CodeBase.NetworkLogic.RoomManagerLogic;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
@@ -8,7 +11,9 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
     public class MultiplayerLobby : LobbyPanel
     {
         private INetworkManager _networkManager;
-
+        private INetworkLobbyManager _networkLobbyManager;
+        private INetworkRoomManager _networkRoomManager;
+        
         [SerializeField] private CreateNewRoomPanel _createNewRoomPanel;
         [SerializeField] private MultiplayerRoomListManager _multiplayerRoomListManager;
         [SerializeField] private RectTransform _notConnectedNetworkOptions;
@@ -21,8 +26,11 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
             _type = LobbyPanelType.MultiplayerLobby;
             
             _networkManager = ServiceLocator.Get<INetworkManager>();
-            _networkManager.Mediator.OnJoinedLobby += PrepareNetworkOptions;
-            _networkManager.Mediator.OnJoinedRoom += SuccessfullyRoomJoining;
+            _networkLobbyManager = ServiceLocator.Get<INetworkLobbyManager>();
+            _networkRoomManager = ServiceLocator.Get<INetworkRoomManager>();
+            
+            _networkLobbyManager.Mediator.OnJoinedLobby += PrepareNetworkOptions;
+            _networkRoomManager.Mediator.OnJoinedRoom += SuccessfullyRoomJoining;
             
             _createNewRoomPanel.Initialize(this);
             await _multiplayerRoomListManager.Initialize();
@@ -37,15 +45,11 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
         public void ConnectButton()
         {
             _networkManager.ConnectToServer();
-            
-            SetNotConnectedNetworkOptionsStatus(false);
         }
         
         public void CreateRoom(string roomName)
         {
-            _networkManager.CreateRoom(roomName);
-            
-            SetConnectedNetworkOptionsStatus(false);
+            _networkRoomManager.CreateRoom(roomName);
         }
         
         void SuccessfullyRoomJoining()
@@ -55,7 +59,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
         
         void PrepareNetworkOptions()
         {
-            if (_networkManager.IsConnected() && _networkManager.IsInLobby())
+            if (_networkManager.IsConnected() && _networkLobbyManager.IsInLobby())
             {
                 SetNotConnectedNetworkOptionsStatus(false);
                 SetConnectedNetworkOptionsStatus(true);

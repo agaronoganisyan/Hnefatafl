@@ -2,15 +2,11 @@ using System;
 using System.Collections.Generic;
 using Photon.Realtime;
 
-namespace CodeBase.NetworkLogic
+namespace CodeBase.NetworkLogic.RoomManagerLogic
 {
-    public class NetworkManagerMediator : INetworkManagerMediator
+    public class NetworkRoomMediator : INetworkRoomMediator
     {
-        public event Action<string> OnConnectionStatusChanged;
-        public event Action OnConnecting;
-        public event Action OnConnected;
-        public event Action OnJoiningLobby;
-        public event Action OnJoinedLobby;
+        public event Action OnRoomCreatingFailed;
         public event Action OnJoiningRoom;
         public event Action OnJoinedRoom;
         public event Action OnJoinRoomFailed;
@@ -18,31 +14,6 @@ namespace CodeBase.NetworkLogic
         public event Action OnRoomLeaved;
         public event Action OnOpponentLeavedRoom;
         public event Action<List<RoomInfo>> OnRoomListUpdated;
-
-        public void NotifyAboutChangingConnectionStatus(string status)
-        {
-            OnConnectionStatusChanged?.Invoke(status);
-        }
-
-        public void NotifyAboutConnecting()
-        {
-            OnConnecting?.Invoke();
-        }
-
-        public void NotifyAboutSuccessfulConnecting()
-        {
-            OnConnected?.Invoke();
-        }
-
-        public void NotifyAboutJoiningLobby()
-        {
-            OnJoiningLobby?.Invoke();
-        }
-
-        public void NotifyAboutSuccessfulJoiningLobby()
-        {
-            OnJoinedLobby?.Invoke();
-        }
 
         public void NotifyAboutJoiningRoom()
         {
@@ -53,7 +24,7 @@ namespace CodeBase.NetworkLogic
         {
             OnJoinedRoom?.Invoke();
         }
-
+        
         public void NotifyAboutFailedJoiningRoom()
         {
             OnJoinRoomFailed?.Invoke();
@@ -77,6 +48,11 @@ namespace CodeBase.NetworkLogic
         public void NotifyAboutOpponentLeaving()
         {
             OnOpponentLeavedRoom?.Invoke();
+        }
+
+        public void NotifyAboutFailedRoomCreating()
+        {
+            OnRoomCreatingFailed?.Invoke();
         }
     }
 }

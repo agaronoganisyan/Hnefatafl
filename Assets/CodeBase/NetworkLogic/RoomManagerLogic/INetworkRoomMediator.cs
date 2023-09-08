@@ -2,15 +2,11 @@ using System;
 using System.Collections.Generic;
 using Photon.Realtime;
 
-namespace CodeBase.NetworkLogic
+namespace CodeBase.NetworkLogic.RoomManagerLogic
 {
-    public interface INetworkManagerMediator
+    public interface INetworkRoomMediator
     {
-        event Action<string> OnConnectionStatusChanged;
-        event Action OnConnecting; 
-        event Action OnConnected;
-        event Action OnJoiningLobby;
-        event Action OnJoinedLobby;
+        event Action OnRoomCreatingFailed;
         event Action OnJoiningRoom;
         event Action OnJoinedRoom;
         event Action OnJoinRoomFailed;
@@ -18,11 +14,7 @@ namespace CodeBase.NetworkLogic
         event Action OnRoomLeaved;
         event Action OnOpponentLeavedRoom;
         event Action<List<RoomInfo>> OnRoomListUpdated;
-        void NotifyAboutChangingConnectionStatus(string status);
-        void NotifyAboutConnecting();
-        void NotifyAboutSuccessfulConnecting();
-        void NotifyAboutJoiningLobby();
-        void NotifyAboutSuccessfulJoiningLobby();
+        
         void NotifyAboutJoiningRoom();
         void NotifyAboutSuccessfulJoiningRoom();
         void NotifyAboutFailedJoiningRoom();
@@ -30,5 +22,6 @@ namespace CodeBase.NetworkLogic
         void NotifyAboutLeavingRoom();
         void NotifyAboutSuccessfulLeavingRoom();
         void NotifyAboutOpponentLeaving();
+        void NotifyAboutFailedRoomCreating();
     }
 }

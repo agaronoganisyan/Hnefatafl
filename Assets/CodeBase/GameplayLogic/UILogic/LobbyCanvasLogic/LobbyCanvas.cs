@@ -14,6 +14,8 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
         
         public async Task Initialize()
         {
+            base.Open();;
+            
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             _gameRoomHandler.Mediator.OnQuitRoom += base.Open;
             

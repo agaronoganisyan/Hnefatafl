@@ -1,4 +1,5 @@
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using CodeBase.NetworkLogic.ManagerLogic;
 using TMPro;
 using UnityEngine;
 

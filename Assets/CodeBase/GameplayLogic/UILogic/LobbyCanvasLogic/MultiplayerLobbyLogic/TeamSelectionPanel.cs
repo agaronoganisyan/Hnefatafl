@@ -3,7 +3,9 @@ using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.NetworkLogic;
+using CodeBase.NetworkLogic.EventsManagerLogic;
+using CodeBase.NetworkLogic.ManagerLogic;
+using CodeBase.NetworkLogic.RoomManagerLogic;
 using ExitGames.Client.Photon;
 using Photon.Realtime;
 using UnityEngine;
@@ -14,6 +16,8 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
     public class TeamSelectionPanel : LobbyPanel , IOnEventCallback, IGameplayModeChangingObserver
     {
         private INetworkManager _networkManager;
+        private INetworkEventsManager _networkEventsManager;
+        private INetworkRoomManager _networkRoomManager;
         private IGameRoomHandler _gameRoomHandler;
 
         [SerializeField] private Button _whiteTeamButton;
@@ -26,6 +30,8 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
             _type = LobbyPanelType.TeamSelection;
 
             _networkManager = ServiceLocator.Get<INetworkManager>();
+            _networkEventsManager = ServiceLocator.Get<INetworkEventsManager>();
+            _networkRoomManager= ServiceLocator.Get<INetworkRoomManager>();
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
 
             _networkManager.AddCallbackTarget(this);
@@ -55,7 +61,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
             _whiteTeamButton.interactable = true;
             _blackTeamButton.interactable = true;
             
-            TeamType selectedTeam = _networkManager.GetSelectedTeamInRoom(_networkManager.GetCurrentRoom());
+            TeamType selectedTeam = _networkRoomManager.GetSelectedTeamInRoom(_networkRoomManager.GetCurrentRoom());
             
             if (selectedTeam == TeamType.None) return;
 
@@ -73,14 +79,14 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
 
         void SelectTeamButton(TeamType selectedTeamType)
         {
-            _networkManager.SelectTeamInRoom(selectedTeamType,_networkManager.GetCurrentRoom());
+            _networkRoomManager.SelectTeamInRoom(selectedTeamType,_networkRoomManager.GetCurrentRoom());
 
             _lobbyPanelsManager.HideCanvas();
             _gameRoomHandler.TryToStartGame();
             
             PrepareButtons(selectedTeamType);
             
-            _networkManager.RaiseSelectTeamEvent(selectedTeamType);
+            _networkEventsManager.RaiseSelectTeamEvent(selectedTeamType);
         }
 
         void PrepareButtons(TeamType selectedTeamType)
@@ -91,9 +97,9 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
 
         public void OnEvent(EventData photonEvent)
         {
-            NetworkEventType type = _networkManager.GetNetworkEventType(photonEvent);
+            NetworkEventType type = _networkEventsManager.GetNetworkEventType(photonEvent);
 
-            if (type == NetworkEventType.SelectTeam) PrepareButtons(_networkManager.GetSelectTeamEventValue(photonEvent));
+            if (type == NetworkEventType.SelectTeam) PrepareButtons(_networkEventsManager.GetSelectTeamEventValue(photonEvent));
         }
     }
 }

@@ -3,6 +3,7 @@ using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
+using UnityEngine;
 
 namespace CodeBase.GameplayLogic.TurnLogic
 {
@@ -28,6 +29,8 @@ namespace CodeBase.GameplayLogic.TurnLogic
 
             _ruleManager = ServiceLocator.Get<IRuleManager>();
             _ruleManager.RuleManagerMediator.OnGameStarted += Prepare;
+
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }
         
         public void UpdateChangedProperties()
@@ -55,6 +58,8 @@ namespace CodeBase.GameplayLogic.TurnLogic
             _teamOfTurn = TeamType.White;
             _selectedUnit = null;
             _selectedUnitPath = null;
+            
+            _managerMediator.Notify(_teamOfTurn);
         }
 
         public void SelectUnit(BattleUnit unit, IUnitPath selectedUnitPath)

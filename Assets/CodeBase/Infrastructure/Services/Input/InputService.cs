@@ -14,6 +14,7 @@ namespace CodeBase.Infrastructure.Services.Input
         private IInputServiceMediator _serviceMediator;
         
         private GameInput _gameInput;
+        private IInputHandler _inputHandler;
         private IRuleManager _ruleManager;
         private IGameRoomHandler _gameRoomHandler;
         
@@ -25,6 +26,8 @@ namespace CodeBase.Infrastructure.Services.Input
 
             SetUIMode();
 
+
+            _inputHandler = ServiceLocator.Get<IInputHandler>();
             _ruleManager = ServiceLocator.Get<IRuleManager>();
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             
@@ -41,6 +44,7 @@ namespace CodeBase.Infrastructure.Services.Input
             _ruleManager.RuleManagerMediator.OnGameFinished -= SetUIMode;
             _gameRoomHandler.Mediator.OnQuitRoom -= SetUIMode;
             
+            _inputHandler = ServiceLocator.Get<IInputHandler>();
             _ruleManager = ServiceLocator.Get<IRuleManager>();
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             
@@ -66,11 +70,14 @@ namespace CodeBase.Infrastructure.Services.Input
             if (context.phase == InputActionPhase.Performed)
             {
 #if UNITY_EDITOR
-                _serviceMediator.Notify(Mouse.current.position.ReadValue());
+                _inputHandler.ProcessClickOnBoard(Mouse.current.position.ReadValue());
+                //_serviceMediator.Notify(Mouse.current.position.ReadValue());
 #elif UNITY_ANDROID || UNITY_IOS
-                _serviceMediator.Notify(Touchscreen.current.primaryTouch.position.ReadValue());
+                _inputHandler.ProcessClickOnBoard(Touchscreen.current.primaryTouch.position.ReadValue());
+                //_serviceMediator.Notify(Touchscreen.current.primaryTouch.position.ReadValue());
 #else
-                _serviceMediator.Notify(Mouse.current.position.ReadValue());
+                _inputHandler.ProcessClickOnBoard(Mouse.current.position.ReadValue());
+                //_serviceMediator.Notify(Mouse.current.position.ReadValue());
 #endif
 
             }

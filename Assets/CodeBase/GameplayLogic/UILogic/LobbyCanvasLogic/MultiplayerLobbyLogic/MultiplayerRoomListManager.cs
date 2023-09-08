@@ -5,6 +5,8 @@ using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.Infrastructure.Services.CustomPoolLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.NetworkLogic;
+using CodeBase.NetworkLogic.ManagerLogic;
+using CodeBase.NetworkLogic.RoomManagerLogic;
 using Photon.Realtime;
 using UnityEngine;
 
@@ -23,7 +25,7 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic.MultiplayerLobbyLogic
         {
             _assetsProvider = ServiceLocator.Get<IAssetsProvider>();
             
-            ServiceLocator.Get<INetworkManager>().Mediator.OnRoomListUpdated += UpdateRoomList;
+            ServiceLocator.Get<INetworkRoomManager>().Mediator.OnRoomListUpdated += UpdateRoomList;
 
             await InitializePool();
         }

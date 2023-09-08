@@ -1,6 +1,10 @@
 using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.NetworkLogic;
+using CodeBase.NetworkLogic.EventsManagerLogic;
+using CodeBase.NetworkLogic.ManagerLogic;
+using CodeBase.NetworkLogic.PlayerLogic;
+using CodeBase.NetworkLogic.RoomManagerLogic;
 using ExitGames.Client.Photon;
 using Photon.Realtime;
 
@@ -9,39 +13,52 @@ namespace CodeBase.Infrastructure.Services.RoomLogic
     public class MultiplayerRoomHandler : GameRoomHandler , IOnEventCallback
     {
         private INetworkManager _networkManager;
+        private INetworkEventsManager _networkEventsManager;
+        private INetworkRoomManager _networkRoomManager;
+        private INetworkPlayerManager _networkPlayerManager;
+        
         public override void Initialize()
         {
             base.Initialize();
             
             _networkManager = ServiceLocator.Get<INetworkManager>();
+            _networkEventsManager = ServiceLocator.Get<INetworkEventsManager>();
+            _networkRoomManager = ServiceLocator.Get<INetworkRoomManager>();
+            _networkPlayerManager= ServiceLocator.Get<INetworkPlayerManager>();
+            
             _networkManager.AddCallbackTarget(this);
 
-            _networkManager.Mediator.OnRoomLeaved += QuitFromMultiplayerRoom;
-            _networkManager.Mediator.OnOpponentLeavedRoom += OpponentLeaveRoom;
+            _networkRoomManager.Mediator.OnRoomLeaved += QuitFromMultiplayerRoom;
+            _networkRoomManager.Mediator.OnOpponentLeavedRoom += OpponentLeaveRoom;
         }
 
         public override void TryToStartGame()
+        {
+            TryToStartMultiplayerGame();
+
+            _networkEventsManager.RaiseTryToStartGameEvent();
+        }
+
+        void TryToStartMultiplayerGame()
         {
             if (IsGameCanBeStarted())
             {
                 _ruleManager.StartGame();
                 
-                _networkManager.MarkRoomAsGameStarted(_networkManager.GetCurrentRoom());
+                _networkRoomManager.MarkRoomAsGameStarted(_networkRoomManager.GetCurrentRoom());
             }
-
-            _networkManager.RaiseTryToStartGameEvent();
         }
 
         public override void Quit()
         {
             LocalPlayerLeaveRoom();
             
-            _networkManager.LeaveRoom();
+            _networkRoomManager.LeaveRoom();
         }
 
         protected override bool IsGameCanBeStarted()
         {
-            return _networkManager.IsRoomFull(_networkManager.GetCurrentRoom()) && _networkManager.IsAllPlayersInRoomSelectTeam(_networkManager.GetCurrentRoom());
+            return _networkRoomManager.IsRoomFull(_networkRoomManager.GetCurrentRoom()) && _networkRoomManager.IsAllPlayersInRoomSelectTeam(_networkRoomManager.GetCurrentRoom());
         }
 
         private void QuitFromMultiplayerRoom()
@@ -52,13 +69,13 @@ namespace CodeBase.Infrastructure.Services.RoomLogic
         void LocalPlayerLeaveRoom()
         {
             if (_ruleManager.IsGameFinished) return;
-            _ruleManager.SetWinningTeam(GetOppositeTeamType(_networkManager.GetPlayerTeam(_networkManager.GetLocalPlayer())));
+            _ruleManager.SetWinningTeam(GetOppositeTeamType(_networkPlayerManager.GetPlayerTeam(_networkPlayerManager.GetLocalPlayer())));
         }
         
         void OpponentLeaveRoom()
         {
             if (_ruleManager.IsGameFinished) return;
-            _ruleManager.SetWinningTeam(_networkManager.GetPlayerTeam(_networkManager.GetLocalPlayer()));
+            _ruleManager.SetWinningTeam(_networkPlayerManager.GetPlayerTeam(_networkPlayerManager.GetLocalPlayer()));
         }
         
         private TeamType GetOppositeTeamType(TeamType localPlayerTeamType)
@@ -68,9 +85,9 @@ namespace CodeBase.Infrastructure.Services.RoomLogic
 
         public void OnEvent(EventData photonEvent)
         {
-            NetworkEventType type = _networkManager.GetNetworkEventType(photonEvent);
+            NetworkEventType type = _networkEventsManager.GetNetworkEventType(photonEvent);
 
-            if (type == NetworkEventType.TryToStartGame) base.TryToStartGame();
+            if (type == NetworkEventType.TryToStartGame) TryToStartMultiplayerGame();
         }
     }
 }

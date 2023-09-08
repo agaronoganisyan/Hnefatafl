@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using CodeBase.GameplayLogic.BattleUnitLogic;
@@ -18,7 +16,11 @@ using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.Infrastructure.Services.StaticData;
-using CodeBase.NetworkLogic;
+using CodeBase.NetworkLogic.EventsManagerLogic;
+using CodeBase.NetworkLogic.LobbyLogic;
+using CodeBase.NetworkLogic.ManagerLogic;
+using CodeBase.NetworkLogic.PlayerLogic;
+using CodeBase.NetworkLogic.RoomManagerLogic;
 
 namespace CodeBase.Infrastructure
 {
@@ -40,6 +42,10 @@ namespace CodeBase.Infrastructure
             ServiceLocator.Register<IAssetsProvider>( new AssetsProvider());
             ServiceLocator.Register<IGameInfrastructureFactory>(new GameInfrastructureFactory());
             ServiceLocator.Register<INetworkManager>(new NetworkManager());
+            ServiceLocator.Register<INetworkEventsManager>(new NetworkEventsManager());
+            ServiceLocator.Register<INetworkLobbyManager>(new NetworkLobbyManager());
+            ServiceLocator.Register<INetworkRoomManager>(new NetworkRoomManager());
+            ServiceLocator.Register<INetworkPlayerManager>(new  NetworkPlayerManager());
             ServiceLocator.Register<IGameModeStaticDataService>(new GameModeStaticDataService());
             ServiceLocator.Register<IGameplayModeManager>(new GameplayModeManager());
             ServiceLocator.Register<IRuleManager>(new EmptyRuleManager());
@@ -69,7 +75,11 @@ namespace CodeBase.Infrastructure
         {
             ServiceLocator.Get<IAssetsProvider>().Initialize();
             ServiceLocator.Get<INetworkManager>().Initialize();
-            
+            ServiceLocator.Get<INetworkEventsManager>().Initialize();
+            ServiceLocator.Get<INetworkLobbyManager>().Initialize();
+            ServiceLocator.Get<INetworkRoomManager>().Initialize();
+            ServiceLocator.Get<INetworkPlayerManager>().Initialize();
+
             ServiceLocator.Get<IGameModeStaticDataService>().Initialize();
             await ServiceLocator.Get<IGameModeStaticDataService>().LoadModeData(GameModeType.Classic);
 

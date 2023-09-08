@@ -3,7 +3,6 @@ using CodeBase.Infrastructure.Services.Input;
 using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using UnityEngine;
 
 namespace CodeBase.Infrastructure.Services.GameplayModeLogic
 {
@@ -84,8 +83,6 @@ namespace CodeBase.Infrastructure.Services.GameplayModeLogic
         {
             if (isInitialized) return;
             isInitialized = true;
-            
-            Debug.Log("InitializeReRegisteredServices");
             
             ServiceLocator.Get<IRuleManager>().Initialize();
             ServiceLocator.Get<IGameRoomHandler>().Initialize();

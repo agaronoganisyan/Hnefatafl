@@ -1,36 +1,11 @@
 using System.Collections.Generic;
 using ExitGames.Client.Photon;
-using Photon.Pun;
 using Photon.Realtime;
 
-namespace CodeBase.NetworkLogic
+namespace CodeBase.NetworkLogic.RoomManagerLogic
 {
-    public class NetworkCallbacks : IConnectionCallbacks , IMatchmakingCallbacks , IInRoomCallbacks, ILobbyCallbacks, IWebRpcCallback, IErrorInfoCallback
+    public class NetworkRoomCallbacks : IMatchmakingCallbacks , IInRoomCallbacks, ILobbyCallbacks
     {
-        public virtual void OnConnected()
-        {
-        }
-
-        public virtual void OnConnectedToMaster()
-        {
-        }
-
-        public virtual void OnDisconnected(DisconnectCause cause)
-        {
-        }
-
-        public virtual void OnRegionListReceived(RegionHandler regionHandler)
-        {
-        }
-
-        public virtual void OnCustomAuthenticationResponse(Dictionary<string, object> data)
-        {
-        }
-
-        public virtual void OnCustomAuthenticationFailed(string debugMessage)
-        {
-        }
-
         public virtual void OnFriendListUpdate(List<FriendInfo> friendList)
         {
         }
@@ -92,14 +67,6 @@ namespace CodeBase.NetworkLogic
         }
 
         public virtual void OnLobbyStatisticsUpdate(List<TypedLobbyInfo> lobbyStatistics)
-        {
-        }
-
-        public virtual void OnWebRpcResponse(OperationResponse response)
-        {
-        }
-
-        public virtual void OnErrorInfo(ErrorInfo errorInfo)
         {
         }
     }
