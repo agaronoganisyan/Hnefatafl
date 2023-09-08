@@ -3,6 +3,7 @@ using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.UnitSelectValidatorLogic;
 using CodeBase.GameplayLogic.BoardLogic;
 using CodeBase.GameplayLogic.TurnLogic;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.UnitsCommanderLogic
 {
     public abstract class UnitsCommander : IUnitsCommander
     {
-        public IUnitsCommanderMediator CommanderMediatorMediator => _commanderMediatorMediator;
+        public IUnitsCommanderMediator Mediator => _commanderMediatorMediator;
         private IUnitsCommanderMediator _commanderMediatorMediator;
         
         private ITurnManager _turnManager;

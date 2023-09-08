@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
+
 namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
 {
     public interface ILobbyCanvas 
     {
-        void Initialize();
+        Task Initialize();
         void ClosePanel();
     }
 }

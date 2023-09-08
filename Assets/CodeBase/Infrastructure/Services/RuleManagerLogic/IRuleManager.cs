@@ -1,3 +1,4 @@
+using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 
 namespace CodeBase.Infrastructure.Services.RuleManagerLogic
@@ -8,7 +9,6 @@ namespace CodeBase.Infrastructure.Services.RuleManagerLogic
         bool IsGameFinished { get; }
         void StartGame();
         void RestartGame();
-        void BlackTeamWin();
-        void WhiteTeamWin();
+        void SetWinningTeam(TeamType teamType);
     }
 }

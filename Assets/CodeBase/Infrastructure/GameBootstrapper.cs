@@ -10,12 +10,17 @@ using CodeBase.GameplayLogic.BattleUnitLogic.UnitSelectValidatorLogic;
 using CodeBase.GameplayLogic.TurnLogic;
 using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.Infrastructure.Services.GameFactoryLogic;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.Input;
+using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.Infrastructure.Services.StaticData;
-using CodeBase.NetworkLogic;
-using CodeBase.NetworkLogic.RoomLogic;
+using CodeBase.NetworkLogic.EventsManagerLogic;
+using CodeBase.NetworkLogic.LobbyLogic;
+using CodeBase.NetworkLogic.ManagerLogic;
+using CodeBase.NetworkLogic.PlayerLogic;
+using CodeBase.NetworkLogic.RoomManagerLogic;
 
 namespace CodeBase.Infrastructure
 {
@@ -28,43 +33,23 @@ namespace CodeBase.Infrastructure
 
         async void GameInitialization()
         {
-            RegisterAndInitializeAssetsProvider();
-            
-            await RegisterServices();
+            RegisterServices();
             await InitializeServices();
-            
-            StartGame();
-            
-            //ServiceLocator.Get<IAssetsProvider>().CleanUp();
         }
 
-        void RegisterAndInitializeAssetsProvider()
+        private void RegisterServices()
         {
             ServiceLocator.Register<IAssetsProvider>( new AssetsProvider());
             ServiceLocator.Register<IGameInfrastructureFactory>(new GameInfrastructureFactory());
-            ServiceLocator.Get<IAssetsProvider>().Initialize();
-            ServiceLocator.Get<IGameInfrastructureFactory>().Initialize();
-        }
-
-        private async Task RegisterServices()
-        {
-            //ServiceLocator.Register<IAssetsProvider>( new AssetsProvider());
-            //ServiceLocator.Register<IGameInfrastructureFactory>(new GameInfrastructureFactory());
-
-            ServiceLocator.Register<INetworkManager>(
-                await ServiceLocator.Get<IGameInfrastructureFactory>().CreateNetworkManager());
-            
+            ServiceLocator.Register<INetworkManager>(new NetworkManager());
+            ServiceLocator.Register<INetworkEventsManager>(new NetworkEventsManager());
+            ServiceLocator.Register<INetworkLobbyManager>(new NetworkLobbyManager());
+            ServiceLocator.Register<INetworkRoomManager>(new NetworkRoomManager());
+            ServiceLocator.Register<INetworkPlayerManager>(new  NetworkPlayerManager());
             ServiceLocator.Register<IGameModeStaticDataService>(new GameModeStaticDataService());
-            ServiceLocator.Register<IRuleManager>(new RuleManager());
-            
-            
-            
-            //LOOOOOOOK
-            ServiceLocator.Register<IGameRoomHandler>(new MultiplayerRoomHandler());
-            //LOOOOOOOK
-            
-            
-            
+            ServiceLocator.Register<IGameplayModeManager>(new GameplayModeManager());
+            ServiceLocator.Register<IRuleManager>(new EmptyRuleManager());
+            ServiceLocator.Register<IGameRoomHandler>(new EmptyRoomHandler());
             ServiceLocator.Register<IInputService>(new InputService());
             ServiceLocator.Register<IBoardTilesContainer>(new BoardTilesContainer());
             ServiceLocator.Register<IUnitsStateContainer>(new UnitsStateContainer());
@@ -80,36 +65,28 @@ namespace CodeBase.Infrastructure
             ServiceLocator.Register<IUnitMoveValidator>(new UnitMoveValidator());
             ServiceLocator.Register<IUnitSelectValidator>(new UnitSelectValidator());
             ServiceLocator.Register<IUnitsPlacementHandler>(new UnitsPlacementHandler());
-            
-            
-            
-            //ServiceLocator.Register<IUnitsCommander>(new UnitsCommander());
-            ServiceLocator.Register<IUnitsCommander>(new MultiplayerUnitsCommander());
-            //LOOOOOOOK
-
-            
-            
+            ServiceLocator.Register<IUnitsCommander>(new EmptyUnitsCommander());
             ServiceLocator.Register<IUnitsFactory>(new UnitsFactory());
             ServiceLocator.Register<IUnitsSpawner>(new UnitsSpawner());
-            
-            
-            
-            //ServiceLocator.Register<IInputHandler>( new InputHandler());
-            ServiceLocator.Register<IInputHandler>( new MultiplayerInputHandler());
-            //LOOOOOOOK
+            ServiceLocator.Register<IInputHandler>( new EmptyInputHandler());
         }
         
         private async Task InitializeServices()
         {
-            // ServiceLocator.Get<IAssetsProvider>().Initialize();
-            
+            ServiceLocator.Get<IAssetsProvider>().Initialize();
             ServiceLocator.Get<INetworkManager>().Initialize();
-            
+            ServiceLocator.Get<INetworkEventsManager>().Initialize();
+            ServiceLocator.Get<INetworkLobbyManager>().Initialize();
+            ServiceLocator.Get<INetworkRoomManager>().Initialize();
+            ServiceLocator.Get<INetworkPlayerManager>().Initialize();
+
             ServiceLocator.Get<IGameModeStaticDataService>().Initialize();
             await ServiceLocator.Get<IGameModeStaticDataService>().LoadModeData(GameModeType.Classic);
 
+            ServiceLocator.Get<IGameplayModeManager>().Initialize();
             ServiceLocator.Get<IRuleManager>().Initialize();
             ServiceLocator.Get<IGameRoomHandler>().Initialize();
+            
             ServiceLocator.Get<IInputService>().Initialize();
             
             ServiceLocator.Get<IBoardTilesContainer>().Initialize();
@@ -150,18 +127,13 @@ namespace CodeBase.Infrastructure
             
             ServiceLocator.Get<IInputHandler>().Initialize();
             
-            //ServiceLocator.Get<IGameInfrastructureFactory>().Initialize();
+            ServiceLocator.Get<IGameInfrastructureFactory>().Initialize();
             await ServiceLocator.Get<IGameInfrastructureFactory>().CreateBoard();
             await ServiceLocator.Get<IGameInfrastructureFactory>().CreateBoardHighlight();
             await ServiceLocator.Get<IGameInfrastructureFactory>().CreateGameplayCanvas();
             await ServiceLocator.Get<IGameInfrastructureFactory>().CreateDebriefingCanvas();
             await ServiceLocator.Get<IGameInfrastructureFactory>().CreateLobbyCanvas();
-
-        }
-        
-        void StartGame()
-        {
-            //ServiceLocator.Get<IRuleManager>().StartGame();
+            await ServiceLocator.Get<IGameInfrastructureFactory>().CreateNetworkLoadingCanvas();
         }
     }
 }

@@ -1,21 +1,22 @@
 using System.Threading.Tasks;
 using UnityEngine;
-using CodeBase.Infrastructure;
 using CodeBase.Infrastructure.Services.AssetManagement;
 using CodeBase.GameplayLogic.TileLogic;
-using CodeBase.GameplayLogic.BattleUnitLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.PathLogic;
 using CodeBase.GameplayLogic.BattleUnitLogic.UnitsCommanderLogic;
-using CodeBase.Infrastructure.Services.RuleManagerLogic;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
+using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
 using CodeBase.Infrastructure.Services.StaticData;
-using CodeBase.NetworkLogic.RoomLogic;
 
 namespace CodeBase.GameplayLogic.BoardLogic
 {
-    public class BoardHighlight : MonoBehaviour,IBoardHighlight
+    public class BoardHighlight : MonoBehaviour , IBoardHighlight, IGameplayModeChangingObserver
     {
         private IAssetsProvider _assetsProvider;
+        private IUnitsPathCalculatorsManager _calculatorsManager;
+        private IUnitsCommander _unitsCommander;
+        private IGameRoomHandler _gameRoomHandler;
         
         [SerializeField] Color _currentTileColor;
         [SerializeField] Color _availableTileColor;
@@ -34,13 +35,33 @@ namespace CodeBase.GameplayLogic.BoardLogic
             _boardSize = currentModeData.BoardSize;
             
             _assetsProvider = ServiceLocator.Get<IAssetsProvider>();
-            
-            ServiceLocator.Get<IUnitsPathCalculatorsManager>().UnitsPathCalculatorsManagerMediator.OnPathCalculated += EnableHighlight;
-            ServiceLocator.Get<IUnitsCommander>().CommanderMediatorMediator.OnUnitUnselected += DisableHighlight;
-            //ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameRestarted += Restart;
-            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += Restart;
+
+            _calculatorsManager = ServiceLocator.Get<IUnitsPathCalculatorsManager>();
+            _unitsCommander= ServiceLocator.Get<IUnitsCommander>();
+            _gameRoomHandler= ServiceLocator.Get<IGameRoomHandler>();
+
+            _calculatorsManager.Mediator.OnPathCalculated += EnableHighlight;
+            _unitsCommander.Mediator.OnUnitUnselected += DisableHighlight;
+            _gameRoomHandler.Mediator.OnQuitRoom += Restart;
+
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }
 
+        public void UpdateChangedProperties()
+        {
+            _calculatorsManager.Mediator.OnPathCalculated -= EnableHighlight;
+            _unitsCommander.Mediator.OnUnitUnselected -= DisableHighlight;
+            _gameRoomHandler.Mediator.OnQuitRoom -= Restart;
+            
+            _calculatorsManager = ServiceLocator.Get<IUnitsPathCalculatorsManager>();
+            _unitsCommander= ServiceLocator.Get<IUnitsCommander>();
+            _gameRoomHandler= ServiceLocator.Get<IGameRoomHandler>();
+
+            _calculatorsManager.Mediator.OnPathCalculated += EnableHighlight;
+            _unitsCommander.Mediator.OnUnitUnselected += DisableHighlight;
+            _gameRoomHandler.Mediator.OnQuitRoom += Restart;
+        }
+        
         void Restart()
         {
             DisableHighlight();
@@ -89,6 +110,5 @@ namespace CodeBase.GameplayLogic.BoardLogic
                 }
             }
         }
-
     }
 }

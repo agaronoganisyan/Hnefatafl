@@ -1,12 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 using CodeBase.GameplayLogic.BattleUnitLogic;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
+using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.NetworkLogic.RoomLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
 {
-    public class DebriefingPanel : MonoBehaviour
+    public class DebriefingPanel : MonoBehaviour, IGameplayModeChangingObserver
     {
         private IGameRoomHandler _gameRoomHandler;
         
@@ -18,8 +19,15 @@ namespace CodeBase.GameplayLogic.UILogic.DebriefingCanvasLogic
         public void Initialize()
         {
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }
 
+        public void UpdateChangedProperties()
+        {
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+        }
+        
         public void Open(TeamType type)
         {
             Prepare(type);

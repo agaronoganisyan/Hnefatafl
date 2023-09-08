@@ -1,14 +1,16 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
+using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.NetworkLogic.RoomLogic;
 using UnityEngine;
 
 namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
 {
-    public class LobbyPanelsManager  : MonoBehaviour
+    public class LobbyPanelsManager  : MonoBehaviour, IGameplayModeChangingObserver
     {
+        private IGameRoomHandler _gameRoomHandler;
         private ILobbyCanvas _lobbyCanvas;
-        
         private LobbyPanel _activePanel;
         
         [SerializeField] private LobbyPanel[] _allPanels;
@@ -16,24 +18,35 @@ namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
         private Dictionary<LobbyPanelType, LobbyPanel> _lobbyDictionary = new Dictionary<LobbyPanelType, LobbyPanel>();
         private List<LobbyPanelType> _panelsHistory = new List<LobbyPanelType>();
         
-        public void Initialize(ILobbyCanvas lobbyCanvas)
+        public async Task Initialize(ILobbyCanvas lobbyCanvas)
         {
             _lobbyCanvas = lobbyCanvas;
             
-            InitializePanels();
+            await InitializePanels();
 
-            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += OpenStartPanel;
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+            _gameRoomHandler.Mediator.OnQuitRoom += OpenStartPanel;
+            
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
 
-            //подписаться на колбек выхода из комнаты чтобы подготвить окно с самого начала 
         }
-
-        private void InitializePanels()
+        
+        public void UpdateChangedProperties()
+        {
+            _gameRoomHandler.Mediator.OnQuitRoom -= OpenStartPanel;
+            
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+            
+            _gameRoomHandler.Mediator.OnQuitRoom += OpenStartPanel;
+        }        
+        
+        private async Task InitializePanels()
         {
             foreach (LobbyPanel panel in _allPanels)
             {
                 if (_allPanels == null) continue;
                 
-                panel.Initialize(this);
+                await panel.Initialize(this);
                 
                 if (_lobbyDictionary.ContainsKey(panel.Type)) continue;
                 

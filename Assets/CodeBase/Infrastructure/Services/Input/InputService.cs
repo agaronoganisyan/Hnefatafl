@@ -1,19 +1,23 @@
 using System;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
+using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.NetworkLogic.RoomLogic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace CodeBase.Infrastructure.Services.Input
 {
-    public class InputService :  IInputService, GameInput.IGameplayActions
+    public class InputService : IInputService, GameInput.IGameplayActions, IGameplayModeChangingObserver
     {
         public IInputServiceMediator InputServiceMediator => _serviceMediator;
         private IInputServiceMediator _serviceMediator;
         
-        private  GameInput _gameInput;
-
+        private GameInput _gameInput;
+        private IInputHandler _inputHandler;
+        private IRuleManager _ruleManager;
+        private IGameRoomHandler _gameRoomHandler;
+        
         public void Initialize()
         {
             _serviceMediator = new InputServiceMediator();
@@ -21,10 +25,32 @@ namespace CodeBase.Infrastructure.Services.Input
             _gameInput.Gameplay.SetCallbacks(this);
 
             SetUIMode();
+
+
+            _inputHandler = ServiceLocator.Get<IInputHandler>();
+            _ruleManager = ServiceLocator.Get<IRuleManager>();
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
             
-            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameStarted += SetGameplayMode;
-            ServiceLocator.Get<IRuleManager>().RuleManagerMediator.OnGameFinished += SetUIMode;
-            ServiceLocator.Get<IGameRoomHandler>().GameRoomHandlerMediator.OnQuitRoom += SetUIMode;
+            _ruleManager.RuleManagerMediator.OnGameStarted += SetGameplayMode;
+            _ruleManager.RuleManagerMediator.OnGameFinished += SetUIMode;
+            _gameRoomHandler.Mediator.OnQuitRoom += SetUIMode;
+            
+            ServiceLocator.Get<IGameplayModeManager>().Mediator.OnGameplayModeChanged += UpdateChangedProperties;
+        }
+        
+        public void UpdateChangedProperties()
+        {
+            _ruleManager.RuleManagerMediator.OnGameStarted -= SetGameplayMode;
+            _ruleManager.RuleManagerMediator.OnGameFinished -= SetUIMode;
+            _gameRoomHandler.Mediator.OnQuitRoom -= SetUIMode;
+            
+            _inputHandler = ServiceLocator.Get<IInputHandler>();
+            _ruleManager = ServiceLocator.Get<IRuleManager>();
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+            
+            _ruleManager.RuleManagerMediator.OnGameStarted += SetGameplayMode;
+            _ruleManager.RuleManagerMediator.OnGameFinished += SetUIMode;
+            _gameRoomHandler.Mediator.OnQuitRoom += SetUIMode;
         }
         
         void SetGameplayMode()
@@ -43,12 +69,15 @@ namespace CodeBase.Infrastructure.Services.Input
         {
             if (context.phase == InputActionPhase.Performed)
             {
-#if UNITY_EDITOR 
-                _serviceMediator.Notify(Mouse.current.position.ReadValue());
+#if UNITY_EDITOR
+                _inputHandler.ProcessClickOnBoard(Mouse.current.position.ReadValue());
+                //_serviceMediator.Notify(Mouse.current.position.ReadValue());
 #elif UNITY_ANDROID || UNITY_IOS
-                _serviceMediator.Notify(Touchscreen.current.primaryTouch.position.ReadValue());
+                _inputHandler.ProcessClickOnBoard(Touchscreen.current.primaryTouch.position.ReadValue());
+                //_serviceMediator.Notify(Touchscreen.current.primaryTouch.position.ReadValue());
 #else
-                _serviceMediator.Notify(Mouse.current.position.ReadValue());
+                _inputHandler.ProcessClickOnBoard(Mouse.current.position.ReadValue());
+                //_serviceMediator.Notify(Mouse.current.position.ReadValue());
 #endif
 
             }

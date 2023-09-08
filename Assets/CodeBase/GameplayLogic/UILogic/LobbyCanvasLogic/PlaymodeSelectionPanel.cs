@@ -1,30 +1,45 @@
+using System.Threading.Tasks;
+using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.GameplayModeLogic;
+using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.ServiceLocatorLogic;
-using CodeBase.NetworkLogic.RoomLogic;
 
 namespace CodeBase.GameplayLogic.UILogic.LobbyCanvasLogic
 {
-    public class PlaymodeSelectionPanel : LobbyPanel
+    public class PlaymodeSelectionPanel : LobbyPanel, IGameplayModeChangingObserver
     {
+        private IGameplayModeManager _gameplayModeManager;
         private IGameRoomHandler _gameRoomHandler;
         
-        public override void Initialize(LobbyPanelsManager lobbyPanelsManager)
+        public override async Task Initialize(LobbyPanelsManager lobbyPanelsManager)
         {
-            base.Initialize(lobbyPanelsManager);
+            await base.Initialize(lobbyPanelsManager);
             
             _type = LobbyPanelType.PlaymodeSelection;
 
+            _gameplayModeManager = ServiceLocator.Get<IGameplayModeManager>();
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+            
+            _gameplayModeManager.Mediator.OnGameplayModeChanged += UpdateChangedProperties;
         }
 
-        public void JumpToMultiplayerPanel()
+        public void UpdateChangedProperties()
         {
+            _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
+        }
+        
+        public void MultiplayerButton()
+        {
+            _gameplayModeManager.SetPlaymodeType(PlaymodeType.Multiplayer);
+            
             _lobbyPanelsManager.SetActivePanel(LobbyPanelType.MultiplayerLobby);
         }
         
         public void SingleplayerButton()
         {
-            _lobbyPanelsManager.HideCanvas();
+            _gameplayModeManager.SetPlaymodeType(PlaymodeType.Singleplayer);
             
+            _lobbyPanelsManager.HideCanvas();
             _gameRoomHandler.TryToStartGame();
         }
     }

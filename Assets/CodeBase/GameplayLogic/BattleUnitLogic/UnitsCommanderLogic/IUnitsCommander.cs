@@ -5,7 +5,7 @@ namespace CodeBase.GameplayLogic.BattleUnitLogic.UnitsCommanderLogic
 {
     public interface IUnitsCommander : IService
     {
-        IUnitsCommanderMediator CommanderMediatorMediator { get; }
+        IUnitsCommanderMediator Mediator { get; }
         void SelectUnit(Vector2Int index);
         void MoveUnit(Vector2Int newIndex);
     }

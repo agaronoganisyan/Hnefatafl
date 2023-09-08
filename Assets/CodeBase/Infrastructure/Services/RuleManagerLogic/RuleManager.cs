@@ -1,6 +1,9 @@
+using CodeBase.GameplayLogic.BattleUnitLogic;
+using UnityEngine;
+
 namespace CodeBase.Infrastructure.Services.RuleManagerLogic
 {
-    public class RuleManager : IRuleManager
+    public abstract class RuleManager : IRuleManager
     {
         public IRuleManagerMediator RuleManagerMediator => _managerMediator;
         private IRuleManagerMediator _managerMediator;
@@ -26,7 +29,13 @@ namespace CodeBase.Infrastructure.Services.RuleManagerLogic
             StartGame();
         }
 
-        public void BlackTeamWin()
+        public virtual void SetWinningTeam(TeamType teamType)
+        {
+            if (teamType == TeamType.White) WhiteTeamWin();
+            else if (teamType == TeamType.Black) BlackTeamWin();
+        }
+
+        private void BlackTeamWin()
         {
             if (_isGameFinished) return;
             _isGameFinished = true;
@@ -34,7 +43,7 @@ namespace CodeBase.Infrastructure.Services.RuleManagerLogic
             _managerMediator.NotifyAboutBlackTeamWon();
         }
 
-        public void WhiteTeamWin()
+        private void WhiteTeamWin()
         {
             if (_isGameFinished) return;
             _isGameFinished = true;
