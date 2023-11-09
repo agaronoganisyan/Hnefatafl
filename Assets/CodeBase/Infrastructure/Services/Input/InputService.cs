@@ -1,4 +1,3 @@
-using System;
 using CodeBase.Infrastructure.Services.GameplayModeLogic;
 using CodeBase.Infrastructure.Services.RoomLogic;
 using CodeBase.Infrastructure.Services.RuleManagerLogic;
@@ -8,7 +7,7 @@ using UnityEngine.InputSystem;
 
 namespace CodeBase.Infrastructure.Services.Input
 {
-    public class InputService : IInputService, GameInput.IGameplayActions, IGameplayModeChangingObserver
+    public class InputService : IInputService, IGameplayModeChangingObserver
     {
         public IInputServiceMediator InputServiceMediator => _serviceMediator;
         private IInputServiceMediator _serviceMediator;
@@ -22,11 +21,11 @@ namespace CodeBase.Infrastructure.Services.Input
         {
             _serviceMediator = new InputServiceMediator();
             _gameInput = new GameInput();
-            _gameInput.Gameplay.SetCallbacks(this);
 
+            _gameInput.Gameplay.ClickOnBoard.canceled += OnClickOnBoard;
+            
             SetUIMode();
-
-
+            
             _inputHandler = ServiceLocator.Get<IInputHandler>();
             _ruleManager = ServiceLocator.Get<IRuleManager>();
             _gameRoomHandler = ServiceLocator.Get<IGameRoomHandler>();
@@ -65,22 +64,9 @@ namespace CodeBase.Infrastructure.Services.Input
             _gameInput.UI.Enable();
         }
 
-        public void OnClickOnBoard(InputAction.CallbackContext context)
+        void OnClickOnBoard(InputAction.CallbackContext context)
         {
-            if (context.phase == InputActionPhase.Performed)
-            {
-#if UNITY_EDITOR
-                _inputHandler.ProcessClickOnBoard(Mouse.current.position.ReadValue());
-                //_serviceMediator.Notify(Mouse.current.position.ReadValue());
-#elif UNITY_ANDROID || UNITY_IOS
-                _inputHandler.ProcessClickOnBoard(Touchscreen.current.primaryTouch.position.ReadValue());
-                //_serviceMediator.Notify(Touchscreen.current.primaryTouch.position.ReadValue());
-#else
-                _inputHandler.ProcessClickOnBoard(Mouse.current.position.ReadValue());
-                //_serviceMediator.Notify(Mouse.current.position.ReadValue());
-#endif
-
-            }
+            _inputHandler.ProcessClickOnBoard(_gameInput.Gameplay.ClickPosition.ReadValue<Vector2>());
         }
     }
 }
